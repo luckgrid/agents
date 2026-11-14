@@ -2,10 +2,10 @@
 id: AS-REC-2026-11-14-MODULAR-REWRITE
 kind: session
 title: Planning the modular skill rewrite (2026-11-14)
-summary: "A cloud session took measure of the skills in this repository, site-system and Workstation, and the open Workstation PRs, and proposed how to carry out the custom-modules plan. The owner added that every dependency around the removed upstream skills goes too, the skills CLI and its package.json included. Six questions, each answered with the recommended option: the herdr copy dropped in M0; wb setup copies skill folders itself; public users copy a folder or use any installer; a new workspace module (M10) after M4; mode invocation, a shared check.sh and rules that only tighten downward. The kickoff brief for the guest session is beside this record."
+summary: "A cloud session took measure of the skills in this repository, site-system and Workstation, and the open Workstation PRs, and proposed how to carry out the custom-modules plan. The owner added that every dependency around the removed upstream skills goes too, the skills CLI and its package.json included. Six questions, each answered with the recommended option: the herdr copy dropped in M0; wb setup copies skill folders itself; public users copy a folder or use any installer; a new workspace module (M10) after M4; mode invocation, a shared check.sh and rules that only tighten downward. Then, the same evening, namespaces: every skill named `<namespace>` or `<namespace>-<name>`, base skills plus namespaced skills in flat folders, the wb- skills moved to Workstation as workbench-*, and the planned names kept. The kickoff brief for the guest session is beside this record."
 status: active
 created: 2026-11-14
-updated: 2026-11-14
+updated: 2026-11-14  # the sixth round: namespaces
 related: [AS-PROGRAM, AS-STATE, AS-REC-2026-11-12-SKILL-MODULES, AS-REC-2026-11-12-SITE-SYSTEM-SKILL, AS-REC-2026-11-14-MODULAR-REWRITE-KICKOFF, AS-ARCH-SKILL-SOURCES, AS-ARCH-GUEST-INSTALL, GW-ADR-0014]
 ---
 
@@ -21,8 +21,8 @@ Word for word:
 >
 > some tips:
 >
-> * most recent work on skills can be seen in site-system and workstation repo
-> * other convenience skills were proposed recently in open workstation PRs that may provide context about using public skills with private skills (i.e. workspace skills in agents monorepo combined with workstation workbench skills to manage workspaces)
+> - most recent work on skills can be seen in site-system and workstation repo
+> - other convenience skills were proposed recently in open workstation PRs that may provide context about using public skills with private skills (i.e. workspace skills in agents monorepo combined with workstation workbench skills to manage workspaces)
 
 Sent while the session was reading:
 
@@ -72,6 +72,25 @@ A proposal of this session's, accepted through the answers above. The rules take
 4. **M2 `council`, then the first pin:** this repository's first `agent_skills_commit`, U16's first install, and Workbench's cell S1.
 5. **AG1** alongside M3 `multiplex`, M4 `wiki`, M10 `workspace`, M5 `grill`, M6 `design-system` (site-system's design-system reference then becomes a pointer), M8 `frugal` and M9 `triage`.
 
+## The sixth round: namespaces (2026-11-14)
+
+The owner's words, after the record above was written:
+
+> a few more things I want to update:
+>
+> - use full workbench namespace for the skills instead of shorthand wb- prefix so it's more specific and obvious
+> - skill namespaces should follow similar conventions and communicate intent (workspace and workbench are good module names, and those can become the prefix for internal skills - i.e: workspace-*, workbench-*, etc)
+> - this should apply to skills in agents as well as skills in other repos like workstation, site-system, etc (public or private)
+
+Four questions followed, recommended option first; the owner chose the recommended option each time. The questions, shortened, and the answers word for word:
+
+1. **Namespaced skills or modes** (the 2026-11-13 decision made `workbench` one folder of modes): "Base skill + namespaced skills (Recommended)". `workbench` stays the base, with the shared rules and a mode table for small uses; anything invoked explicitly, or that must load on its own, becomes `workbench-<name>`; `roles.toml` names the skill directly, with no `mode` key.
+2. **Where namespaced skills live:** "Flat folders (Recommended)": `skills/workbench-code/` beside `skills/workbench/`.
+3. **`wb-guest-rules` and `wb-herdr`:** "Move and rename in Part B (Recommended)": out of this repository in part A, into Workstation's `guest/skills/` as `workbench-guest-rules` and `workbench-herdr` in part B.
+4. **The planned names** (council, multiplex, wiki, grill, design-system, frugal, triage, workspace, site-system): "Keep them all (Recommended)", each a namespace owned by one repository, listed in one registry.
+
+**What this changes in the plan above:** in step 1, the two `wb-` skills leave this repository instead of staying with a `CREDITS.md`, so it holds no skills until M2; in step 2, Workstation's companion adds them as `workbench-guest-rules` and `workbench-herdr` and puts `roles.toml`'s skill names in the `workbench` namespace; in step 3, `roles.toml` gets no `mode` key; answer 6's invocation rule now reads `<prefix><skill> [<mode>] [args]`, with explicitly invoked uses as namespaced skills. The registry and the rules are in the roadmap's [sixth round](../../program.md#sixth-round-owner-2026-11-14) and [namespaces](../../program.md#namespaces-owner-2026-11-14); the kickoff brief was updated to match.
+
 ## Checks
 
-rumdl 0.3.2 (`rumdl check wiki/`) on the changed pages; relative links and `related:` IDs checked by hand. No skill or script changed.
+rumdl 0.3.2 (`rumdl check wiki/` and `rumdl fmt --check wiki/`) pass on the wiki; every relative link, heading anchor and `related:` ID in the changed pages resolves (a script this session ran). The owner's quoted list items are written with `-` markers, as rumdl's formatter sets them; their words are unchanged. No skill or script changed.
