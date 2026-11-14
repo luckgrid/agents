@@ -5,7 +5,7 @@ title: Skill references
 summary: "The skills and tools each custom module learns from, with the repository, the commit read, the licence, what it contributes, and how it may be used: ideas only, since every module is written in Luckgrid's own words (owner, 2026-11-12)."
 status: active
 created: 2026-11-12
-updated: 2026-11-12  # site-system's sources as read for M7; before that, third round: triage; before that, second round: council, multiplex, design-system, site-system
+updated: 2026-11-14  # workspace (M10), fifth round; before that, site-system's sources as read for M7; before that, third round: triage; before that, second round: council, multiplex, design-system, site-system
 related: [AS-PROGRAM, AS-REC-2026-11-12-SKILL-MODULES, AS-RESOURCES]
 ---
 
@@ -129,6 +129,15 @@ Read on 2026-11-12 for the skill's first version. The private sources' commits a
 | getsentry/skills `find-bugs`, `triage-frontend-issues` | Apache-2.0 | `e94f2221` | Gather every input, map the attack surface, verify, audit before concluding; a triage plan applied only on approval, with a recovery path |
 | rtk-ai/rtk `.claude/skills/issue-triage`, `pr-triage` (in French) | Apache-2.0 | `2a786dca` | Open issues and PRs audited by category, duplicates, staleness, linked PRs and risk, then a deeper look at the chosen ones |
 | DietrichGebert/ponytail `ponytail-debt` | MIT | `96608e07` | Tracking deliberate shortcuts so they come back up |
+
+## `workspace` (M10)
+
+Added in the fifth round (owner, 2026-11-14). Its public references are read in its own research step, after M4; until then it learns from Luckgrid's own sources only.
+
+| Source | Licence | Commit | What it contributes |
+| --- | --- | --- | --- |
+| Workstation #43, the owner's checks of 2026-11-14 (luckgrid/workstation, private for now) | Luckgrid's | `6bf8345` (the PR's first commit) | The proposal: release notes from a template, and a release workflow's dry run before tagging |
+| Luckgrid's PR descriptions and review records, in this repository, site-system and Workstation | Luckgrid's | as each module record names | What a PR description and a review disposition hold |
 
 ## Removed in M0: the linked skills
 

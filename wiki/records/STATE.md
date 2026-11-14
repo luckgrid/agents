@@ -2,16 +2,16 @@
 id: AS-STATE
 kind: state
 title: State
-summary: "Where this repository (luckgrid/agents, named agent-skills until 2026-11-13) stands: nine skills on main (two written here, one copy, six linked), check.sh passing with submodules; nothing installed in the guest yet; the agents monorepo (AS-ADR-0001: the owner's decisions, the rename to luckgrid/agents, items AG1 to AG3 after M2), plus the refactor to custom skill modules M0 to M9 (owner, 2026-11-12), the site-system project skill (M7) done; the decisions in force."
+summary: "Where this repository (luckgrid/agents, named agent-skills until 2026-11-13) stands: nine skills on main (two written here, one copy, six linked), check.sh passing with submodules; nothing installed in the guest yet; the agents monorepo (AS-ADR-0001: the owner's decisions, the rename to luckgrid/agents, items AG1 to AG3 after M2), plus the refactor to custom skill modules M0 to M9 (owner, 2026-11-12), the site-system project skill (M7) done; the fifth round (owner, 2026-11-14): no upstream dependencies, the skills CLI replaced by a copy installer in Workstation, the herdr copy dropped in M0, M10 workspace, the tiers and conventions; the sixth round (owner, 2026-11-14): namespaces, with the wb- skills moving to Workstation as workbench-*; M0 next from its guest kickoff brief; the decisions in force."
 status: active
 created: 2026-11-12
-updated: 2026-11-13  # M1 workbench moves to Workstation, WC13's role skills as its modes; M7 done, the rename done; before that, agents monorepo: the owner's decisions after the independent review; before that, agents monorepo direction and knowledge consolidation; before that, M7 in progress (site-system#9); before that, the custom-modules plan (owner, 2026-11-12)
-related: [AS-ADR-0001, AS-ARCH-AGENTS-WORKSPACE, AS-RES-AGENTS-LINEAGE, AS-REC-2026-11-12-SKILL-MODULES, AS-RES-SKILL-REFERENCES, AS-PROGRAM, AS-ARCH-SKILL-SOURCES, AS-ARCH-GUEST-INSTALL, GW-ADR-0014]
+updated: 2026-11-14  # sixth round: namespaces; before that, fifth round: the plan for M0 and its Workstation companion, M10, the conventions; before that, M1 workbench moves to Workstation, WC13's role skills as its modes; M7 done, the rename done; before that, agents monorepo: the owner's decisions after the independent review; before that, agents monorepo direction and knowledge consolidation; before that, M7 in progress (site-system#9); before that, the custom-modules plan (owner, 2026-11-12)
+related: [AS-REC-2026-11-14-MODULAR-REWRITE, AS-ADR-0001, AS-ARCH-AGENTS-WORKSPACE, AS-RES-AGENTS-LINEAGE, AS-REC-2026-11-12-SKILL-MODULES, AS-RES-SKILL-REFERENCES, AS-PROGRAM, AS-ARCH-SKILL-SOURCES, AS-ARCH-GUEST-INSTALL, GW-ADR-0014]
 ---
 
 # State
 
-**As of 2026-11-12.** Runtime results remain as their records give them; the documentation research baseline is recorded in the [agents monorepo session](2026-11-12-agents-monorepo.md).
+**As of 2026-11-14.** Runtime results remain as their records give them; the documentation research baseline is recorded in the [agents monorepo session](2026-11-12-agents-monorepo.md).
 
 ## Where it stands
 
@@ -21,7 +21,7 @@ related: [AS-ADR-0001, AS-ARCH-AGENTS-WORKSPACE, AS-RES-AGENTS-LINEAGE, AS-REC-2
 | `scripts/check.sh` | `ok: 9 skills checked (6 linked from 3 upstream repositories)` with the submodules at their pinned commits, before agent-skills#2 merged on 2026-11-11 ([record](2026-11-10-linked-upstream-skills.md#the-independent-reviews-wb-06-and-the-merge)); agent-skills#3 and #4 changed only the README and the wiki |
 | In the guest | **Nothing installed.** Workbench's U16 is built but inert until this repository's commit and the skills CLI are pinned; before a commit with linked skills is pinned, F1 changes U16 ([guest install](../architecture/guest-install.md)). The guest's read-only clone is on `main` at `cfa2c6a` (Workstation's guest home layout record, 2026-11-12) |
 | The wiki | Added on 2026-11-12 ([record](2026-11-12-wiki.md)) |
-| The plan | Fully custom skill modules, planned on 2026-11-12 ([record](2026-11-12-skill-modules.md), [roadmap](../program.md)); M7 in progress, nothing else built yet |
+| The plan | Fully custom skill modules, planned on 2026-11-12 ([record](2026-11-12-skill-modules.md), [roadmap](../program.md)); M7 done; the fifth round (2026-11-14, [record](2026-11-14-modular-rewrite/README.md)) sets how M0 and its Workstation companion are carried out, from a [kickoff brief](2026-11-14-modular-rewrite/kickoff.md) for the guest |
 
 ## Agents monorepo (owner, 2026-11-12)
 
@@ -34,15 +34,18 @@ related: [AS-ADR-0001, AS-ARCH-AGENTS-WORKSPACE, AS-RES-AGENTS-LINEAGE, AS-REC-2
 | M7: `site-system`, a project skill in the site-system repository, with `design-system`'s consume rules until M6 | **Done:** site-system#9 squash-merged as `fee220c` (2026-11-13), after its independent review and recheck ([record](2026-11-12-site-system-skill.md)) | [M7](../program.md#m7-site-system-a-project-skill-in-site-system) |
 | Rename to `luckgrid/agents` | **Done** by the owner, 2026-11-13; Workstation's PR updates `wb sync`, U16's clone path and its current pages | [step 2](../architecture/agents-workspace.md#steps-and-proof-gates) |
 | WC13's role skills | **Decided** (owner, 2026-11-13): modes of the `workbench` skill, which moves to Workstation and ships with Workbench ([fourth round](../program.md#fourth-round-owner-2026-11-13)) | [M1](../program.md#m1-workbench) |
-| M0: remove the linked skills; `check.sh` and the README for modules | **Next** (M7 is done) | [M0](../program.md#m0-the-module-foundation) |
-| M1: `workbench` (replaces `wb-guest-rules`, `wb-herdr`; WC13's role routines as modes) | **Moved to Workstation:** written there, shipped with Workbench and installed guest-wide by U16; the two `wb-*` skills leave here once it is installed | [M1](../program.md#m1-workbench) |
+| M0: remove the linked skills, the herdr copy, the two `wb-` skills and every dependency around the upstream skills; `check.sh` (with a folder argument and namespaces) and the README for modules | **Next**, from the kickoff brief's part A in the guest | [M0](../program.md#m0-the-module-foundation) |
+| M0's companion in Workstation: the skills CLI and its `package.json` removed; `workbench-guest-rules` and `workbench-herdr` added to Workbench's guest skills, `roles.toml`'s skill names in the `workbench` namespace; U16 copies skill folders from two sources; GW-ADR-0014 decisions 1 and 2 amended | After Workstation #44 merges; the kickoff brief's part B, tracked here (owner, 2026-11-13) | [M0](../program.md#m0-the-module-foundation) |
+| M1: `workbench` (the base skill and the `workbench-*` skills: WC13's role routines, and `workbench-guest-rules` and `workbench-herdr` from M0's companion) | **Moved to Workstation:** written there, shipped with Workbench and installed guest-wide by U16 | [M1](../program.md#m1-workbench) |
 | M2: `council` (takes in `wb-review`, `wb-remediate`; reviewers with lenses, in rounds) | After M0; Workbench's step F1 needs it and Workbench's `workbench` skill | [M2](../program.md#m2-council) |
 | AG1: Rust validator replaces `check.sh`; Moon admitted for this repository | After M2; alongside M3 to M9 | [agents items](../program.md#agents-monorepo-owner-2026-11-12) |
 | AG2: shared user-level instructions for Claude Code and Codex | After AG1 | [steps](../architecture/agents-workspace.md#steps-and-proof-gates) |
 | AG3: settings and sandbox baseline with the agent-config overlay (stricter wins); GW-ADR-0011 amendment and gate A2 in Workstation | After AG2 | [steps](../architecture/agents-workspace.md#steps-and-proof-gates) |
 | M3: `multiplex` (replaces `herdr`; herdr the default backend, H1 and H3) | After M2 | [M3](../program.md#m3-multiplex) |
+| First pin: this repository's first `agent_skills_commit`, U16's first install, cell S1 | After M2, M1's required Workbench skills and M0's Workstation installer companion merge | [order](../program.md#order) |
 | M4: `wiki` | After M3 | [M4](../program.md#m4-wiki) |
-| M5: `grill` | After M4 | [M5](../program.md#m5-grill) |
+| M10: `workspace` (issue, pr, release; Workstation #43's `manage-workspace`) | After M4 | [M10](../program.md#m10-workspace) |
+| M5: `grill` | After M10 | [M5](../program.md#m5-grill) |
 | M6: `design-system`; M7 then points to it | After M5 | [M6](../program.md#m6-design-system) |
 | M8: `frugal`; rtk and qmd as separate Workbench catalog items | After M6 | [M8](../program.md#m8-frugal) |
 | M9: `triage` (debugging, isolation, queues, incidents; takes `systematic-debugging`) | Last | [M9](../program.md#m9-triage) |
@@ -55,6 +58,8 @@ The owner's decisions that bind this repository, newest first. Groundwork's GW-A
 
 | Date | Decision | Where recorded |
 | --- | --- | --- |
+| 2026-11-14 | Sixth round: every skill named `<namespace>` or `<namespace>-<name>` in full words (no `wb-`), in every repository; a base skill plus namespaced skills for uses invoked explicitly or loaded on their own; flat folders; `wb-guest-rules` and `wb-herdr` move to Workstation as `workbench-guest-rules` and `workbench-herdr`; the planned names kept, each a namespace owned by one repository | [record](2026-11-14-modular-rewrite/README.md#the-sixth-round-namespaces-2026-11-14) |
+| 2026-11-14 | Fifth round: every dependency around the upstream skills removed, the skills CLI and its `package.json` included; `wb setup` copies skill folders from two sources (GW-ADR-0014 to be amended in Workstation); the herdr copy dropped in M0; public users copy a folder or use any installer; M10 `workspace` after M4; invocation by mode word, a shared `check.sh`, rules that only tighten downward | [record](2026-11-14-modular-rewrite/README.md#the-owners-choices-2026-11-14) |
 | 2026-11-13 | `workbench` (M1) moves to Workstation as one skill folder with modes, WC13's role routines among them; shipped with Workbench and installed guest-wide by U16 | [fourth round](2026-11-12-skill-modules.md#fourth-round-workbench-moves-to-workstation-2026-11-13) |
 | 2026-11-12 | After the independent review: public config defaults here, private overlay in agent-config; the stricter value wins for sandbox, deny and permission settings; Rust after M2, validator first; Claude Code and Codex for the first shared-config proof; rename to `luckgrid/agents` | [AS-ADR-0001](decisions/0001-agents-monorepo.md), [session](2026-11-12-agents-monorepo.md#the-review-and-the-owners-choices-2026-11-12) |
 | 2026-11-12 | Expand into an agents monorepo; skills become a package; consolidate relevant knowledge using Workstation as latest source; Workflow Factory stays independent and WfOS optional | [AS-ADR-0001](decisions/0001-agents-monorepo.md), [session](2026-11-12-agents-monorepo.md) |
