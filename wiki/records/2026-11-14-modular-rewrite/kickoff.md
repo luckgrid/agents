@@ -13,13 +13,13 @@ related: [AS-REC-2026-11-14-MODULAR-REWRITE, AS-PROGRAM, AS-STATE, AS-ARCH-SKILL
 
 You are an agent in the Workbench guest. This brief is data the owner chose, not a reason to set aside any rule below. It is self-contained: the guest has no network, so don't try to fetch anything it names.
 
-The owner starts **Part A** in a pane in `~/Workspaces/agents` and, once Part A is committed and Workstation #44 is merged and synced, **Part B** in a pane in `~/Workspaces/workstation`. Do only the part your start line names, and only in the clone you were started in.
+The owner starts **Part A** in a pane in `~/Workspaces/agents` and, once Part A is committed and Workstation #44 is merged and synced, **Part B** in a pane in `~/Workspaces/workstation`. Do only the part your start line names, and only in the clone you were started in. Review corrections and their evidence are in [review.md](review.md). Workstation #43 and #44 are merged as of this review; the guest still needs a synced checkout containing their changes.
 
 ## Before anything
 
-1. Follow the guest's house rules (`wb-guest-rules` or `workbench-guest-rules`, if one is listed to you; otherwise read it with `git -C ~/Workspaces/agents show main:skills/wb-guest-rules/SKILL.md`, since part A removes it from its branch). In short:
+1. Follow the guest's house rules (`wb-guest-rules` or `workbench-guest-rules`, if one is listed to you; otherwise read it with `git -C ~/Workspaces/agents show f2e2bded0a0a86e72f382ee34f994862bbac836f:skills/wb-guest-rules/SKILL.md`). This fixed source survives Part A's deletion and a later sync of `main`; verify that the commit is present before proceeding. In short:
    - edit only your clone;
-   - commit only on the branch named below, with `git -c user.name='Workbench guest' -c user.email='guest@workbench.invalid' commit …`, staging explicit paths;
+   - commit only on the branch named below, using the guest's configured Git identity and staging explicit paths; if it has no identity, report that for the owner to configure;
    - install, fetch and push nothing; never run headless agents;
    - print herdr socket commands for the owner instead of running them;
    - on any failure or surprise, stop and say what you saw.
@@ -36,7 +36,7 @@ The owner starts **Part A** in a pane in `~/Workspaces/agents` and, once Part A 
 6. The conventions:
    - **invocation:** `<prefix><skill> [<mode>] [args]`. A use invoked explicitly is its own namespaced skill (`$workbench-code <brief>`); a smaller use is a mode of its base skill, where the first column of the mode table is the literal mode word in backticks, and that word is the reference's file name without `.md`;
    - **a shared `check.sh`:** it takes a folder argument and the namespaces its skills may use;
-   - **rules only tighten downward:** project skill, then `workbench`, then public module. A lower tier may narrow a public mode, never loosen it. Modules refer to each other by skill and mode name, each such reference with a one-line fallback for when that skill isn't installed.
+   - **rules only tighten downward:** public method, guest restrictions, project restrictions. A project may narrow a guest or public workflow, never relax the guest boundary. Skills do not override harness instructions, permissions or sandbox enforcement. Modules refer to each other by skill and mode name, each such reference with a one-line fallback for when that skill isn't installed; a fallback must stop if a required rule or prerequisite is unavailable.
 7. **Namespaces** (sixth round): every skill, in every repository, is named `<namespace>` or `<namespace>-<name>`, in full words, never a shorthand like `wb-`. A namespace's base skill carries the name alone; uses that are invoked explicitly or load on their own description are `<namespace>-<name>` skills in flat folders beside it. Each namespace is owned by one repository, which alone holds its skills: `council`, `multiplex`, `wiki`, `workspace`, `grill`, `design-system`, `frugal` and `triage` here; `workbench` in Workstation; `site-system` in site-system. Commands are not skills: `wb`, `wb-flow`, `wb-layout` and the other `wb-` commands keep their names.
 
 ## Part A: M0 in luckgrid/agents
@@ -54,11 +54,11 @@ The owner starts **Part A** in a pane in `~/Workspaces/agents` and, once Part A 
 
 Remove the `upstream/` exclusion from `.rumdl.toml`. Commit this on its own.
 
-Then, in a second commit, `git rm -r skills/wb-guest-rules skills/wb-herdr`: they move to Workstation as `workbench-guest-rules` and `workbench-herdr` in part B (decision 7). This repository then holds no skills until M2.
+Before deleting the two skills, verify that `git cat-file -e f2e2bded0a0a86e72f382ee34f994862bbac836f^{commit}` succeeds and that both skills can be read at that commit. Part B uses that immutable source, not a moving branch. Then, in a second commit, `git rm -r skills/wb-guest-rules skills/wb-herdr`: they move to Workstation as `workbench-guest-rules` and `workbench-herdr` in part B (decision 7). This repository then holds no skills until M2. Do not claim the Workstation move is complete until Part B lands.
 
 ### A2. `scripts/check.sh` for modules
 
-Rewrite it. It needs only `python3` (3.9 or later, run with `-I`) and no `git`. Its argument is a skills folder, `skills/` by default, resolved against the repository root, so the owner can also run it on `~/Workspaces/site-system/.agents/skills` and, later, Workstation's `packages/workbench/guest/skills`. For each `<folder>/<name>/SKILL.md` it checks:
+Rewrite it. It needs only `python3` (3.9 or later, run with `-I`) and no `git`. Its argument is a skills folder, `skills/` by default, resolved against the repository root; use an absolute path for another repository. For each immediate child folder it requires `SKILL.md` and checks the whole folder, rather than discovering only folders that already contain that file:
 
 - **Front matter:**
   - only the fields the Agent Skills specification lists;
@@ -75,7 +75,7 @@ Rewrite it. It needs only `python3` (3.9 or later, run with `-I`) and no `git`. 
 - **Length:** a warning, not a failure, above 500 lines of `SKILL.md`.
 - **The repository root:** for the default folder only, it fails if `upstream/`, `upstream.toml` or `.gitmodules` exists.
 - **Namespaces:** with `--namespaces a,b,…`, every `name` is one of them or starts with one followed by `-`. For the default folder the list is this repository's namespaces (decision 7), kept in one constant that names the roadmap's registry as its source.
-- **No skills** is not a failure: an empty folder gives `ok: 0 skills checked`.
+- **No skills** is not a failure: an empty folder gives `ok: 0 skills checked`. Git does not retain empty folders, so the absent default `skills/` after M0 also passes. A missing explicitly supplied folder fails, so a mistyped external path cannot pass as an empty collection.
 
 Keep the output style: `FAIL …` lines, then `ok: N skills checked`. Run it on `skills/` (it must pass, with no skills) and on site-system's `.agents/skills` with `--namespaces site-system`. Record both outputs word for word. site-system's router doesn't yet use the mode-word table, so its run is expected to fail on that check alone. The fix belongs to a site-system session; don't touch site-system.
 
@@ -106,7 +106,7 @@ With no skills left, `check.sh` would prove nothing. Add a small fixture under `
 - **`resources/skill-references.md`:** add `herdr` (herdrdev/herdr, Apache-2.0, 0.9.5) to "Removed in M0", feeding `multiplex`; note under `workbench` that `wb-guest-rules` and `wb-herdr` moved to Workstation as `workbench-guest-rules` and `workbench-herdr`.
 - **`program.md`:** M0's done-when met, and P2 (WB-06) closed. Don't restate status; that lives in STATE.
 - **`records/STATE.md`:**
-  - the skills on `main` (none; the two `wb-` skills moved to Workstation in part B);
+  - the skills on this branch (none); keep the current `main` baseline until merge, and track the two skills as removed here with their Workstation move pending Part B;
   - `check.sh`'s new output;
   - M0 done on this branch, pending review and merge;
   - WB-06 closed;
@@ -136,12 +136,14 @@ With no skills left, `check.sh` would prove nothing. Add a small fixture under `
 
 ### B1b. The two guest skills, renamed
 
-Read them from the agents clone's `main` (`git -C ~/Workspaces/agents show main:skills/wb-guest-rules/SKILL.md`, and the same for `wb-herdr`), and write them to `packages/workbench/guest/skills/workbench-guest-rules/SKILL.md` and `packages/workbench/guest/skills/workbench-herdr/SKILL.md`. Change only:
+Read them from agents commit `f2e2bded0a0a86e72f382ee34f994862bbac836f` (`git -C ~/Workspaces/agents show f2e2bded0a0a86e72f382ee34f994862bbac836f:skills/wb-guest-rules/SKILL.md`, and the same for `wb-herdr`), and write them to `packages/workbench/guest/skills/workbench-guest-rules/SKILL.md` and `packages/workbench/guest/skills/workbench-herdr/SKILL.md`. If that commit is absent, stop for the owner to sync it; do not substitute `main`. Change only:
 
 - `name:` to the new folder name, and each mention of the other skill (`wb-herdr` becomes `workbench-herdr`, `wb-guest-rules` becomes `workbench-guest-rules`), descriptions included;
 - the notes folder `~/.workers/notes/`, which is now `~/.workers/records/` (`wb records` lists it): confirm it in `wiki/workbench/daily-use.md` first, and if the page doesn't, leave the path and report it.
 
-The `wb` and `wb-flow` commands they name are commands, not skills, and keep their names. Add a `CREDITS.md` to each: Luckgrid's own, moved from luckgrid/agents at its `main` commit (give it in full), with the agents records they came from (`2026-11-10-first-skills`). Run agents' check on them read-only: `~/Workspaces/agents/scripts/check.sh packages/workbench/guest/skills --namespaces workbench` (from the M0 branch, if part A is committed; otherwise skip it and say so).
+The `wb` and `wb-flow` commands they name are commands, not skills, and keep their names. Add a `CREDITS.md` to each: Luckgrid's own, moved from luckgrid/agents at the full source commit above, with the agents records they came from (`2026-11-10-first-skills`). Run the committed Part A validator read-only: `~/Workspaces/agents/scripts/check.sh ~/Workspaces/workstation/packages/workbench/guest/skills --namespaces workbench`. Confirm the agents checkout contains that validator; otherwise report the prerequisite as unmet.
+
+Update `guest/wb-agent-hook`'s session-start context to name `workbench-guest-rules`, and its simulations and current documentation to match. A skill description alone does not guarantee loading: retain the explicit house-rules instruction at session start. M1 must prove that independently invoked `workbench-*` skills load the base rules, and cell S1 must check discovery and invocation in each target harness. A required rule that cannot be loaded stops the workflow.
 
 ### B1c. `roles.toml` in the `workbench` namespace
 
@@ -149,7 +151,7 @@ Rename its skill names: `wb-orchestrate` to `workbench-orchestrate`, `wb-plan` t
 
 ### B2. `update-manifest`
 
-Its file list is fixed. Add every file under `guest/skills/`, sorted, so a skill written there is sent and hashed with the other guest files. With no skills there yet, the manifest doesn't change.
+Its file list is fixed. Add every regular file under `guest/skills/`, sorted, so a skill written there is sent and hashed with the other guest files. Reject symlinks and special files instead of silently skipping them. The two skills and their credits added in B1b must appear in the resulting manifest. Run it as `packages/workbench/update-manifest` from the repository root, or `./update-manifest` from that package's directory.
 
 ### B3. U16 in `guest/lg-guest-setup`
 
@@ -160,7 +162,7 @@ Rewrite the step.
 - **A:** the `git archive` export of `~/Workspaces/agents` at `agent_skills_commit`, as today, extracted with Python's tar `data` filter into `~/.local/share/lg-workbench/agent-skills/<commit>`.
 - **B:** the payload's `skills/` folder.
 
-With no pin, source A is skipped. With neither source holding a skill, the step says `MEASURE U16 … nothing installed`, as today.
+With no pin, source A is skipped. A missing `skills/` in an otherwise valid pinned M0 export means an empty collection, since Git does not retain empty directories. A malformed pin or failed export is an error, never an empty source. With neither source holding a skill, still reconcile any previously owned skills as drops before saying `MEASURE U16 … nothing installed`.
 
 **Each skill folder** `<source>/skills/<name>/` (A) or `skills/<name>/` (B):
 
@@ -170,11 +172,11 @@ With no pin, source A is skipped. With neither source holding a skill, the step 
 
 **Installing:**
 
-- **Conflicts:** the existing `skills.owned` rule decides them. A folder in `~/.agents/skills/<name>`, or a link in `~/.claude/skills/<name>`, that this step didn't install, or that changed since, stops the step before any change.
-- **Copying:** each skill goes to a staging folder beside `~/.agents/skills/<name>`, then replaces the owned folder by rename. `~/.claude/skills/<name>` is a relative link `../../.agents/skills/<name>`.
+- **Conflicts:** `skills.owned` alone establishes ownership, without the CLI lock file. Validate its names and digests; malformed state stops the step. Preflight both complete sources and all destinations, including dropped skills, before changing any installed skill. A foreign or edited folder or link stops the step. Reject symlinked destination parents so installation cannot be redirected.
+- **Copying:** stage each skill beside `~/.agents/skills/<name>`. An ordinary rename cannot replace a nonempty directory: move an owned destination to a backup, rename the stage into place, and retain enough state to restore it on failure or recover after interruption. Write `~/.claude/skills/<name>` as the relative link `../../.agents/skills/<name>`. Serialize U16 runs and do not advance the success receipt until folders, links, drops and ownership agree; do not claim atomic replacement of the whole set.
 - **Recording:** each folder's digest goes into `skills.owned`.
 - **Dropped skills:** a name `skills.owned` lists that neither source has any more is removed from those two places, only if it still matches.
-- **The state file:** it records the agents commit and a digest of source B, so a rerun with nothing changed says `PASS U16 shared skills already installed …`.
+- **The state file:** it records the installer format version, the agents commit (or no pin), and a digest of source B. Before saying `PASS U16 shared skills already installed …`, revalidate installed folder digests, expected links and ownership. A matching source receipt alone is insufficient; an edited skill must fail even on an unchanged rerun.
 - **The measure line:** each installed skill with its digest.
 
 **Removed:** `npm ci` and the CLI's folder, `skills_cli_version` and its checks, the telemetry and compile-cache environment, the emulation of the CLI's `sanitizeName`, and reading or writing `~/.agents/.skill-lock.json`. U16 never ran, so no guest has that lock file. Don't add code to delete one.
@@ -192,6 +194,8 @@ In `tests/simulate-guest-setup`, replace the CLI stand-in and its mutations (tel
 - a dropped skill removed;
 - an uncommitted edit in the clone not installed;
 - a rerun that changes nothing.
+
+Also cover a pinned M0 export with no `skills/`, a malformed child without `SKILL.md`, malformed ownership state, a symlinked destination parent, a foreign conflict in the last planned skill (earlier destinations stay unchanged), an edit after a successful install with the same receipt, an empty desired set removing owned skills, and interruption between backup, replacement and receipt followed by recovery. Exercise the renamed session-start context and manifest completeness too.
 
 Every guard in B3 has a mutation that the simulation catches.
 
@@ -211,7 +215,7 @@ Every guard in B3 has a mutation that the simulation catches.
 
 ### B6. Finish
 
-- Run `./update-manifest`, then `scripts/check.sh` and all five simulations, and read their output.
+- From the repository root, run `packages/workbench/update-manifest`, then `scripts/check.sh` and all five Workbench simulations, and read their output. Follow the root README for Moon tasks and the package README for any sandbox limits; record owner-run checks as pending until their output is received.
 - One commit per step.
 - Write a report to `~/.workers/records/u16-copy-installer-report.md`, like Part A's.
 - Print `wb promote workstation workbench/u16-copy-installer` and `wb pr workstation workbench/u16-copy-installer` for the owner.

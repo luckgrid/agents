@@ -42,7 +42,7 @@ related: [AS-REC-2026-11-14-MODULAR-REWRITE, AS-ADR-0001, AS-ARCH-AGENTS-WORKSPA
 | AG2: shared user-level instructions for Claude Code and Codex | After AG1 | [steps](../architecture/agents-workspace.md#steps-and-proof-gates) |
 | AG3: settings and sandbox baseline with the agent-config overlay (stricter wins); GW-ADR-0011 amendment and gate A2 in Workstation | After AG2 | [steps](../architecture/agents-workspace.md#steps-and-proof-gates) |
 | M3: `multiplex` (replaces `herdr`; herdr the default backend, H1 and H3) | After M2 | [M3](../program.md#m3-multiplex) |
-| First pin: this repository's first `agent_skills_commit`, U16's first install, cell S1 | After M2 | [order](../program.md#order) |
+| First pin: this repository's first `agent_skills_commit`, U16's first install, cell S1 | After M2, M1's required Workbench skills and M0's Workstation installer companion merge | [order](../program.md#order) |
 | M4: `wiki` | After M3 | [M4](../program.md#m4-wiki) |
 | M10: `workspace` (issue, pr, release; Workstation #43's `manage-workspace`) | After M4 | [M10](../program.md#m10-workspace) |
 | M5: `grill` | After M10 | [M5](../program.md#m5-grill) |

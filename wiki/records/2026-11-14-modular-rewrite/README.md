@@ -93,4 +93,6 @@ Four questions followed, recommended option first; the owner chose the recommend
 
 ## Checks
 
+**Later review, 2026-11-14:** [review.md](review.md) records corrections to the actionable brief and roadmap, including immutable migration sources and first-install prerequisites. The planning history and owner quotations above remain as recorded. Workstation #43 and #44 have since merged; the guest must still sync their changes before Part B.
+
 rumdl 0.3.2 (`rumdl check wiki/` and `rumdl fmt --check wiki/`) pass on the wiki; every relative link, heading anchor and `related:` ID in the changed pages resolves (a script this session ran). The owner's quoted list items are written with `-` markers, as rumdl's formatter sets them; their words are unchanged. No skill or script changed.
