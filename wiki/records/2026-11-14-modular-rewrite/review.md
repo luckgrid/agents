@@ -5,7 +5,7 @@ title: Modular rewrite plan review (2026-11-14)
 summary: "Review of agents PR 9 at 5cd9fd3: corrected the deleted migration source, cross-repository validator path, empty export handling, session hook rename, installer ownership and recovery requirements, and first-pin prerequisites. Documentation only; no installer or skill implemented."
 status: active
 created: 2026-11-14
-updated: 2026-11-14
+updated: 2026-11-14  # dated note: sync with Workstation's merges
 related: [AS-PROGRAM, AS-STATE, AS-REC-2026-11-14-MODULAR-REWRITE, AS-REC-2026-11-14-MODULAR-REWRITE-KICKOFF]
 ---
 
@@ -45,3 +45,12 @@ Wiki links, heading anchors and AS related IDs: 0 problems in 24 files
 ```
 
 The link check is a temporary local review helper, not a new repository dependency. Both migrated skill blobs were fetched at the base and head and matched: guest rules `ff80011a9762ef8b970ee606e9c738277936b009`; herdr rules `68e72bc20d46a27bed6de75ec0272c9d0aee99fd`.
+
+## Dated note, 2026-11-14 evening: sync with Workstation's merges
+
+A cloud session, asked by the owner to "update the next steps and kickoff based on recent merges - need to sync everything up properly", read luckgrid/workstation at `24fc34c` (`main`) and this repository at `79a7c8b` (`main`).
+
+- **Merged in Workstation since the review:** #44 (`wb done`, `wb install`, public HTTPS clones, Cursor's approvals unrestricted with its sandbox on, strace), #43 (the owner's checks of 2026-11-14), and #45 and #47 (documentation only, nothing under `packages/`). `wb` on `main` is `9899ebd9d6624a75f2466b44b9a5f16b2deb12e5115e5b8c4c21c09ef663a2b4`.
+- **New ordering:** the owner chose to build the hand-off's trust-dialog handling next in Workstation (wait for the dialog, then offer the request again; never pre-trust), on the branch `workbench/handoff-trust-dialog`. It changes files Part B also changes (`simulate-wb-flow`, `agent-roles.md`, `daily-use.md`, `guest.sha256` and `wb`'s pin), so Part B now starts after it merges and is synced, as well as after Part A is committed. Part A doesn't touch Workstation and can run alongside it.
+- **B1b's list of changes:** besides the notes folder, the two skills also name `wb notes` (now `wb records`), `~/.workers/worktrees/<repo>/` (now `~/.workers/spaces/<repo>/`) and the copied `herdr` skill, which M0 drops (now herdr's own `herdr --skill`). The kickoff adds them, each to be confirmed in Workstation's daily-use page or cheatsheet first.
+- **Stale status lines** in the roadmap and STATE that still waited for #44 now name the hand-off change.

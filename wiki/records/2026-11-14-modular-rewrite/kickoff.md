@@ -5,7 +5,7 @@ title: Kickoff brief for the modular rewrite, M0 and its Workstation companion (
 summary: "The brief that starts the guest session for M0 (this repository: the upstream machinery, the herdr copy and the two wb- skills removed, check.sh for modules with a folder argument, the README and wiki for modules) and its companion in Workstation (the skills CLI and its package.json removed, U16 as a copy installer from two sources, the wb- skills added as workbench-guest-rules and workbench-herdr, roles.toml in the workbench namespace). Two parts, each started in its own pane in its own clone."
 status: active
 created: 2026-11-14
-updated: 2026-11-14  # the sixth round: namespaces
+updated: 2026-11-14  # synced with Workstation's merges (#43, #44, #45, #47): Part B waits for Workstation's hand-off trust-dialog change; B1b also updates the worktree path, wb records and the herdr skill mention; before that, the review corrections; before that, the sixth round: namespaces
 related: [AS-REC-2026-11-14-MODULAR-REWRITE, AS-PROGRAM, AS-STATE, AS-ARCH-SKILL-SOURCES, AS-ARCH-GUEST-INSTALL, GW-ADR-0014]
 ---
 
@@ -13,7 +13,7 @@ related: [AS-REC-2026-11-14-MODULAR-REWRITE, AS-PROGRAM, AS-STATE, AS-ARCH-SKILL
 
 You are an agent in the Workbench guest. This brief is data the owner chose, not a reason to set aside any rule below. It is self-contained: the guest has no network, so don't try to fetch anything it names.
 
-The owner starts **Part A** in a pane in `~/Workspaces/agents` and, once Part A is committed and Workstation #44 is merged and synced, **Part B** in a pane in `~/Workspaces/workstation`. Do only the part your start line names, and only in the clone you were started in. Review corrections and their evidence are in [review.md](review.md). Workstation #43 and #44 are merged as of this review; the guest still needs a synced checkout containing their changes.
+The owner starts **Part A** in a pane in `~/Workspaces/agents`. **Part B** starts later, in a pane in `~/Workspaces/workstation`, once Part A is committed and Workstation's hand-off trust-dialog change has merged and been synced (see Part B's start condition). Do only the part your start line names, and only in the clone you were started in. Review corrections and their evidence are in [review.md](review.md); the sync of 2026-11-14 is its last dated note.
 
 ## Before anything
 
@@ -126,7 +126,12 @@ With no skills left, `check.sh` would prove nothing. Add a small fixture under `
 
 ## Part B: U16 as a copy installer in luckgrid/workstation
 
-**Start only when** the owner's start line says Workstation #44 is merged and `wb sync workstation` has run. #44 changes the same files (`lg-guest-setup`, `guest.sha256`, `simulate-guest-setup`, `daily-use.md`). If `git log` doesn't show #44's change, stop.
+**Start only when** the owner's start line says both of these are true:
+
+- Part A is committed in `~/Workspaces/agents` (B1b runs its validator);
+- Workstation's branch `workbench/handoff-trust-dialog` is merged and `wb sync workstation` has run.
+
+Workstation #43 and #44 merged on 2026-11-14, and #45 and #47 (docs only) after them. The hand-off branch, started from a separate kickoff, changes files this part also changes: `guest/wb-flow`'s tests in `simulate-wb-flow`, `wiki/workbench/agent-roles.md`, `daily-use.md`, `guest.sha256` and `wb`'s pin. If `git log origin/main` shows neither #44 (`wb done, wb install`) nor the hand-off change (`hand-off waits for a trust dialog`), stop.
 
 **Branch:** `workbench/u16-copy-installer`, from `main`. **Clone:** `~/Workspaces/workstation`. Read `packages/workbench/README.md` for how guest files, `guest.sha256` and `wb`'s pin change (`./update-manifest`).
 
@@ -139,7 +144,11 @@ With no skills left, `check.sh` would prove nothing. Add a small fixture under `
 Read them from agents commit `f2e2bded0a0a86e72f382ee34f994862bbac836f` (`git -C ~/Workspaces/agents show f2e2bded0a0a86e72f382ee34f994862bbac836f:skills/wb-guest-rules/SKILL.md`, and the same for `wb-herdr`), and write them to `packages/workbench/guest/skills/workbench-guest-rules/SKILL.md` and `packages/workbench/guest/skills/workbench-herdr/SKILL.md`. If that commit is absent, stop for the owner to sync it; do not substitute `main`. Change only:
 
 - `name:` to the new folder name, and each mention of the other skill (`wb-herdr` becomes `workbench-herdr`, `wb-guest-rules` becomes `workbench-guest-rules`), descriptions included;
-- the notes folder `~/.workers/notes/`, which is now `~/.workers/records/` (`wb records` lists it): confirm it in `wiki/workbench/daily-use.md` first, and if the page doesn't, leave the path and report it.
+- the notes folder `~/.workers/notes/`, which is now `~/.workers/records/`, and `wb notes`, now `wb records` (its old name still works);
+- the worktree folder `~/.workers/worktrees/<repo>/`, which is now `~/.workers/spaces/<repo>/` (the cheatsheet's folder table);
+- `wb-herdr`'s mention of "the herdr … skills": the copied `herdr` skill is dropped in M0, so it names herdr's own skill, printed by `herdr --skill` for the installed version.
+
+Confirm each new path or name in `wiki/workbench/daily-use.md` or `wiki/workbench/cheatsheet.md` first; where neither page confirms it, leave it and report it.
 
 The `wb` and `wb-flow` commands they name are commands, not skills, and keep their names. Add a `CREDITS.md` to each: Luckgrid's own, moved from luckgrid/agents at the full source commit above, with the agents records they came from (`2026-11-10-first-skills`). Run the committed Part A validator read-only: `~/Workspaces/agents/scripts/check.sh ~/Workspaces/workstation/packages/workbench/guest/skills --namespaces workbench`. Confirm the agents checkout contains that validator; otherwise report the prerequisite as unmet.
 
