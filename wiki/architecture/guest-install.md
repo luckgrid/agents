@@ -5,7 +5,7 @@ title: Guest install
 summary: "How the Workbench guest is to install these skills: Workbench's step U16, built but inert until pinned; what the skills CLI 1.7.6 was tested to write; and what U16 needs before a commit with linked upstream skills is pinned."
 status: active
 created: 2026-11-12
-updated: 2026-11-12
+updated: 2026-11-14  # the skills CLI to be replaced by a copy installer (fifth round); before that, created
 related: [GW-ADR-0014, GW-ARCH-WORKBENCH-AGENT-WORKFLOWS, GW-GUIDE-WORKBENCH-DAILY-USE, GW-RES-0007, GW-REC-2026-11-11-AGENT-TOOLING-REVIEW, AS-ARCH-SKILL-SOURCES, AS-REC-2026-11-10-LINKED-UPSTREAM-SKILLS, AS-STATE]
 derived_from: GW-ADR-0014
 ---
@@ -38,6 +38,8 @@ Groundwork's read of the CLI's code (GW-RES-0007, 2026-11-11) agrees. It also fo
 ## What U16 needs before linked skills are pinned
 
 > **Planned change (owner, 2026-11-12):** M0 removes the linked skills, so none of this section will be needed: U16's single `skills add` on a `git archive` export installs every module ([roadmap](../program.md#m0-the-module-foundation)).
+>
+> **Planned change (owner, 2026-11-14):** the skills CLI goes too. `wb setup` copies skill folders itself from this repository's `git archive` export and Workbench's own guest skills, so this page is rewritten in M0 for the copy installer ([fifth round](../program.md#fifth-round-owner-2026-11-14)).
 
 As built, U16 runs the CLI once on a `git archive` export. That export has no submodules, so it would install only the skills written here. Before a commit with linked skills is pinned, Workbench's agent workflows step F1 changes U16 to:
 

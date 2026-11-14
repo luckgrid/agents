@@ -2,11 +2,11 @@
 id: AS-PROGRAM
 kind: roadmap
 title: Roadmap
-summary: "The refactor to fully custom skill modules (owner, 2026-11-12): M0 removes the linked upstream skills and sets the module layout; then workbench, council, multiplex, wiki, grill, design-system, a site-system project skill in that repository, frugal and triage, each written in Luckgrid's own words from a reference list of reviewed skills. The earlier items P1 to P3 are folded into the modules."
+summary: "The refactor to fully custom skill modules (owner, 2026-11-12): M0 removes the linked upstream skills, the herdr copy and every dependency around them, and sets the module layout, with a companion in Workstation that replaces the skills CLI with a copy installer; then workbench (in Workstation), council, multiplex, wiki, workspace, grill, design-system, a site-system project skill in that repository, frugal and triage, each written in Luckgrid's own words from a reference list of reviewed skills, in three tiers whose rules only tighten downward. The earlier items P1 to P3 are folded into the modules."
 status: active
 created: 2026-11-12
-updated: 2026-11-13  # fourth round: M1 workbench moves to Workstation; the rename done; before that, agents monorepo: the owner's decisions after the independent review, items AG1 to AG3 after M2, M0 unchanged; before that, third round (owner): the open questions answered, the order, triage; before that, second round (owner): council, multiplex, design-system and site-system; before that, the custom-modules refactor (owner, 2026-11-12); before that, P1 to P3 from the wiki's first version
-related: [AS-ADR-0001, AS-ARCH-AGENTS-WORKSPACE, AS-STATE, AS-RES-SKILL-REFERENCES, AS-REC-2026-11-12-SKILL-MODULES, GW-ADR-0014, GW-ARCH-WORKBENCH-AGENT-WORKFLOWS, AS-ARCH-SKILL-SOURCES, AS-ARCH-GUEST-INSTALL]
+updated: 2026-11-14  # fifth round: no upstream dependencies, the skills CLI replaced by a copy installer, the herdr copy dropped in M0, M10 workspace, the tiers and conventions; before that, fourth round: M1 workbench moves to Workstation; the rename done; before that, agents monorepo: the owner's decisions after the independent review, items AG1 to AG3 after M2, M0 unchanged; before that, third round (owner): the open questions answered, the order, triage; before that, second round (owner): council, multiplex, design-system and site-system; before that, the custom-modules refactor (owner, 2026-11-12); before that, P1 to P3 from the wiki's first version
+related: [AS-REC-2026-11-14-MODULAR-REWRITE, AS-ADR-0001, AS-ARCH-AGENTS-WORKSPACE, AS-STATE, AS-RES-SKILL-REFERENCES, AS-REC-2026-11-12-SKILL-MODULES, GW-ADR-0014, GW-ARCH-WORKBENCH-AGENT-WORKFLOWS, AS-ARCH-SKILL-SOURCES, AS-ARCH-GUEST-INSTALL]
 ---
 
 # Roadmap
@@ -55,16 +55,27 @@ The owner answered the open questions ([record](records/2026-11-12-skill-modules
 
 `workbench` moves to Workstation ([record](records/2026-11-12-skill-modules.md#fourth-round-workbench-moves-to-workstation-2026-11-13)). In the owner's words, the module "would/should contain workbench skills inside a single dir", and "it might be better to just migrate workbench skill into workstation repo like how site-system was handled since its very specific to that workspace". Because agents in every repository in the guest need it, the owner chose to ship it with Workbench: installed guest-wide by U16 from Workstation's guest files, not as a project skill that loads only in Workstation's checkout. Workstation's proposed role skills (WC13) become its modes.
 
+### Fifth round (owner, 2026-11-14)
+
+The owner asked for a plan to carry out the rewrite, and added: "since the upstream skills are getting removed, let's remove any dependencies around them - this should remove the need for package.json and shells.sh cli". Six questions followed, each answered with the recommended option ([record](records/2026-11-14-modular-rewrite/README.md#the-owners-choices-2026-11-14)). The guest session starts from its [kickoff brief](records/2026-11-14-modular-rewrite/kickoff.md).
+
+- **No upstream dependencies:** M0 removes the submodules, `upstream.toml` and the copied `herdr` too. [M3](#m3-multiplex)'s herdr reference defers to `herdr --skill`.
+- **No installer CLI:** the skills CLI (skills.sh) and its `package.json` in Workstation go. `wb setup` (U16) copies skill folders itself from two sources: this repository's `git archive` export at the pinned commit, and Workbench's own `packages/workbench/guest/skills/`. GW-ADR-0014 decisions 1 and 2 are amended in Workstation, by M0's [companion](#m0-the-module-foundation), from the agents session (the owner's rule of 2026-11-13).
+- **Public use:** copy a `skills/<name>` folder into a harness's skills folder, or use any Agent Skills installer; none is tested here.
+- **A new module, [M10 `workspace`](#m10-workspace)**, after M4: Workstation #43's proposed `manage-workspace` skill, named to match the others.
+- **The conventions** in [tiers and composition](#tiers-and-composition-owner-2026-11-14): invocation by mode word, a shared `check.sh`, and rules that only tighten downward.
+
 ## Order
 
 Module numbers are IDs and don't change; the build order is:
 
 1. **M7 `site-system`**, now. It is a project skill in the site-system repository, so agents there get it once it merges, without waiting for Workbench's install step, and it helps the site prototypes due this month. Until M6 exists, it carries `design-system`'s rules for consuming a release.
-2. **M0**, the module foundation.
+2. **M0**, the module foundation, with its Workstation companion (the copy installer) after Workstation #44 merges.
 3. **M2 `council`**: with Workbench's own `workbench` skill ([M1](#m1-workbench), now in Workstation), what Workbench's F1 needs. **AG1** follows M2 and can run alongside what comes next ([agents items](#agents-monorepo-owner-2026-11-12)).
-4. **M3 `multiplex`**, **M4 `wiki`**, **M5 `grill`**.
-5. **M6 `design-system`**; M7 then points to it instead of carrying its rules.
-6. **M8 `frugal`**, **M9 `triage`**.
+4. **The first pin** once M2 merges: this repository's first `agent_skills_commit`, U16's first install, and Workbench's cell S1.
+5. **M3 `multiplex`**, **M4 `wiki`**, **M10 `workspace`**, **M5 `grill`**.
+6. **M6 `design-system`**; M7 then points to it instead of carrying its rules.
+7. **M8 `frugal`**, **M9 `triage`**.
 
 ## The module shape
 
@@ -82,23 +93,40 @@ skills/<module>/
 - A module that needs a tool says so in `compatibility`, checks that the tool is installed, and never installs it.
 - The public repository's rules still hold: no hostnames, account names, emails, IPs, keys or tokens.
 
+### Tiers and composition (owner, 2026-11-14)
+
+| Tier | Where | Installed | Holds |
+| --- | --- | --- | --- |
+| Public modules | `skills/` here | U16, guest-wide, from the pinned export; anyone else copies a folder | Methods that hold in any workspace |
+| Workbench's skill | `packages/workbench/guest/skills/workbench/` in Workstation (private) | U16, from Workbench's guest files, hashed in `guest.sha256` | The guest's rules, `wb` and `wb-flow`, the roles |
+| Project skills | `.agents/skills/<name>/` in their repository, with a `.claude/skills/<name>` link | Read by the harness in that checkout | That repository's rails (`site-system`) |
+
+- **Rules only tighten downward.** A project skill, then `workbench`, then a public module: a lower tier may narrow a public mode (`commit` becomes "on a local branch only"), never loosen it, as the config overlay's stricter value wins ([AS-ADR-0001](records/decisions/0001-agents-monorepo.md)).
+- **Name, don't path.** Modules refer to each other by skill and mode name, each such reference with a one-line fallback for when that skill isn't installed. A public module may name `workbench` as the guest's authority, never restate what it holds.
+- **The generic half is public.** Where a workflow has a part that holds anywhere and a part that holds only in the guest, the first is a public mode and the second a `workbench` mode that points to it (`workspace release` and `workbench issue-to-release`).
+- **One namespace.** Names are unique across the three tiers; U16 stops on a name in both of its sources.
+- **Invocation:** `<prefix><skill> <mode> [args]`, the prefix the harness's (`$` for Codex, `/` for Claude Code and Cursor, as Workbench's `roles.toml` sets them). The first column of a router's mode table is the literal mode word in backticks, the name of its reference without `.md`. `roles.toml` gains a `mode` key in Workstation.
+- **A shared check.** `scripts/check.sh` takes a skills folder as its argument, so the owner can run it on site-system's and Workbench's skills too, until AG1's validator replaces it.
+
 ## M0: the module foundation
 
 One PR, before any module:
 
-- **Remove the linked skills:** the three submodules under `upstream/`, the six links in `skills/`, `upstream.toml`, and the README's linked-skills sections. Their repositories, commits and licences move to [skill references](resources/skill-references.md).
-- **`scripts/check.sh` for modules:** front matter as the specification sets it (name rules including no consecutive hyphens, description at most 1024 characters, `compatibility` at most 500); no symlinks anywhere under `skills/`; every module has `CREDITS.md`; every relative link from `SKILL.md` resolves, one level deep; a warning above 500 lines of `SKILL.md`. The link and submodule checks go.
-- **The README:** the rules for writing a module, in place of "Adding a skill".
-- **The wiki:** [skill sources](architecture/skill-sources.md) rewritten for modules; [guest install](architecture/guest-install.md) loses the F1 submodule changes, since U16's single `skills add` on a `git archive` export works again.
-- `wb-herdr`, `wb-guest-rules` and the copied `herdr` stay until their modules replace them.
+- **Remove the linked skills and the copy:** the three submodules under `upstream/`, `.gitmodules`, the six links in `skills/`, `upstream.toml`, the copied `herdr` with its `UPSTREAM.md` (fifth round), the `upstream/` exclusion in `.rumdl.toml`, and the README's sections on linked skills and the skills CLI. Their repositories, commits and licences move to [skill references](resources/skill-references.md).
+- **`scripts/check.sh` for modules,** taking a skills folder as its argument (`skills/` by default): front matter as the specification sets it (name rules including no consecutive hyphens, description at most 1024 characters, `compatibility` at most 500); no symlinks and no `UPSTREAM.md` in a skill; every skill has `CREDITS.md`; `references/` flat; every relative link resolves inside the skill; every reference linked from `SKILL.md`, with a mode-table row whose first cell is its mode word; a warning above 500 lines of `SKILL.md`. The link, copy and submodule checks go, and so does its need for `git`.
+- **The README:** the rules for writing a module, in place of "Adding a skill"; how to use the skills, in the fifth round's words.
+- **The wiki:** [skill sources](architecture/skill-sources.md) rewritten as the skill modules page, with the [tiers](#tiers-and-composition-owner-2026-11-14); [guest install](architecture/guest-install.md) rewritten for the copy installer.
+- `wb-herdr` and `wb-guest-rules` get a `CREDITS.md` and stay until `workbench` is installed.
 
 **Done when:** `check.sh` passes in a clone without submodules, with no `upstream/` left; the reference list has every removed skill.
 
-**Effect on open items:** WB-06 (helpers the linked skills name) is gone with the linked skills; F1 no longer needs the submodule export or one `skills add` per linked skill. Workstation's Workbench pages that describe those F1 changes get a follow-up PR there.
+**Its companion in Workstation,** from the agents session, after Workstation #44 merges (it changes the same files): `packages/workbench/guest/skills/package.json` and its lockfile deleted; `update-manifest` sends every file under `guest/skills/`; U16 copies skill folders from its two sources, keeping the `skills.owned` guard and dropping `npm ci`, the telemetry switches, the CLI's lock file and `skills_cli_version`; new simulations; GW-ADR-0014 decisions 1 and 2 amended; the catalog's row for the skills CLI withdrawn. The [kickoff brief](records/2026-11-14-modular-rewrite/kickoff.md) sets out both parts.
+
+**Effect on open items:** WB-06 (helpers the linked skills name) is gone with the linked skills; F1 no longer needs the submodule export, one `skills add` per linked skill, or the skills CLI at all.
 
 ## M1: `workbench`
 
-**Moved to Workstation (owner, 2026-11-13; [fourth round](#fourth-round-owner-2026-11-13)).** Workbench's own skill, one folder at `packages/workbench/guest/skills/workbench/` in luckgrid/workstation, hashed in `guest.sha256` and installed guest-wide by U16 with `wb setup`. Besides the content below, it takes WC13's role routines (plan, orchestrate, code, write, hand-off) as modes. Once it is installed, `wb-guest-rules` and `wb-herdr` leave this repository. The plan as first written here, kept for the Workstation session:
+**Moved to Workstation (owner, 2026-11-13; [fourth round](#fourth-round-owner-2026-11-13)).** Workbench's own skill, one folder at `packages/workbench/guest/skills/workbench/` in luckgrid/workstation, hashed in `guest.sha256` and installed guest-wide by U16 with `wb setup`. Besides the content below, it takes WC13's role routines (plan, orchestrate, code, write, hand-off) as modes. From the fifth round: it also takes Workstation #43's two proposals for the guest rules (one retry of a failed read-only look-up; one approval pattern for Codex's `git -c core.hooksPath=/dev/null add|commit|switch`), and `roles.toml`'s start lines name its modes (`/workbench code <brief>`). Once it is installed, `wb-guest-rules` and `wb-herdr` leave this repository. The plan as first written here, kept for the Workstation session:
 
 Replaces `wb-guest-rules` and `wb-herdr`. The guest's house rules, always loaded in the guest, plus references for:
 
@@ -143,7 +171,7 @@ Fixed prompts only: text an agent wrote moves to another agent through files, ne
 
 ## M3: `multiplex`
 
-Replaces the copied `herdr` skill. Terminal multiplexers and session managers through one set of workflows, with a reference per backend. The backends are Workbench's [session backends](https://github.com/luckgrid/workstation/blob/main/wiki/workbench/session-backends.md): herdr the default, tmux the fallback, TUIOS under evaluation; herdr-core's `hc` later, if a Core trial starts. Rex is a terminal app, not a backend.
+Takes over from the copied `herdr` skill, which M0 removes (fifth round). Terminal multiplexers and session managers through one set of workflows, with a reference per backend. The backends are Workbench's [session backends](https://github.com/luckgrid/workstation/blob/main/wiki/workbench/session-backends.md): herdr the default, tmux the fallback, TUIOS under evaluation; herdr-core's `hc` later, if a Core trial starts. Rex is a terminal app, not a backend.
 
 - **Core (`SKILL.md`):** find which backend the agent runs in (`HERDR_ENV=1` for herdr; `TMUX` for tmux; each backend's own marker), read that backend's reference, and stop if there is none; the installed binary's own help or skill is the authority for syntax; never install, update or upgrade a backend; in the guest, `workbench`'s rules decide what may run.
 - **Workflows (`references/`),** each written once and mapped to every backend that can do it: dispatch and wait (start a named agent, the status vocabulary, prompt and wait, read the result); worktrees (create through the backend so its events fire, the removal order, never force); status labels for active, blocked, hand-off and done; sidecars for long-running observable work; orchestration (fan work out to workers and audit their results before closing a pane, with `council` for review); handing the orchestrator role between harnesses.
@@ -230,6 +258,16 @@ The owner's idea (2026-11-12): a broader triage module, with debugging part of i
 - **hand-off:** a brief another agent can act on, or the fix sent to `council`.
 
 **Learns from:** obra/superpowers `systematic-debugging` (with its root-cause tracing, condition-based waiting and polluter-finding helpers, read as ideas); mattpocock/skills `diagnosing-bugs` and `triage`; getsentry/skills `find-bugs` and `triage-frontend-issues` (plan, then apply on approval); rtk-ai/rtk's `issue-triage` and `pr-triage`; DietrichGebert/ponytail `ponytail-debt` (tracking deliberate shortcuts); Luckgrid's stop-on-surprise rule and incident records.
+
+## M10: `workspace`
+
+Added in the fifth round (owner, 2026-11-14), from Workstation #43's proposal of a `manage-workspace` skill for release notes from a template. Built after M4, whose record conventions it follows. The generic half of working on a Luckgrid repository, in any workspace; Workbench's `issue-to-release` mode supplies the guest's half (the `wb` and `dev` commands) and points here. Modes:
+
+- **issue:** an issue's text from what was found: what happens, what was expected, how to reproduce, and the evidence word for word;
+- **pr:** a PR description: what and why, each commit, the checks run with their output, what wasn't checked, and the review rounds with their dispositions;
+- **release:** release notes from a template, from the merged PRs since the last tag, and the checks before a tag (a dry run of the release workflow first, as the wiki-reader 0.1.12 redo would have needed).
+
+It never files, pushes, tags or publishes; in the guest, `workbench` says who does. **Learns from:** Luckgrid's own PR descriptions, release records and the owner's checks of 2026-11-14 (Workstation #43); references are read in its own research step.
 
 ## Each module's done-when
 
