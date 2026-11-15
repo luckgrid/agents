@@ -5,7 +5,7 @@ title: Skill references
 summary: "The skills and tools each custom module learns from, with the repository, the commit read, the licence, what it contributes, and how it may be used: ideas only, since every module is written in Luckgrid's own words (owner, 2026-11-12)."
 status: active
 created: 2026-11-12
-updated: 2026-11-14  # workspace (M10), fifth round; before that, site-system's sources as read for M7; before that, third round: triage; before that, second round: council, multiplex, design-system, site-system
+updated: 2026-11-15  # M0: herdr removed, the wb- skills moved to Workstation; before that, workspace (M10), fifth round; before that, site-system's sources as read for M7; before that, third round: triage; before that, second round: council, multiplex, design-system, site-system
 related: [AS-PROGRAM, AS-REC-2026-11-12-SKILL-MODULES, AS-RESOURCES]
 ---
 
@@ -23,6 +23,8 @@ Re-read an entry at a new commit before a module learns anything new from it.
 | --- | --- | --- | --- |
 | this repository's `wb-guest-rules`, `wb-herdr` | Apache-2.0 (Luckgrid's) | `9ff8b6c` | The guest's house rules, and herdr socket commands handed to the owner |
 | Workbench's agent workflows and GW-ADR-0014 (luckgrid/workstation, private for now) | Luckgrid's | `30b10df` | The rules for agents in the guest, F1 and the hand-off |
+
+**Moved in M0** (sixth round, owner, 2026-11-14): `wb-guest-rules` and `wb-herdr` left this repository and move to Workstation as `workbench-guest-rules` and `workbench-herdr`, from the source `f2e2bde` ([record](../records/2026-11-15-m0.md)); the move is complete when Workstation's companion change lands.
 
 ## `council` (M2)
 
@@ -139,12 +141,13 @@ Added in the fifth round (owner, 2026-11-14). Its public references are read in 
 | Workstation #43, the owner's checks of 2026-11-14 (luckgrid/workstation, private for now) | Luckgrid's | `6bf8345` (the PR's first commit) | The proposal: release notes from a template, and a release workflow's dry run before tagging |
 | Luckgrid's PR descriptions and review records, in this repository, site-system and Workstation | Luckgrid's | as each module record names | What a PR description and a review disposition hold |
 
-## Removed in M0: the linked skills
+## Removed in M0: the linked skills and the herdr copy
 
-Kept here so nothing about them is lost. Their review is in the [linked upstream skills record](../records/2026-11-10-linked-upstream-skills.md).
+Kept here so nothing about them is lost. The linked skills' review is in the [linked upstream skills record](../records/2026-11-10-linked-upstream-skills.md); the herdr copy's is in the [first skills record](../records/2026-11-10-first-skills.md).
 
 | Skill | Upstream | Commit | Feeds |
 | --- | --- | --- | --- |
 | `verification-before-completion`, `receiving-code-review`, `systematic-debugging` | obra/superpowers | `22f0b463` (v7.0.2) | `council` (the first two); `triage` takes `systematic-debugging` |
 | `differential-review` | trailofbits/skills | `e4dd0bb5` | `council` |
 | `grilling`, `grill-me` | mattpocock/skills | `4ae2317d` | `grill` |
+| `herdr`, copied unchanged from `herdr --skill` | [herdrdev/herdr](https://github.com/herdrdev/herdr), Apache-2.0 | herdr 0.9.5 (tag v0.9.5, `2ecf19a`) | `multiplex`, whose herdr reference defers to `herdr --skill` |

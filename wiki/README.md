@@ -7,8 +7,8 @@ It follows Luckgrid's shared wiki template, the wiki structure kept in luckgrid/
 ## Reading order
 
 1. [records/STATE.md](records/STATE.md): where the repository stands, what is open, and the decisions in force.
-2. [architecture/skill-sources.md](architecture/skill-sources.md): the three kinds of skill (written here, copied, linked), `upstream.toml`, and what `scripts/check.sh` proves.
-3. [architecture/guest-install.md](architecture/guest-install.md): how the Workbench guest is to install these skills, what the skills CLI was tested to do, and what has to change before linked skills are pinned.
+2. [architecture/skill-sources.md](architecture/skill-sources.md): skill modules: the module shape, the three tiers, namespaces, composition, and what `scripts/check.sh` proves.
+3. [architecture/guest-install.md](architecture/guest-install.md): how the Workbench guest is to install these skills: `wb setup` copies skill folders from two sources, and what it needs from this repository.
 4. [Agents monorepo decision](records/decisions/0001-agents-monorepo.md), [workspace proposal](architecture/agents-workspace.md) and [knowledge lineage](resources/agents-knowledge-lineage.md): the owner's decisions, the proposed layout, defaults and overlay, and the sources.
 5. [program.md](program.md): the module roadmap and the bounded monorepo foundation.
 6. [records/README.md](records/README.md): the dated history, one record per episode.
@@ -20,10 +20,10 @@ It follows Luckgrid's shared wiki template, the wiki structure kept in luckgrid/
 | --- | --- |
 | Why this workspace expands, what the owner decided, and what remains independent | [Agents monorepo decision](records/decisions/0001-agents-monorepo.md) |
 | Shared configuration-source direction and historical knowledge dispositions | Workstation's current wiki, then the [agents-specific design](architecture/agents-workspace.md) and [lineage](resources/agents-knowledge-lineage.md) |
-| The rules for working in this repository (no secrets, how to add a skill, licences) | the root `README.md` |
-| Whether and how the Workbench guest installs skills, and with which CLI | Groundwork's GW-ADR-0014 (Workstation) |
+| The rules for working in this repository (no secrets, how to write a module, licences) | the root `README.md` |
+| Whether and how the Workbench guest installs skills | Groundwork's GW-ADR-0014, then Workbench's daily use for U16 (Workstation) |
 | The review-and-remediate workflow these skills serve (step F1 onwards) | Workbench's agent workflows (Workstation) |
-| How a linked, copied or own skill is recorded and checked here | [architecture/skill-sources.md](architecture/skill-sources.md) |
+| What a module holds, the tiers and namespaces, and what the check proves | [architecture/skill-sources.md](architecture/skill-sources.md) |
 | What the guest's install step needs from this repository | [architecture/guest-install.md](architecture/guest-install.md) |
 | Which skills each planned module learns from, and under which licence | [resources/skill-references.md](resources/skill-references.md) |
 | What is open and what is next | [records/STATE.md](records/STATE.md), then [program.md](program.md) |
@@ -36,4 +36,4 @@ It follows Luckgrid's shared wiki template, the wiki structure kept in luckgrid/
 - **Label evidence.** Tell apart the owner's decisions, results the owner reported, results a session ran, upstream claims and proposals. A proposal is not acceptance.
 - **This repository is public.** The root README's no-secrets rule holds for the wiki too: no hostnames, user or account names, email addresses, IPs, keys or tokens, and paths written as `~/…`. Links to Luckgrid's private repositories are allowed, as the owner decided on 2026-11-12 ([record](records/2026-11-12-workstation-links.md)), and say that they are private.
 
-Checks: `scripts/check.sh` checks the skills, not the wiki. The wiki's Markdown is checked with [rumdl](https://github.com/rvben/rumdl) 0.3.2, the version Luckgrid's other wikis pin, as `rumdl check wiki/`, using the root `.rumdl.toml` (the same settings as site-system's and Workstation's, with `upstream/` excluded, since it is other people's work).
+Checks: `scripts/check.sh` checks the skills, not the wiki. The wiki's Markdown is checked with [rumdl](https://github.com/rvben/rumdl) 0.3.2, the version Luckgrid's other wikis pin, as `rumdl check wiki/`, using the root `.rumdl.toml` (the same settings as site-system's and Workstation's).

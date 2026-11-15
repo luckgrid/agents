@@ -5,7 +5,7 @@ title: Roadmap
 summary: "The refactor to fully custom skill modules (owner, 2026-11-12): M0 removes the linked upstream skills, the herdr copy and every dependency around them, and sets the module layout, with a companion in Workstation that replaces the skills CLI with a copy installer; then workbench (in Workstation), council, multiplex, wiki, workspace, grill, design-system, a site-system project skill in that repository, frugal and triage, each written in Luckgrid's own words from a reference list of reviewed skills, in three tiers whose rules only tighten downward, every skill named `<namespace>` or `<namespace>-<name>` from one registry. The earlier items P1 to P3 are folded into the modules."
 status: active
 created: 2026-11-12
-updated: 2026-11-14  # M0's companion waits for Workstation's hand-off change (#44 merged); before that, sixth round: namespaces (workbench-*, workspace-*), base skills plus namespaced skills, flat folders, the wb- skills move to Workstation as workbench-*; before that, fifth round: no upstream dependencies, the skills CLI replaced by a copy installer, the herdr copy dropped in M0, M10 workspace, the tiers and conventions; before that, fourth round: M1 workbench moves to Workstation; the rename done; before that, agents monorepo: the owner's decisions after the independent review, items AG1 to AG3 after M2, M0 unchanged; before that, third round (owner): the open questions answered, the order, triage; before that, second round (owner): council, multiplex, design-system and site-system; before that, the custom-modules refactor (owner, 2026-11-12); before that, P1 to P3 from the wiki's first version
+updated: 2026-11-15  # M0's done-when met on its branch, P2 (WB-06) closed; before that, M0's companion waits for Workstation's hand-off change (#44 merged); before that, sixth round: namespaces (workbench-*, workspace-*), base skills plus namespaced skills, flat folders, the wb- skills move to Workstation as workbench-*; before that, fifth round: no upstream dependencies, the skills CLI replaced by a copy installer, the herdr copy dropped in M0, M10 workspace, the tiers and conventions; before that, fourth round: M1 workbench moves to Workstation; the rename done; before that, agents monorepo: the owner's decisions after the independent review, items AG1 to AG3 after M2, M0 unchanged; before that, third round (owner): the open questions answered, the order, triage; before that, second round (owner): council, multiplex, design-system and site-system; before that, the custom-modules refactor (owner, 2026-11-12); before that, P1 to P3 from the wiki's first version
 related: [AS-REC-2026-11-14-MODULAR-REWRITE, AS-ADR-0001, AS-ARCH-AGENTS-WORKSPACE, AS-STATE, AS-RES-SKILL-REFERENCES, AS-REC-2026-11-12-SKILL-MODULES, GW-ADR-0014, GW-ARCH-WORKBENCH-AGENT-WORKFLOWS, AS-ARCH-SKILL-SOURCES, AS-ARCH-GUEST-INSTALL]
 ---
 
@@ -150,7 +150,7 @@ One PR, before any module:
 - **The wiki:** [skill sources](architecture/skill-sources.md) rewritten as the skill modules page, with the [tiers](#tiers-and-composition-owner-2026-11-14); [guest install](architecture/guest-install.md) rewritten for the copy installer.
 - `wb-herdr` and `wb-guest-rules` leave this repository; the companion below adds them to Workstation as `workbench-herdr` and `workbench-guest-rules` (sixth round). This repository then holds no skills until M2, and `check.sh` passes with none.
 
-**Done when:** `check.sh` passes in a clone without submodules, with no `upstream/` left; the reference list has every removed skill.
+**Done when:** `check.sh` passes in a clone without submodules, with no `upstream/` left; the reference list has every removed skill. **Met** on the branch `skills/m0-module-foundation` ([record](records/2026-11-15-m0.md)); its review and merge are tracked in [STATE](records/STATE.md).
 
 **Its companion in Workstation,** from the agents session, after Workstation's hand-off trust-dialog change merges (#44 merged on 2026-11-14; the hand-off change touches the same files): `packages/workbench/guest/skills/package.json` and its lockfile deleted; `update-manifest` sends every file under `guest/skills/`; `workbench-guest-rules` and `workbench-herdr` added there, with a `CREDITS.md` each; `roles.toml`'s skill names in the `workbench` namespace (`workbench-code`, `workbench-plan`, `workbench-orchestrate`); U16 copies skill folders from its two sources, keeping the `skills.owned` guard and dropping `npm ci`, the telemetry switches, the CLI's lock file and `skills_cli_version`; new simulations; GW-ADR-0014 decisions 1 and 2 amended; the catalog's row for the skills CLI withdrawn. The [kickoff brief](records/2026-11-14-modular-rewrite/kickoff.md) sets out both parts.
 
@@ -333,7 +333,7 @@ The owner's decision 3 of 2026-11-11. Now part of [M3](#m3-multiplex): third-par
 
 ### P2: WB-06, helpers the linked skills name
 
-Gone with the linked skills in [M0](#m0-the-module-foundation): `council` is self-contained, so it names no helper it doesn't provide.
+Gone with the linked skills in [M0](#m0-the-module-foundation): `council` is self-contained, so it names no helper it doesn't provide. **Closed** with M0, which removed the skills WB-06 is about ([record](records/2026-11-15-m0.md)).
 
 ### P3: the review and remediation skills (F1)
 

@@ -13,5 +13,6 @@ Dated episodes, named for the date their first content happened. Where the repos
 - [2026-11-12-agents-monorepo.md](2026-11-12-agents-monorepo.md): the owner messages, research, corrections, independent-workspace boundaries, the independent review, the owner's choices and delivery evidence.
 - [2026-11-12-site-system-skill.md](2026-11-12-site-system-skill.md): M7, the site-system project skill: the sources read, the owner's answers, and where the skill lives.
 - [2026-11-14-modular-rewrite/](2026-11-14-modular-rewrite/README.md): planning the modular rewrite: what the skills in three repositories and the open Workstation PRs hold, the owner's addition (no upstream dependencies, no skills CLI), six answers, and the [kickoff brief](2026-11-14-modular-rewrite/kickoff.md) for M0 and its Workstation companion in the guest.
+- [2026-11-15-m0.md](2026-11-15-m0.md): M0, the module foundation: the upstream machinery, the herdr copy and the `wb-` skills removed, `check.sh` for modules with fixtures and a self-test, the README and wiki for modules, and the owner's two choices on the sandbox's read-only paths.
 
 The modular rewrite's [review and corrections](2026-11-14-modular-rewrite/review.md) cover the migration source, validator paths, session hook, installer recovery and cross-repository proof gates.

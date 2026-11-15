@@ -1,225 +1,444 @@
 #!/usr/bin/env bash
-# Check the front matter of every skills/*/SKILL.md, upstream copies against the
-# SHA-256 in their UPSTREAM.md, and linked upstream skills against upstream.toml.
-# Needs only python3 (3.9 or later) and git.
+# Check a folder of Agent Skills modules: front matter, folder contents,
+# references, links and the mode table. Needs only python3 (3.9 or later).
+#
+#   scripts/check.sh [--namespaces a,b,...] [<skills folder>]
+#   scripts/check.sh --self-test
+#
+# The folder is skills/ by default; a relative folder is resolved against the
+# repository root, so give another repository's folder as an absolute path.
 set -euo pipefail
 root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-exec python3 -I - "$root" <<'PY'
-import hashlib, os, pathlib, re, subprocess, sys
+exec python3 -I - "$root" "$@" <<'PY'
+import os, pathlib, re, shutil, sys, tempfile, urllib.parse
 
-root = pathlib.Path(sys.argv[1])
+# This repository's namespaces. Source: the namespaces registry in
+# wiki/program.md (owner, 2026-11-14); change both together.
+NAMESPACES = ("council", "multiplex", "wiki", "workspace", "grill", "design-system", "frugal", "triage")
+# The fields the Agent Skills specification lists for SKILL.md's front matter.
+FIELDS = {"name", "description", "license", "compatibility", "metadata", "allowed-tools"}
 NAME_RE = re.compile(r"^[a-z0-9]+(-[a-z0-9]+)*$")
-SHA_RE = re.compile(r"SHA-256:\s*`?([0-9a-f]{64})`?")
-HEX40 = re.compile(r"^[0-9a-f]{40}$")
-HEX64 = re.compile(r"^[0-9a-f]{64}$")
-REQUIRE_UPSTREAM = {"herdr"}
-REPO_KEYS = {"url", "commit", "licence", "licence_file", "reviewed"}
-REPO_OPTIONAL = {"tag"}
-SKILL_KEYS = {"repo", "path", "skill_sha256", "tree_sha256"}
-errors = []
+SCHEME_RE = re.compile(r"^[A-Za-z][A-Za-z0-9+.-]*:")
+INLINE_LINK_RE = re.compile(r"\]\(\s*(<[^>]*>|[^)\s]+)(?:\s+[\"'(][^)]*)?\)")
+REF_DEF_RE = re.compile(r"^\s{0,3}\[[^\]]+\]:\s*(<[^>]*>|\S+)")
+FENCE_RE = re.compile(r"^\s{0,3}(`{3,}|~{3,})")
+MODE_CELL_RE = re.compile(r"^`([^`]+)`$")
+MAX_LINES = 500
+HOME = os.path.expanduser("~")
 
 
-def front_matter(path):
-    lines = path.read_text(encoding="utf-8").splitlines()
+def shown(path):
+    """A path for output: relative to the repository root, else with ~ for home."""
+    p = str(path)
+    if p == ROOT or p.startswith(ROOT + os.sep):
+        return os.path.relpath(p, ROOT)
+    if p == HOME or p.startswith(HOME + os.sep):
+        return "~" + p[len(HOME):]
+    return p
+
+
+def read_text(path, errors):
+    try:
+        return path.read_bytes().decode("utf-8")
+    except UnicodeDecodeError:
+        errors.append(f"{shown(path)}: not UTF-8")
+        return None
+
+
+def unquote(value):
+    if len(value) >= 2 and value[0] == value[-1] == "'":
+        return value[1:-1].replace("''", "'")
+    if len(value) >= 2 and value[0] == value[-1] == '"':
+        return value[1:-1]
+    return value
+
+
+def front_matter(text, where, errors):
+    """Top-level fields of the front matter, or None if it has none.
+
+    Enough YAML for SKILL.md: `key: value` lines at column 0, quoted or plain
+    scalars continued on indented lines, block scalars (| and >) and indented
+    mappings (metadata)."""
+    lines = text.splitlines()
     if not lines or lines[0].strip() != "---":
         return None
-    fields = {}
-    for line in lines[1:]:
-        if line.strip() == "---":
-            return fields
-        m = re.match(r"^([A-Za-z0-9_-]+):\s*(.*)$", line)
+    try:
+        end = next(i for i in range(1, len(lines)) if lines[i].strip() == "---")
+    except StopIteration:
+        return None
+    fields, key, block, parts = {}, None, None, []
+
+    def close():
+        if key is None:
+            return
+        if block is not None:
+            joiner = "\n" if block.startswith("|") else " "
+            fields[key] = joiner.join(p.strip() for p in parts).strip()
+        elif parts and parts[0] == "":
+            fields[key] = "\n".join(p.strip() for p in parts[1:])
+        else:
+            fields[key] = unquote(" ".join(p.strip() for p in parts).strip())
+
+    for n, line in enumerate(lines[1:end], 2):
+        if not line.strip() or line.lstrip().startswith("#"):
+            if key is not None and block is not None:
+                parts.append("")
+            continue
+        if line[0] in " \t":
+            if key is None:
+                errors.append(f"{where}:{n}: indented line before any field")
+            else:
+                parts.append(line)
+            continue
+        m = re.match(r"^([A-Za-z0-9_-]+):(?:\s+(.*))?$", line)
+        if not m:
+            errors.append(f"{where}:{n}: front matter line is not a `key: value` field")
+            continue
+        close()
+        key, value = m.group(1), (m.group(2) or "").strip()
+        if key in fields:
+            errors.append(f"{where}:{n}: field {key!r} given twice")
+        block = value if re.match(r"^[|>][+-]?$", value) else None
+        parts = [] if block is not None else [value]
+    close()
+    return fields
+
+
+def front_matter_end(text):
+    """The number of lines the front matter takes, its --- lines included."""
+    lines = text.splitlines()
+    if lines and lines[0].strip() == "---":
+        for i in range(1, len(lines)):
+            if lines[i].strip() == "---":
+                return i + 1
+    return 0
+
+
+def outside_code(text, spans=True):
+    """Lines of Markdown with fenced code blocks, and code spans unless told
+    to keep them, blanked out."""
+    out, fence = [], None
+    for line in text.splitlines():
+        m = FENCE_RE.match(line)
+        if fence is not None:
+            if m and m.group(1)[0] == fence[0] and len(m.group(1)) >= len(fence):
+                fence = None
+            out.append("")
+            continue
         if m:
-            value = m.group(2).strip()
-            if len(value) >= 2 and value[0] == value[-1] and value[0] in "\"'":
-                value = value[1:-1]
-            fields[m.group(1)] = value
-    return None
+            fence = m.group(1)
+            out.append("")
+            continue
+        out.append(line if not spans else re.sub(r"(`+)(?:(?!\1).)+?\1", lambda c: "`" + " " * (len(c.group(0)) - 2) + "`", line))
+    return out
 
 
-def check_skill(skill):
-    folder = skill.parent.name
-    where = skill.relative_to(root) if not skill.parent.is_symlink() else pathlib.Path("skills", folder, "SKILL.md")
-    fm = front_matter(skill)
+def links(lines):
+    for n, line in enumerate(lines, 1):
+        targets = [m.group(1) for m in INLINE_LINK_RE.finditer(line)]
+        m = REF_DEF_RE.match(line)
+        if m:
+            targets.append(m.group(1))
+        for t in targets:
+            yield n, t[1:-1] if t.startswith("<") else t
+
+
+def tables(lines):
+    """Each Markdown table as a list of data rows, each a list of cells."""
+    found, i = [], 0
+    while i + 1 < len(lines):
+        head, sep = lines[i].strip(), lines[i + 1].strip()
+        if head.startswith("|") and re.match(r"^\|?\s*:?-+:?\s*(\|\s*:?-+:?\s*)*\|?$", sep):
+            rows, i = [], i + 2
+            while i < len(lines) and lines[i].strip().startswith("|"):
+                cells = re.split(r"(?<!\\)\|", lines[i].strip().strip("|"))
+                rows.append([c.strip() for c in cells])
+                i += 1
+            found.append(rows)
+        else:
+            i += 1
+    return found
+
+
+def check_skill(folder, namespaces):
+    """Errors and warnings for one skill folder."""
+    errors, warnings = [], []
+    rel = shown(folder)
+    if folder.is_symlink():
+        return [f"{rel}: a symlink, not a skill folder"], warnings
+    for dirpath, dirnames, filenames in os.walk(folder):
+        for entry in sorted(dirnames + filenames):
+            p = pathlib.Path(dirpath, entry)
+            if p.is_symlink():
+                errors.append(f"{shown(p)}: symlink in a skill folder")
+            elif entry == "UPSTREAM.md":
+                errors.append(f"{shown(p)}: UPSTREAM.md: skills here are written here, not copied")
+    skill = folder / "SKILL.md"
+    if not skill.is_file() or skill.is_symlink():
+        errors.append(f"{rel}: no SKILL.md")
+        return errors, warnings
+    if not (folder / "CREDITS.md").is_file():
+        errors.append(f"{rel}: no CREDITS.md")
+
+    text = read_text(skill, errors)
+    if text is None:
+        return errors, warnings
+    where = shown(skill)
+    if len(text.splitlines()) > MAX_LINES:
+        warnings.append(f"{where}: {len(text.splitlines())} lines (the specification suggests at most {MAX_LINES})")
+    fm = front_matter(text, where, errors)
     if fm is None:
         errors.append(f"{where}: no front matter between --- lines")
-        return
-    name = fm.get("name", "")
-    if name != folder:
-        errors.append(f"{where}: name {name!r} does not match folder {folder!r}")
-    if not NAME_RE.match(name) or len(name) > 64:
-        errors.append(f"{where}: name {name!r} must be lowercase letters, digits and single hyphens, at most 64 characters")
-    desc = fm.get("description", "")
-    if not desc:
-        errors.append(f"{where}: description missing")
-    elif len(desc) > 1024:
-        errors.append(f"{where}: description is {len(desc)} characters (max 1024)")
+    else:
+        for field in sorted(set(fm) - FIELDS):
+            errors.append(f"{where}: field {field!r} is not in the Agent Skills specification")
+        name = fm.get("name", "")
+        if name != folder.name:
+            errors.append(f"{where}: name {name!r} does not match folder {folder.name!r}")
+        if not NAME_RE.match(name) or len(name) > 64:
+            errors.append(f"{where}: name {name!r} must be lowercase letters, digits and single hyphens, at most 64 characters")
+        elif namespaces and not any(name == ns or name.startswith(ns + "-") for ns in namespaces):
+            errors.append(f"{where}: name {name!r} is not in the namespaces {', '.join(namespaces)}")
+        desc = fm.get("description", "")
+        if not desc:
+            errors.append(f"{where}: description missing")
+        elif len(desc) > 1024:
+            errors.append(f"{where}: description is {len(desc)} characters (max 1024)")
+        if len(fm.get("compatibility", "")) > 500:
+            errors.append(f"{where}: compatibility is {len(fm['compatibility'])} characters (max 500)")
 
+    refs_dir = folder / "references"
+    refs = []
+    if refs_dir.is_dir() and not refs_dir.is_symlink():
+        for p in sorted(refs_dir.iterdir()):
+            if p.is_symlink():
+                continue
+            if p.is_dir():
+                errors.append(f"{shown(p)}: references/ must be flat, no subfolders")
+            elif p.suffix != ".md":
+                errors.append(f"{shown(p)}: references/ holds only .md files")
+            else:
+                refs.append(p)
 
-def read_manifest(path):
-    """Parse upstream.toml's restricted format: [kind.id] tables, key = "string"."""
-    tables, current = {}, None
-    for n, raw in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
-        line = raw.strip()
-        if not line or line.startswith("#"):
+    linked_from_skill = set()
+    sources = [(skill, text)] + [(r, read_text(r, errors)) for r in refs]
+    base = os.path.normpath(str(folder))
+    for source, body in sources:
+        if body is None:
             continue
-        m = re.match(r'^\[(repo|skill)\.([a-z0-9]+(?:-[a-z0-9]+)*)\]$', line)
-        if m:
-            current = (m.group(1), m.group(2))
-            if current in tables:
-                errors.append(f"upstream.toml:{n}: duplicate table [{current[0]}.{current[1]}]")
-            tables[current] = {}
-            continue
-        m = re.match(r'^([a-z_0-9]+)\s*=\s*"([^"\\]*)"$', line)
-        if m and current is not None:
-            if m.group(1) in tables[current]:
-                errors.append(f"upstream.toml:{n}: duplicate key {m.group(1)}")
-            tables[current][m.group(1)] = m.group(2)
-            continue
-        errors.append(f"upstream.toml:{n}: not a [repo.<id>] or [skill.<name>] table or a key = \"string\" line")
-    return tables
+        lines = outside_code(body)
+        if source == skill:
+            lines = [""] * front_matter_end(text) + lines[front_matter_end(text):]
+        for n, target in links(lines):
+            if target.startswith("#") or SCHEME_RE.match(target):
+                continue
+            path = urllib.parse.unquote(target.split("#", 1)[0])
+            resolved = os.path.normpath(os.path.join(str(source.parent), path))
+            if path.startswith("/") or not resolved.startswith(base + os.sep):
+                errors.append(f"{shown(source)}:{n}: link {target!r} leaves the skill's folder")
+            elif not os.path.isfile(resolved):
+                errors.append(f"{shown(source)}:{n}: link {target!r} does not resolve to a file")
+            elif source == skill:
+                linked_from_skill.add(resolved)
+    for r in refs:
+        if os.path.normpath(str(r)) not in linked_from_skill:
+            errors.append(f"{shown(r)}: not linked from SKILL.md")
 
-
-def git(*args):
-    r = subprocess.run(["git", "-C", str(root)] + list(args), capture_output=True, text=True)
-    return r.stdout.strip() if r.returncode == 0 else None
-
-
-def tree_digest(folder):
-    lines = []
-    for p in sorted(folder.rglob("*")):
-        if p.is_symlink():
-            return None, f"contains a symlink: {p.relative_to(folder).as_posix()}"
-        if p.is_file():
-            lines.append(f"{p.relative_to(folder).as_posix()}\0{hashlib.sha256(p.read_bytes()).hexdigest()}\n")
-    return hashlib.sha256("".join(lines).encode()).hexdigest(), None
-
-
-# 1. Front matter of every skill folder (copies, own skills, and links that resolve).
-skills = sorted(root.glob("skills/*/SKILL.md"))
-if not skills:
-    errors.append("no skills/*/SKILL.md found")
-for skill in skills:
-    check_skill(skill)
-    if skill.parent.is_symlink():
-        continue
-    upstream = skill.parent / "UPSTREAM.md"
-    folder = skill.parent.name
-    if upstream.exists():
-        m = SHA_RE.search(upstream.read_text(encoding="utf-8"))
-        if not m:
-            errors.append(f"{upstream.relative_to(root)}: no SHA-256: line")
+    if refs:
+        stems = {r.stem for r in refs}
+        best, best_hits = None, 0
+        for rows in tables(outside_code(text, spans=False)):
+            words = [MODE_CELL_RE.match(row[0]).group(1) for row in rows if row and MODE_CELL_RE.match(row[0])]
+            hits = len(stems & set(words))
+            if hits > best_hits:
+                best, best_hits = rows, hits
+        if best is None:
+            errors.append(f"{where}: no mode table whose first cells are the references' mode words in backticks")
         else:
-            actual = hashlib.sha256(skill.read_bytes()).hexdigest()
-            if actual != m.group(1):
-                errors.append(f"skills/{folder}/SKILL.md: SHA-256 {actual} does not match UPSTREAM.md {m.group(1)}")
-    elif folder in REQUIRE_UPSTREAM:
-        errors.append(f"skills/{folder}/SKILL.md: upstream copy needs an UPSTREAM.md")
+            seen = {}
+            for row in best:
+                m = MODE_CELL_RE.match(row[0]) if row else None
+                word = m.group(1) if m else None
+                if word not in stems:
+                    errors.append(f"{where}: mode-table row {row[0] if row else ''!r} has no matching references/<mode>.md")
+                else:
+                    seen[word] = seen.get(word, 0) + 1
+            for word in sorted(stems):
+                if word not in seen:
+                    errors.append(f"{where}: references/{word}.md has no mode-table row with first cell `{word}`")
+                elif seen[word] > 1:
+                    errors.append(f"{where}: mode word `{word}` has {seen[word]} rows")
+    return errors, warnings
 
-# 2. Linked upstream skills.
-manifest_path = root / "upstream.toml"
-tables = read_manifest(manifest_path) if manifest_path.exists() else {}
-repos = {k[1]: v for k, v in tables.items() if k[0] == "repo"}
-linked = {k[1]: v for k, v in tables.items() if k[0] == "skill"}
 
-if git("rev-parse", "--is-inside-work-tree") != "true":
-    errors.append("not a Git work tree: linked skills can't be checked")
-    repos, linked = {}, {}
+def check_folder(folder, namespaces, root_checks, required, root):
+    """Errors, warnings and the number of skills checked for a skills folder."""
+    errors, warnings, count = [], [], 0
+    if root_checks:
+        for leftover in ("upstream", "upstream.toml", ".gitmodules"):
+            if os.path.lexists(os.path.join(root, leftover)):
+                errors.append(f"{leftover}: the upstream machinery was removed in M0")
+    if not os.path.lexists(folder):
+        if required:
+            errors.append(f"{shown(folder)}: no such folder")
+        return errors, warnings, count
+    if folder.is_symlink() or not folder.is_dir():
+        errors.append(f"{shown(folder)}: not a folder")
+        return errors, warnings, count
+    for child in sorted(folder.iterdir()):
+        if child.is_symlink() or child.is_dir():
+            e, w = check_skill(child, namespaces)
+            errors += e
+            warnings += w
+            count += 1
+    return errors, warnings, count
 
-gitmodules = {}
-if (root / ".gitmodules").exists():
-    out = git("config", "-f", ".gitmodules", "--get-regexp", r"^submodule\..*\.(path|url)$") or ""
-    for line in out.splitlines():
-        key, value = line.split(" ", 1)
-        name, field = key[len("submodule."):].rsplit(".", 1)
-        gitmodules.setdefault(name, {})[field] = value
 
-for name in sorted(set(gitmodules) - {f"upstream/{r}" for r in repos}):
-    errors.append(f".gitmodules: submodule {name!r} has no [repo.*] entry in upstream.toml")
-if (root / "upstream").is_dir():
-    for d in sorted((root / "upstream").iterdir()):
-        if d.name not in repos:
-            errors.append(f"upstream/{d.name}: not listed in upstream.toml")
+# The self-test's fixtures in scripts/fixtures/: each folder and the one FAIL
+# line it must give (None: it must pass), checked with the namespace fixture.
+FIXTURES = {
+    "fixture": None,
+    "fixture-no-skill-md": "no SKILL.md",
+    "fixture-no-credits": "no CREDITS.md",
+    "fixture-no-front-matter": "no front matter between --- lines",
+    "fixture-bad-front-matter-line": "front matter line is not a `key: value` field",
+    "fixture-duplicate-field": "field 'license' given twice",
+    "fixture-unknown-field": "field 'version' is not in the Agent Skills specification",
+    "fixture-name-mismatch": "does not match folder",
+    "fixture--double-hyphen": "must be lowercase letters, digits and single hyphens",
+    "fixture-name-too-long-" + "x" * 43: "at most 64 characters",
+    "wrong-namespace": "is not in the namespaces fixture",
+    "fixture-no-description": "description missing",
+    "fixture-description-too-long": "description is 1025 characters (max 1024)",
+    "fixture-compatibility-too-long": "compatibility is 501 characters (max 500)",
+    "fixture-upstream-file": "UPSTREAM.md: skills here are written here, not copied",
+    "fixture-reference-not-md": "references/ holds only .md files",
+    "fixture-reference-subfolder": "references/ must be flat, no subfolders",
+    "fixture-broken-link": "does not resolve to a file",
+    "fixture-link-outside": "leaves the skill's folder",
+    "fixture-unlinked-reference": "not linked from SKILL.md",
+    "fixture-no-mode-table": "no mode table whose first cells are the references' mode words",
+    "fixture-missing-mode-row": "has no mode-table row with first cell `extra`",
+    "fixture-extra-mode-row": "has no matching references/<mode>.md",
+    "fixture-duplicate-mode-row": "mode word `check` has 2 rows",
+}
 
-for rid, repo in sorted(repos.items()):
-    where = f"upstream.toml [repo.{rid}]"
-    missing = REPO_KEYS - set(repo)
-    extra = set(repo) - REPO_KEYS - REPO_OPTIONAL
-    if missing:
-        errors.append(f"{where}: missing {', '.join(sorted(missing))}")
-    if extra:
-        errors.append(f"{where}: unknown key(s) {', '.join(sorted(extra))}")
-    commit = repo.get("commit", "")
-    if not HEX40.match(commit):
-        errors.append(f"{where}: commit must be a full 40-character SHA")
-    sub = gitmodules.get(f"upstream/{rid}")
-    if sub is None:
-        errors.append(f"{where}: no submodule at upstream/{rid} in .gitmodules")
-        continue
-    if sub.get("path") != f"upstream/{rid}" or sub.get("url") != repo.get("url"):
-        errors.append(f"{where}: .gitmodules path/url {sub.get('path')!r} {sub.get('url')!r} do not match")
-    staged = (git("ls-files", "-s", "--", f"upstream/{rid}") or "").split()
-    if len(staged) < 2 or staged[0] != "160000" or staged[1] != commit:
-        errors.append(f"{where}: recorded gitlink {staged[1] if len(staged) > 1 else 'none'} is not {commit}")
-    sub_root = root / "upstream" / rid
-    head = subprocess.run(["git", "-C", str(sub_root), "rev-parse", "HEAD"], capture_output=True, text=True)
-    if not (sub_root / ".git").exists() or head.returncode != 0:
-        errors.append(f"{where}: submodule not checked out (run: git submodule update --init --depth 1)")
-        continue
-    if head.stdout.strip() != commit:
-        errors.append(f"{where}: upstream/{rid} is checked out at {head.stdout.strip()}, not {commit}")
-    if not (sub_root / repo.get("licence_file", "LICENSE")).is_file():
-        errors.append(f"{where}: licence file {repo.get('licence_file')!r} missing")
 
-for name, entry in sorted(linked.items()):
-    where = f"upstream.toml [skill.{name}]"
-    missing = SKILL_KEYS - set(entry)
-    if missing or set(entry) - SKILL_KEYS:
-        errors.append(f"{where}: keys must be exactly {', '.join(sorted(SKILL_KEYS))}")
-        continue
-    if entry["repo"] not in repos:
-        errors.append(f"{where}: repo {entry['repo']!r} is not a [repo.*] entry")
-        continue
-    path = entry["path"]
-    if path.startswith("/") or ".." in path.split("/"):
-        errors.append(f"{where}: path must be relative and stay inside the repository")
-        continue
-    link = root / "skills" / name
-    expected = f"../upstream/{entry['repo']}/{path}"
-    if not link.is_symlink():
-        errors.append(f"skills/{name}: must be a symlink to {expected}")
-        continue
-    if os.readlink(link) != expected:
-        errors.append(f"skills/{name}: links to {os.readlink(link)!r}, not {expected!r}")
-        continue
-    target = link.resolve()
-    if not target.is_dir() or not (target / "SKILL.md").is_file():
-        errors.append(f"skills/{name}: target has no SKILL.md (is upstream/{entry['repo']} checked out?)")
-        continue
-    sub_real = (root / "upstream" / entry["repo"]).resolve()
-    if sub_real not in target.parents:
-        errors.append(f"skills/{name}: resolves outside upstream/{entry['repo']}")
-        continue
-    for key, pattern in (("skill_sha256", HEX64), ("tree_sha256", HEX64)):
-        if not pattern.match(entry[key]):
-            errors.append(f"{where}: {key} must be 64 hex characters")
-    actual = hashlib.sha256((target / "SKILL.md").read_bytes()).hexdigest()
-    if actual != entry["skill_sha256"]:
-        errors.append(f"skills/{name}/SKILL.md: SHA-256 {actual} does not match upstream.toml {entry['skill_sha256']}")
-    digest, problem = tree_digest(target)
-    if problem:
-        errors.append(f"skills/{name}: {problem}")
-    elif digest != entry["tree_sha256"]:
-        errors.append(f"skills/{name}: folder digest {digest} does not match upstream.toml {entry['tree_sha256']}")
+def self_test():
+    """Run the check on the fixtures, and on cases Git can't hold, built in a
+    temporary folder: each must give exactly its expected FAIL line."""
+    fixtures = pathlib.Path(ROOT, "scripts", "fixtures")
+    failures, passed = [], 0
 
-for link in sorted((root / "skills").iterdir()):
-    if link.is_symlink() and link.name not in linked:
-        errors.append(f"skills/{link.name}: symlink with no [skill.{link.name}] entry in upstream.toml")
-    if not link.is_symlink() and link.name in linked:
-        errors.append(f"skills/{link.name}: listed in upstream.toml but is not a symlink")
+    def expect(case, result, wanted, warn=None):
+        nonlocal passed
+        errors, warnings = result[0], result[1]
+        errors = [e.replace(tmp, "<tmp>") for e in errors]
+        if wanted is None:
+            ok = not errors and (warn is None or any(warn in w for w in warnings))
+        else:
+            ok = len(errors) == 1 and wanted in errors[0]
+        if ok:
+            passed += 1
+            shown_line = f"FAIL {errors[0]}" if errors else ("WARN " + warnings[0].replace(tmp, "<tmp>") if warn else "passes")
+            print(f"pass {case}: {shown_line}")
+        else:
+            failures.append(f"self-test {case}: expected {wanted or warn or 'no FAIL line'!r}, got {errors + warnings!r}")
 
+    tmp = tempfile.mkdtemp()
+    try:
+        present = {p.name for p in fixtures.iterdir()} if fixtures.is_dir() else set()
+        for name in sorted(present - set(FIXTURES)):
+            failures.append(f"self-test: scripts/fixtures/{name} has no expected result in FIXTURES")
+        for name, wanted in FIXTURES.items():
+            if name not in present:
+                failures.append(f"self-test: scripts/fixtures/{name} is missing")
+                continue
+            expect(name, check_skill(fixtures / name, ("fixture",)), wanted)
+
+        valid = fixtures / "fixture"
+        def copy(case):
+            dest = pathlib.Path(tmp, case, "skills", "fixture")
+            shutil.copytree(valid, dest)
+            return dest
+        d = copy("symlink-inside")
+        os.symlink("check.md", d / "references" / "link.md")
+        expect("symlink-inside", check_skill(d, ("fixture",)), "symlink in a skill folder")
+        d = copy("symlinked-skill")
+        os.symlink("fixture", d.parent / "fixture-link")
+        expect("symlinked-skill", check_skill(d.parent / "fixture-link", ("fixture",)), "a symlink, not a skill folder")
+        d = copy("not-utf-8")
+        (d / "SKILL.md").write_bytes((d / "SKILL.md").read_bytes() + b"\xff\n")
+        expect("not-utf-8", check_skill(d, ("fixture",)), "not UTF-8")
+        d = copy("long-skill-md")
+        with open(d / "SKILL.md", "a", encoding="utf-8") as f:
+            f.write("\nA line.\n" * 250)
+        expect("long-skill-md", check_skill(d, ("fixture",)), None, warn=f"lines (the specification suggests at most {MAX_LINES})")
+
+        empty = pathlib.Path(tmp, "empty", "skills")
+        empty.mkdir(parents=True)
+        result = check_folder(empty, None, False, True, str(empty.parent))
+        expect("empty-folder", result, None)
+        if result[2] != 0:
+            failures.append(f"self-test empty-folder: {result[2]} skills checked, not 0")
+        absent = pathlib.Path(tmp, "absent")
+        expect("absent-default-folder", check_folder(absent / "skills", NAMESPACES, True, False, str(absent)), None)
+        expect("missing-explicit-folder", check_folder(absent / "skills", None, False, True, str(absent)), "no such folder")
+        f = pathlib.Path(tmp, "a-file")
+        f.write_text("not a folder\n")
+        expect("folder-is-a-file", check_folder(f, None, False, True, tmp), "not a folder")
+        for leftover in ("upstream", "upstream.toml", ".gitmodules"):
+            r = pathlib.Path(tmp, "leftover-" + leftover.strip("."))
+            (r / "skills").mkdir(parents=True)
+            (r / leftover).mkdir() if leftover == "upstream" else (r / leftover).write_text("")
+            expect(f"root-{leftover}", check_folder(r / "skills", NAMESPACES, True, False, str(r)), f"{leftover}: the upstream machinery was removed in M0")
+        d = copy("default-namespaces")
+        expect("default-namespaces", check_folder(d.parent, NAMESPACES, True, False, str(d.parent.parent)), "is not in the namespaces council")
+    finally:
+        shutil.rmtree(tmp, ignore_errors=True)
+
+    for e in failures:
+        print(f"FAIL {e}")
+    if failures:
+        sys.exit(1)
+    print(f"ok: self-test, {passed} cases as expected")
+    sys.exit(0)
+
+
+def usage(message):
+    print(f"FAIL {message}\nusage: scripts/check.sh [--namespaces a,b,...] [<skills folder>]\n       scripts/check.sh --self-test")
+    sys.exit(2)
+
+
+ROOT = sys.argv[1]
+args, namespaces, folder_arg = sys.argv[2:], None, None
+if args == ["--self-test"]:
+    self_test()
+while args:
+    a = args.pop(0)
+    if a == "--namespaces" or a.startswith("--namespaces="):
+        value = a.split("=", 1)[1] if "=" in a else (args.pop(0) if args else "")
+        namespaces = tuple(ns for ns in value.split(",") if ns)
+        if not namespaces or not all(NAME_RE.match(ns) for ns in namespaces):
+            usage(f"--namespaces needs a comma-separated list of names, got {value!r}")
+    elif a.startswith("-"):
+        usage(f"unknown option {a}")
+    elif folder_arg is None:
+        folder_arg = a
+    else:
+        usage("give at most one skills folder")
+
+default_folder = pathlib.Path(ROOT, "skills")
+folder = pathlib.Path(os.path.normpath(os.path.join(ROOT, folder_arg))) if folder_arg else default_folder
+is_default = folder == default_folder
+if namespaces is None and is_default:
+    namespaces = NAMESPACES
+errors, warnings, count = check_folder(folder, namespaces, is_default, folder_arg is not None, ROOT)
 for e in errors:
     print(f"FAIL {e}")
 if errors:
     sys.exit(1)
-print(f"ok: {len(skills)} skills checked ({len(linked)} linked from {len(repos)} upstream repositories)")
+for w in warnings:
+    print(f"WARN {w}")
+print(f"ok: {count} skills checked")
 PY
