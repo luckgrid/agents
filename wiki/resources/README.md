@@ -5,7 +5,7 @@ title: Sources
 summary: "The format, tools, upstream repositories and Luckgrid pages behind this repository, with the versions and commits they were read at."
 status: active
 created: 2026-11-12
-updated: 2026-11-12  # became a folder, with skill references beside it
+updated: 2026-11-15  # M0: the skills CLI withdrawn, the linked repositories removed; before that, became a folder, with skill references beside it
 related: [AS-RES-AGENTS-LINEAGE, AS-ARCH-SKILL-SOURCES, AS-ARCH-GUEST-INSTALL, GW-ADR-0014, AS-RES-SKILL-REFERENCES]
 ---
 
@@ -18,13 +18,13 @@ The skills and tools each planned module learns from are listed in [skill refere
 | Source | What it gives | Read at |
 | --- | --- | --- |
 | [Agent Skills specification](https://agentskills.io/specification) ([agentskills/agentskills](https://github.com/agentskills/agentskills)) | The `SKILL.md` format: folder, front matter, `name` and `description` limits | 2026-11-12 |
-| [Vercel's skills CLI](https://github.com/vercel-labs/skills) (behind skills.sh) | The installer Workbench pins | 1.7.6, tested 2026-11-10 (agents#2), code read 2026-11-11 (Groundwork's GW-RES-0007) |
-| [herdr](https://herdr.dev) | The terminal multiplexer the guest's agents run in; `herdr --skill` | 0.9.5 (tag v0.9.5, commit `2ecf19a`) |
+| [Vercel's skills CLI](https://github.com/vercel-labs/skills) (behind skills.sh) | The installer Workbench was to pin; **withdrawn** (owner, 2026-11-14): `wb setup` copies skill folders itself | 1.7.6, tested 2026-11-10 (agents#2), code read 2026-11-11 (Groundwork's GW-RES-0007) |
+| [herdr](https://herdr.dev) | The terminal multiplexer the guest's agents run in; `herdr --skill`, copied here until M0 | 0.9.5 (tag v0.9.5, commit `2ecf19a`) |
 | [rumdl](https://github.com/rvben/rumdl) | Markdown checks for this wiki | 0.3.2 |
 
-## Linked upstream repositories
+## Linked upstream repositories (removed in M0)
 
-Pinned commits and digests are in `upstream.toml`, which decides; this table is a summary.
+Linked as submodules until M0, which removed them with `upstream.toml` ([record](../records/2026-11-15-m0.md)); the pins and digests are in that file's history. They stay in the [skill references](skill-references.md).
 
 | Repository | Licence | Commit | Skills linked |
 | --- | --- | --- | --- |

@@ -5,14 +5,14 @@ title: Agents workspace and configuration boundaries
 summary: "The proposed agents monorepo: skills at the root as today, public harness defaults under configs/, a private overlay in Groundwork's agent-config repository with the stricter value winning for sandbox settings, Rust from AG1, and proof gates AG1 to AG3."
 status: proposed
 created: 2026-11-12
-updated: 2026-11-13  # the rename done; before that, after the independent review and the owner's choices: skills stay at the root; the package map trimmed to skills, configs, crates and wiki; defaults and overlay with the stricter-wins rule; proof steps AG1 to AG3
+updated: 2026-11-15  # dated note: the skills CLI withdrawn; before that, the rename done; before that, after the independent review and the owner's choices: skills stay at the root; the package map trimmed to skills, configs, crates and wiki; defaults and overlay with the stricter-wins rule; proof steps AG1 to AG3
 derived_from: AS-ADR-0001
 related: [AS-ADR-0001, AS-RES-AGENTS-LINEAGE, AS-PROGRAM, AS-ARCH-GUEST-INSTALL, WS-ADR-0004, WS-ARCH-CONTRACTS, GW-ADR-0011, GW-ADR-0016]
 ---
 
 # Agents workspace and configuration boundaries
 
-The [decision](../records/decisions/0001-agents-monorepo.md) records what the owner decided. This page proposes how to build it; [STATE](../records/STATE.md) holds delivery status. Today's skill paths and installation are in [skill sources](skill-sources.md) and [guest install](guest-install.md).
+The [decision](../records/decisions/0001-agents-monorepo.md) records what the owner decided. This page proposes how to build it; [STATE](../records/STATE.md) holds delivery status. Today's skill paths and installation are in [skill modules](skill-sources.md) and [guest install](guest-install.md).
 
 ## Layout
 
@@ -61,6 +61,8 @@ Configuration holds references to secrets, never secrets. Secret backends, scope
 ## Installer and Rust
 
 Skills stay at `skills/`, so the installer path doesn't change. Workbench's U16 step and its tests against skills CLI 1.7.6 remain the baseline; a CLI pin change is Workbench's to review. Telemetry stays off as the install procedure requires.
+
+**Dated note, 2026-11-15:** the owner withdrew the skills CLI on 2026-11-14 (fifth round): U16 copies skill folders itself, so there is no CLI baseline or pin ([guest install](guest-install.md)).
 
 Rust starts at AG1 with a concrete job: replacing `check.sh`. Cargo owns Rust builds and dependencies; Moon runs the checks. Skill users need neither. Any new dependency, tool pin or install command follows the owning environment's admission procedure.
 
