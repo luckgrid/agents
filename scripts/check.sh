@@ -3,13 +3,14 @@
 # references, links and the mode table. Needs only python3 (3.9 or later).
 #
 #   scripts/check.sh [--namespaces a,b,...] [<skills folder>]
+#   scripts/check.sh --self-test
 #
 # The folder is skills/ by default; a relative folder is resolved against the
 # repository root, so give another repository's folder as an absolute path.
 set -euo pipefail
 root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 exec python3 -I - "$root" "$@" <<'PY'
-import os, pathlib, re, sys, urllib.parse
+import os, pathlib, re, shutil, sys, tempfile, urllib.parse
 
 # This repository's namespaces. Source: the namespaces registry in
 # wiki/program.md (owner, 2026-11-14); change both together.
@@ -293,13 +294,126 @@ def check_folder(folder, namespaces, root_checks, required, root):
     return errors, warnings, count
 
 
+# The self-test's fixtures in scripts/fixtures/: each folder and the one FAIL
+# line it must give (None: it must pass), checked with the namespace fixture.
+FIXTURES = {
+    "fixture": None,
+    "fixture-no-skill-md": "no SKILL.md",
+    "fixture-no-credits": "no CREDITS.md",
+    "fixture-no-front-matter": "no front matter between --- lines",
+    "fixture-bad-front-matter-line": "front matter line is not a `key: value` field",
+    "fixture-duplicate-field": "field 'license' given twice",
+    "fixture-unknown-field": "field 'version' is not in the Agent Skills specification",
+    "fixture-name-mismatch": "does not match folder",
+    "fixture--double-hyphen": "must be lowercase letters, digits and single hyphens",
+    "fixture-name-too-long-" + "x" * 43: "at most 64 characters",
+    "wrong-namespace": "is not in the namespaces fixture",
+    "fixture-no-description": "description missing",
+    "fixture-description-too-long": "description is 1025 characters (max 1024)",
+    "fixture-compatibility-too-long": "compatibility is 501 characters (max 500)",
+    "fixture-upstream-file": "UPSTREAM.md: skills here are written here, not copied",
+    "fixture-reference-not-md": "references/ holds only .md files",
+    "fixture-reference-subfolder": "references/ must be flat, no subfolders",
+    "fixture-broken-link": "does not resolve to a file",
+    "fixture-link-outside": "leaves the skill's folder",
+    "fixture-unlinked-reference": "not linked from SKILL.md",
+    "fixture-no-mode-table": "no mode table whose first cells are the references' mode words",
+    "fixture-missing-mode-row": "has no mode-table row with first cell `extra`",
+    "fixture-extra-mode-row": "has no matching references/<mode>.md",
+    "fixture-duplicate-mode-row": "mode word `check` has 2 rows",
+}
+
+
+def self_test():
+    """Run the check on the fixtures, and on cases Git can't hold, built in a
+    temporary folder: each must give exactly its expected FAIL line."""
+    fixtures = pathlib.Path(ROOT, "scripts", "fixtures")
+    failures, passed = [], 0
+
+    def expect(case, result, wanted, warn=None):
+        nonlocal passed
+        errors, warnings = result[0], result[1]
+        errors = [e.replace(tmp, "<tmp>") for e in errors]
+        if wanted is None:
+            ok = not errors and (warn is None or any(warn in w for w in warnings))
+        else:
+            ok = len(errors) == 1 and wanted in errors[0]
+        if ok:
+            passed += 1
+            shown_line = f"FAIL {errors[0]}" if errors else ("WARN " + warnings[0].replace(tmp, "<tmp>") if warn else "passes")
+            print(f"pass {case}: {shown_line}")
+        else:
+            failures.append(f"self-test {case}: expected {wanted or warn or 'no FAIL line'!r}, got {errors + warnings!r}")
+
+    tmp = tempfile.mkdtemp()
+    try:
+        present = {p.name for p in fixtures.iterdir()} if fixtures.is_dir() else set()
+        for name in sorted(present - set(FIXTURES)):
+            failures.append(f"self-test: scripts/fixtures/{name} has no expected result in FIXTURES")
+        for name, wanted in FIXTURES.items():
+            if name not in present:
+                failures.append(f"self-test: scripts/fixtures/{name} is missing")
+                continue
+            expect(name, check_skill(fixtures / name, ("fixture",)), wanted)
+
+        valid = fixtures / "fixture"
+        def copy(case):
+            dest = pathlib.Path(tmp, case, "skills", "fixture")
+            shutil.copytree(valid, dest)
+            return dest
+        d = copy("symlink-inside")
+        os.symlink("check.md", d / "references" / "link.md")
+        expect("symlink-inside", check_skill(d, ("fixture",)), "symlink in a skill folder")
+        d = copy("symlinked-skill")
+        os.symlink("fixture", d.parent / "fixture-link")
+        expect("symlinked-skill", check_skill(d.parent / "fixture-link", ("fixture",)), "a symlink, not a skill folder")
+        d = copy("not-utf-8")
+        (d / "SKILL.md").write_bytes((d / "SKILL.md").read_bytes() + b"\xff\n")
+        expect("not-utf-8", check_skill(d, ("fixture",)), "not UTF-8")
+        d = copy("long-skill-md")
+        with open(d / "SKILL.md", "a", encoding="utf-8") as f:
+            f.write("\nA line.\n" * 250)
+        expect("long-skill-md", check_skill(d, ("fixture",)), None, warn=f"lines (the specification suggests at most {MAX_LINES})")
+
+        empty = pathlib.Path(tmp, "empty", "skills")
+        empty.mkdir(parents=True)
+        result = check_folder(empty, None, False, True, str(empty.parent))
+        expect("empty-folder", result, None)
+        if result[2] != 0:
+            failures.append(f"self-test empty-folder: {result[2]} skills checked, not 0")
+        absent = pathlib.Path(tmp, "absent")
+        expect("absent-default-folder", check_folder(absent / "skills", NAMESPACES, True, False, str(absent)), None)
+        expect("missing-explicit-folder", check_folder(absent / "skills", None, False, True, str(absent)), "no such folder")
+        f = pathlib.Path(tmp, "a-file")
+        f.write_text("not a folder\n")
+        expect("folder-is-a-file", check_folder(f, None, False, True, tmp), "not a folder")
+        for leftover in ("upstream", "upstream.toml", ".gitmodules"):
+            r = pathlib.Path(tmp, "leftover-" + leftover.strip("."))
+            (r / "skills").mkdir(parents=True)
+            (r / leftover).mkdir() if leftover == "upstream" else (r / leftover).write_text("")
+            expect(f"root-{leftover}", check_folder(r / "skills", NAMESPACES, True, False, str(r)), f"{leftover}: the upstream machinery was removed in M0")
+        d = copy("default-namespaces")
+        expect("default-namespaces", check_folder(d.parent, NAMESPACES, True, False, str(d.parent.parent)), "is not in the namespaces council")
+    finally:
+        shutil.rmtree(tmp, ignore_errors=True)
+
+    for e in failures:
+        print(f"FAIL {e}")
+    if failures:
+        sys.exit(1)
+    print(f"ok: self-test, {passed} cases as expected")
+    sys.exit(0)
+
+
 def usage(message):
-    print(f"FAIL {message}\nusage: scripts/check.sh [--namespaces a,b,...] [<skills folder>]")
+    print(f"FAIL {message}\nusage: scripts/check.sh [--namespaces a,b,...] [<skills folder>]\n       scripts/check.sh --self-test")
     sys.exit(2)
 
 
 ROOT = sys.argv[1]
 args, namespaces, folder_arg = sys.argv[2:], None, None
+if args == ["--self-test"]:
+    self_test()
 while args:
     a = args.pop(0)
     if a == "--namespaces" or a.startswith("--namespaces="):
