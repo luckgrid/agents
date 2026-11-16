@@ -16,3 +16,5 @@ Dated episodes, named for the date their first content happened. Where the repos
 - [2026-11-15-m0.md](2026-11-15-m0.md): M0, the module foundation: the upstream machinery, the herdr copy and the `wb-` skills removed, `check.sh` for modules with fixtures and a self-test, the README and wiki for modules, and the owner's two choices on the sandbox's read-only paths.
 
 The modular rewrite's [review and corrections](2026-11-14-modular-rewrite/review.md) cover the migration source, validator paths, session hook, installer recovery and cross-repository proof gates.
+
+- [2026-11-16-workspace-skills/](2026-11-16-workspace-skills/README.md): the seventh round. `workspace` comes first, for herdr workspaces and worktrees. It also covers this repository's purpose, work across workspaces, records that capture intent in one schema, and the [kickoff brief](2026-11-16-workspace-skills/kickoff.md) for Cursor's bootstrap session.
