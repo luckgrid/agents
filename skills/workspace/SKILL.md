@@ -30,8 +30,9 @@ Read every workspace and worktree ID from JSON replies. Never guess an ID. If a 
 
 | Term | Meaning |
 | --- | --- |
-| Workspace | A Git clone at `~/Workspaces/<ns>` **and** a herdr workspace whose label is `<ns>` |
+| Workspace | A Git clone at `~/Workspaces/<ns>` **and** the herdr workspace whose checkout is that clone (`worktree.repo_root` or `checkout_path`, not a linked worktree). Match by that metadata, never by label alone; a workspace this skill creates is labelled `<ns>` |
 | Non-clone workspace | Allowed in herdr (for example `~` or `Workspaces`) but **outside** this model: report it, never operate on it |
+| Worktree root | The folder herdr puts a clone's linked worktrees in: the parent of the paths `herdr worktree list` reports. Read it, never assume it; Workbench names its own |
 | Base branch | `develop` if that local branch exists, otherwise `main`. New worktrees use `--base` that ref. **Never create `develop`** |
 | Feature worktree | A herdr-linked worktree for a feature branch, opened as its own herdr workspace |
 | Sub-worktree | Branch `<parent-branch>--<name>` (at most one `--`), created from the **clone** workspace with `--base <parent-branch>`. Depth is the count of `--` in the **branch name** (0 or 1). Folders and labels turn `/` into `-` and collapse `--` to `-`; do not read depth from the folder |
@@ -53,7 +54,7 @@ herdr's sidebar stays flat. Nesting is a skill convention. `worktree list` alway
 - Never `--force` on `worktree remove`, never `--trust-repository`, never `git branch -D` without the owner's word.
 - Never plain `git worktree add` for feature work; use herdr so its events fire.
 - Never file, push, tag, or publish from the `issue`, `pr`, or `release` modes; in the guest, `workbench` says who does those steps. If `workbench` is not installed, stop before any guest-only action.
-- Public status and maintain skills say "refresh remotes first" and name no sync command; only `workbench-herdr` may name `wb sync`.
+- Public skills say "refresh remotes first" and name no sync command or guest path; Workbench's `workbench-herdr` narrows them for the guest.
 
 ## Modes
 

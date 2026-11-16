@@ -7,12 +7,12 @@ Collect a read-only picture of one namespace `<ns>` (default: the repo of the cu
 1. Run `herdr workspace list` once. From that reply:
    - find the clone workspace for `~/Workspaces/<ns>` (`workspace-open` find steps, **without creating** unless the owner asked to open);
    - collect every workspace that is **not** a clone under `~/Workspaces/` into `non_clone_workspaces` (id and label only). Report them; never operate on them.
-2. If there is **no** clone workspace ID yet: still report the base branch from the clone on disk, list Git worktrees with `git worktree list`, list empty dirs under `~/.workers/spaces/<ns>/`, fill `workspace_id` as `null`, leave `worktrees` empty or Git-only notes, and stop the herdr worktree/agent steps for this namespace. Do not invent an ID and do not call `herdr worktree list` without a real clone ID.
+2. If there is **no** clone workspace ID yet: still report the base branch from the clone on disk, list Git worktrees with `git worktree list`, list empty folders in the clone's worktree root if it is known, fill `workspace_id` as `null`, leave `worktrees` empty or Git-only notes, and stop the herdr worktree/agent steps for this namespace. Do not invent an ID and do not call `herdr worktree list` without a real clone ID.
 3. With a clone ID: `herdr worktree list --workspace <clone ID>`.
 4. `herdr agent list` (and pane list if needed to place agents). Attach agents to worktrees by `workspace_id` / pane cwd.
 5. For the clone, note the base branch and whether local `origin/<base>` exists. Record the date/time of the last fetch when known (for example from `FETCH_HEAD` mtime); if unknown, say so.
 6. Compare each worktree branch tip to local `origin/<base>` when that ref exists: report ahead/behind counts. "Behind" means behind that local origin ref, not a live network fetch.
-7. List empty directories under `~/.workers/spaces/<ns>/` as orphaned path findings (for example leftover probe folders). Do not delete them here.
+7. List empty folders in the clone's worktree root (the parent of the paths `herdr worktree list` reports) as orphaned path findings (for example leftover probe folders). Do not delete them here.
 
 ## Nesting
 
@@ -25,7 +25,7 @@ Print a nested outline for the owner, for example:
 ```text
 agents (w8) base=develop
 ├── develop @ ~/Workspaces/agents
-├── feat/workspace-skills (wK) @ ~/.workers/spaces/agents/feat-workspace-skills
+├── feat/workspace-skills (wK) @ <worktree root>/feat-workspace-skills
 │   agent: cursor working pane=wK:p1
 └── skills/herdr-workflows-1 (wG) @ ...
 orphans: (none)
@@ -45,11 +45,12 @@ After the tree, print one fenced `json` block with the same data. Shape:
   "workspace_id": "w8",
   "base_branch": "develop",
   "last_fetch": null,
+  "agents": [],
   "worktrees": [
     {
       "branch": "feat/x",
       "workspace_id": "wK",
-      "path": "~/.workers/spaces/agents/feat-x",
+      "path": "<worktree root>/feat-x",
       "is_linked_worktree": true,
       "ahead_of_base": 0,
       "behind_base": 0,
@@ -57,7 +58,7 @@ After the tree, print one fenced `json` block with the same data. Shape:
         {
           "branch": "feat/x--y",
           "workspace_id": "wN",
-          "path": "~/.workers/spaces/agents/feat-x-y",
+          "path": "<worktree root>/feat-x-y",
           "is_linked_worktree": true,
           "ahead_of_base": 0,
           "behind_base": 0,
@@ -75,4 +76,4 @@ After the tree, print one fenced `json` block with the same data. Shape:
 }
 ```
 
-Paths use `~/…`. Omit any orchestrator key. Children arrays are always present (empty when none). This block is the contract a future sidebar plugin would read.
+Paths use `~/…`. The top-level `agents` holds agents in the clone's own workspace. Omit any orchestrator key. `children` and `agents` arrays are always present (empty when none). This block is the contract a future sidebar plugin would read.

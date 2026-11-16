@@ -9,39 +9,19 @@ updated: 2026-11-16  # independent review remediated remove-ID wording, adopt pa
 related: [AS-REC-2026-11-16-WORKSPACE-SKILLS, AS-REC-2026-11-16-WORKSPACE-SKILLS-KICKOFF, AS-PROGRAM, AS-STATE, AS-REC-2026-11-14-MODULAR-REWRITE, AS-REC-2026-11-15-M0, AS-RES-SKILL-REFERENCES, AS-ARCH-WORKSPACE-COORDINATION]
 ---
 
-## Placement
+# Workspace skills bootstrap session (build and survey, 2026-11-16)
 
-This page is the **bootstrap build session** that followed the [kickoff](kickoff.md). The seventh-round intent and standing proposal live in [README.md](README.md). The kickoff asked this session for word-for-word owner answers and survey evidence; those appear below. The general records rule (intent unless asked for exact words) still holds for later work.
+## Intent
 
-# Workspace management skills kickoff (2026-11-16)
-
-## The owner's words (2026-11-16), unedited
-
-> check recent updates, review and provide a kick-off to continue working starting with workspace management and maintenance skills written using herdr commands from current workstation main capabilities and recently updated wiki that sets the goals of the product/project (workspace or repo)
->
-> from the guest in current state, using cursor in bootstrap mode (prompt to steer agent to ignore harness restrictions for codex) - user will choose allowlist for commands or allow once during run. Risky config changes can be checked and fixed after bootstrap/dogfooding is done.
->
-> from a user perspective, I want to use the agents workspace to record and save/store common patterns related to agents and agent workflows from a preferred set of tools, apps, configs, etc that can be describes and used through workstation repo/workspace.
->
-> in the terminal with herdr (vm guest using wb sh && herdr) - a Workspace defines the top level space in herdr's space sidebar. My preference is to have multiple herdr workspaces named using the namespaces inside the Workspaces dir in the vm.guest user's home `~` in Linux Fedora (lima vm) - currently named `lima-fedora-dev` in shell (see the screenshot of herdr with open workspaces and cursor session in agents workspace (luckgrid/agents repo) waiting for a plan kick-off session.
-
-**Product goal (owner's words, restated once):** agents is the place to record and store common agent and workflow patterns from a preferred set of tools, apps and configs, described and used through the Workstation repository/workspace.
-
-## Enhancement wishes (input for a Workstation session, not this one)
-
-Full paste from the owner still pending if a longer source exists. Short form from the same kickoff message:
-
-1. **Sidebar:** workspace item starts on `develop`, falling back to `main` (and later creates `develop`); feature branches are herdr worktrees managed through the herdr CLI; worktrees may have sub-worktrees, shown nested and collapsible, at most two levels; a collapsed workspace shows a status dot with the count of agents working in it (one agent shows a plain dot); a worktree group has its own background shade.
-2. **Agents list:** shows how agents relate: who works under the same orchestrator, and which workspace or worktree each belongs to; later, higher tiers: one Workspaces-level agent orchestrating per-workspace orchestrators.
-3. **Panel:** a top toolbar, with agent, workspace and worktree metadata on the left, and actions on the right: a settings icon to clear or restart the session, copy a hand-off summary, and show herdr session state in a popover; a bottom drawer with a prompt field to the workspace's or worktree's top orchestrator. Slim bar when there's no agent; taller with model, mode, skill and tool controls when there is one.
-4. **The TUI:** extend herdr (plugins, or a fork) until Workbench's workflows settle, then build Workbench's own TUI.
-5. **Skills:** develop and refine skills and workflows, eventually including skills for managing skills, scoped to daily use.
+This is the bootstrap build session that followed the [kickoff](kickoff.md). The owner's intent for the seventh round, the repository's purpose and the herdr interface ideas for Workstation are in the [record](README.md#the-owners-intent-2026-11-16). They aren't repeated here. Under the records rule of 2026-11-16, this page captures intent. The answers below are the options the owner chose, and the survey replies are evidence.
 
 ## Seventh round (owner, 2026-11-16)
 
 `workspace` (M10) comes first, before M2 `council`. Its scope grows from issue, pr and release modes to workspace management. The first `agent_skills_commit` pin follows these skills once they merge (not after M2).
 
-## Questions and answers (word for word)
+## Decisions: questions and the owner's answers
+
+Each answer is the option the owner chose, as offered.
 
 Write steps (Plan mode): "Stay in Plan mode: ask the model questions now, and write the plan with the lifecycle exercise as its first build step"
 
@@ -116,4 +96,14 @@ Findings fixed on this branch:
 3. `workspace-status` survey: collect `non_clone_workspaces` from `workspace list`; when the clone has no herdr workspace, report with `workspace_id: null` and do not call `worktree list` without an ID.
 4. Root README and M2 program wording updated for the seventh-round order (M10 before M2).
 
-Not changed: the owner's kickoff quote keeps `vm.guest` / `lima-fedora-dev` only inside that verbatim block, as the kickoff brief required.
+## Remediation of PR #14 (2026-11-16)
+
+After promotion, a cloud session reviewed #14 and fixed the following on the branch:
+
+- The public skills named Workbench's worktree root (`~/.workers/spaces`) and the guest sandbox. They now read the root from `herdr worktree list`, and `workbench-herdr` narrows them.
+- The base model made the herdr label the identity. It now matches by checkout metadata, as `workspace-open` and the [coordination proposal](../../architecture/workspace-coordination.md) do. Created workspaces are still labelled `<ns>`.
+- This page quoted the owner word for word, including the VM's host and user names, in a public repository. It now points to the record's intent, as the records rule asks.
+- `workspace-worktree`'s credits table split on `|` characters.
+- The private Workstation skills were credited as Apache-2.0.
+- The status JSON had no field for agents in the clone's own workspace. It now has a top-level `agents` field.
+- The README and STATE wording assumed the work was still on the branch.

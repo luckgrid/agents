@@ -311,7 +311,7 @@ The owner's idea (2026-11-12): a broader triage module, with debugging part of i
 
 Added in the fifth round (owner, 2026-11-14), from Workstation #43's proposal of a `manage-workspace` skill for release notes from a template. These issue, pr and release uses follow M4's record conventions; the seventh round moves the initial workspace/worktree skills earlier. The generic half of working on a Luckgrid repository, in any workspace; Workbench may only narrow these rules and supplies the guest half (for example `issue-to-release` with `wb` commands).
 
-**Base skill `workspace`:** the shared model (clone `~/Workspaces/<ns>` plus herdr workspace labelled `<ns>`; base branch `develop` else `main`, never create `develop`; sub-worktrees `<parent>--<name>` from the clone workspace ID; depth from the branch name). Modes:
+**Base skill `workspace`:** the shared model (clone `~/Workspaces/<ns>` plus the herdr workspace whose checkout it is, matched by metadata and labelled `<ns>` when created; base branch `develop` else `main`, never create `develop`; sub-worktrees `<parent>--<name>` from the clone workspace ID; depth from the branch name). Modes:
 
 - **issue:** an issue's text from what was found: what happens, what was expected, how to reproduce, and the evidence word for word;
 - **pr:** a PR description: what and why, each commit, the checks run with their output, what wasn't checked, and the review rounds with their dispositions;

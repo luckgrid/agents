@@ -12,8 +12,8 @@ Turn the survey into a numbered list of proposed fixes. Examples:
 - Feature branch exists as a plain Git worktree → adopt via `workspace-worktree` `adopt` (owner runs move)
 - Linked worktree wanted but missing → `create` or `open` from the clone ID
 - Worktree abandoned and clean → `remove` (no `--force`)
-- Empty orphan folder under `~/.workers/spaces/<ns>/` → remove the folder only when the owner approves and it is not an active checkout
-- Behind `origin/<base>` → report only unless the owner asks for a specific git action allowed by guest rules
+- Empty orphan folder in the clone's worktree root → remove the folder only when the owner approves and it is not an active checkout
+- Behind `origin/<base>` → report only unless the owner asks for a specific Git action the environment's rules allow
 
 Never propose operating on non-clone herdr workspaces. Never propose `--force`, `--trust-repository`, or `git branch -D` without the owner's explicit word.
 

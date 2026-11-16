@@ -6,7 +6,7 @@ Agent Skills modules for the Workbench guest's harnesses (Claude Code, Codex and
 
 ## Skills
 
-None on `main` since M0. Five `workspace*` skills are on `feat/workspace-skills` (seventh round); the first install pin follows those skills once they merge (with Workbench prerequisites). The modules, their order and the namespaces registry are in the [roadmap](wiki/program.md); Workbench's own skills (`workbench-*`) are in Workstation.
+M10's five `workspace*` skills: `workspace`, `workspace-open`, `workspace-worktree`, `workspace-status` and `workspace-maintain` (seventh round). The first install pin follows them, with Workbench's prerequisites. The modules, their order and the namespaces registry are in the [roadmap](wiki/program.md); Workbench's own skills (`workbench-*`) are in Workstation.
 
 ## Wiki
 

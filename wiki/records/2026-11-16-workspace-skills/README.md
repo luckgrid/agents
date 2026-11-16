@@ -60,7 +60,7 @@ These are summaries, not quotes. Under the new records rule below, records captu
 
 ## Skills built (bootstrap session)
 
-On branch `feat/workspace-skills` (herdr worktree), after survey and owner answers:
+Built on `feat/workspace-skills` (a herdr worktree) after the survey and the owner's answers, and merged as #14:
 
 | Skill | Role |
 | --- | --- |

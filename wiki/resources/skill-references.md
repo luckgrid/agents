@@ -141,7 +141,7 @@ Added in the fifth round (owner, 2026-11-14); expanded and built in the seventh 
 | Workstation #43, the owner's checks of 2026-11-14 (luckgrid/workstation, private for now) | Luckgrid's | `6bf8345` (the PR's first commit) | The proposal: release notes from a template, and a release workflow's dry run before tagging |
 | Luckgrid's PR descriptions and review records, in this repository, site-system and Workstation | Luckgrid's | as each module record names | What a PR description and a review disposition hold |
 | [herdrdev/herdr](https://github.com/herdrdev/herdr) `herdr --skill` and CLI help | Apache-2.0 | 0.9.5 (`2ecf19a`) | `HERDR_ENV=1`; syntax authority; workspace/worktree/agent JSON |
-| Luckgrid `workbench-herdr` (guest skill in Workstation) | Apache-2.0 | as installed in the guest | Clone workspace first; print refused socket commands; no `--force` / `--trust-repository`; adopt via owner move |
+| Luckgrid `workbench-herdr` (guest skill in Workstation) | Luckgrid's (private, luckgrid/workstation) | as installed in the guest | Clone workspace first; print refused socket commands; no `--force` / `--trust-repository`; adopt via owner move |
 | Bootstrap survey 2026-11-16 (Luckgrid session evidence) | Luckgrid's | [record](../records/2026-11-16-workspace-skills/session.md) | `linked_worktree_source`; `--` nesting; folder collapse; `already_open`; dirty remove |
 
 ## Removed in M0: the linked skills and the herdr copy

@@ -21,7 +21,7 @@ test "${HERDR_ENV:-}" = 1
 herdr --version   # require 0.9.5 or newer
 ```
 
-Refresh remotes first when behind checks matter. This public skill names no sync command; only `workbench-herdr` may name `wb sync`.
+Refresh remotes first when behind checks matter. This public skill names no sync command; Workbench's `workbench-herdr` names the guest's.
 
 ## Modes
 

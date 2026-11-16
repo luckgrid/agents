@@ -20,7 +20,7 @@ test "${HERDR_ENV:-}" = 1
 herdr --version   # require 0.9.5 or newer
 ```
 
-Refresh remotes first when the owner wants an up-to-date behind check. This public skill names no sync command; in the guest, `workbench-herdr` may name `wb sync`. If that guest skill is unavailable, ask the owner to refresh remotes and continue with local refs.
+Refresh remotes first when the owner wants an up-to-date behind check. This public skill names no sync command; Workbench's `workbench-herdr` names the guest's. If no such skill is installed, ask the owner to refresh remotes and continue with local refs.
 
 ## Modes
 
