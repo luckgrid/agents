@@ -93,7 +93,6 @@ The owner's intent, recorded in the [session record](records/2026-11-16-workspac
 - **Bootstrap sessions.** Cursor, in the guest, runs with the owner approving each command. The workarounds written for Codex's sandbox don't apply there. Every configuration change is logged for the owner to judge after the bootstrap. The rules on pushing, credentials, installs and the network stay.
 - **herdr's interface** (sidebar nesting and agent counts, agent relationships, a panel toolbar and prompt drawer, and later a Workbench TUI) belongs to Workstation. The session's survey notes what herdr's plugins and CLI already allow, for a Workstation session to take up.
 
-
 ## Order
 
 Module numbers are IDs and don't change; the build order is:

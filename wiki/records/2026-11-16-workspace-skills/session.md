@@ -9,10 +9,9 @@ updated: 2026-11-16  # independent review remediated remove-ID wording, adopt pa
 related: [AS-REC-2026-11-16-WORKSPACE-SKILLS, AS-REC-2026-11-16-WORKSPACE-SKILLS-KICKOFF, AS-PROGRAM, AS-STATE, AS-REC-2026-11-14-MODULAR-REWRITE, AS-REC-2026-11-15-M0, AS-RES-SKILL-REFERENCES, AS-ARCH-WORKSPACE-COORDINATION]
 ---
 
-# Note
+## Placement
 
 This page is the **bootstrap build session** that followed the [kickoff](kickoff.md). The seventh-round intent and standing proposal live in [README.md](README.md). The kickoff asked this session for word-for-word owner answers and survey evidence; those appear below. The general records rule (intent unless asked for exact words) still holds for later work.
-
 
 # Workspace management skills kickoff (2026-11-16)
 

@@ -58,7 +58,6 @@ These are summaries, not quotes. Under the new records rule below, records captu
   - Workstation on `feat/fw1-guest-rules-and-attribution`;
   - a Cursor session in the agents clone, at its workspace trust dialog.
 
-
 ## Skills built (bootstrap session)
 
 On branch `feat/workspace-skills` (herdr worktree), after survey and owner answers:
