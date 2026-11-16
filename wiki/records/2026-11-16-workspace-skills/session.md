@@ -21,35 +21,24 @@ This is the bootstrap build session that followed the [kickoff](kickoff.md). The
 
 ## Decisions: questions and the owner's answers
 
-Each answer is the option the owner chose, as offered.
+These summaries record the options the owner selected. They preserve the later separator correction and pin timing, without presenting agent-authored option text as a verbatim owner quote.
 
-Write steps (Plan mode): "Stay in Plan mode: ask the model questions now, and write the plan with the lifecycle exercise as its first build step"
+| Topic | Selected direction |
+| --- | --- |
+| Plan/build order | Ask the model questions in Plan mode, then make the lifecycle survey the first build step |
+| Initial binding | One clone per namespace; unrelated Herdr attachments remain allowed but out of scope |
+| Base | Local develop, else main; do not create develop |
+| Nesting | Initially proposed parent/name, corrected to parent--name after the Git ref-name conflict; at most one separator. Create from the clone ID with the parent branch as base; sidebar grouping is a convention |
+| Maintenance | Report local-origin comparison/freshness and empty-folder candidates; apply approved fixes only |
+| Status | Grouped human report and JSON with agent kind/state/pane; no invented orchestrator |
+| Skills | Keep all five; status read-only, maintain begins with its survey |
+| Backend | Direct Herdr initially, HERDR_ENV check and 0.9.5 floor; M3 extracts common mechanics later |
+| First pin | Follow these skills once merged, with the pin handed to Workstation and its prerequisites still effective |
+| Build | Dogfood a new feat/workspace-skills checkout from develop; stop/report a refused commit |
+| Session | Owner starts a fresh Cursor session in that checkout; the survey session writes the hand-off |
+| Socket | Record Cursor's observed reachability as a Workstation boundary gap; keep per-mutation owner approval for this bootstrap |
 
-Workspace: "(Recommended) Yes. Workspaces that aren't clones (like `~` or `Workspaces`) are allowed but outside the model: the skills report them and never touch them"
-
-Base branch: "(Recommended) Yes. The base branch is develop, else main, and new worktrees branch from it (`--base develop` or `--base main`). The skills never create develop"
-
-Nesting (first): "(Recommended) By branch name: a sub-worktree's branch is `<parent-branch>/<name>` (for example feat/x/y), branched from the parent's branch. Depth is read from the name, so nothing extra is written. I'll confirm in the build's first step that herdr accepts it and what source_workspace_id says"
-
-Nesting separator (after Git `feat/x` + `feat/x/y` correction): "(Recommended) `<parent-branch>--<name>`, for example feat/x--y. Its folder is feat-x--y, a double dash never appears in a top-level branch, and depth is the number of `--`, at most one"
-
-Maintenance: "(Recommended) Yes as written. 'Behind' is against the local origin/<base> ref, with the date of the last fetch stated. Empty folders under the worktree root (like herdr-probe) count as orphaned and are reported. The public skill says 'refresh remotes first' and names no command; only workbench-herdr names `wb sync`"
-
-Status: "(Recommended) A nested text tree for you, plus a fenced JSON block of the same data (workspace, base, worktrees with children, agents with kind, state and pane). The JSON is the contract a future sidebar plugin would read. No orchestrator field until herdr or Workbench records one"
-
-Skills set: "(Recommended) Keep all five. Status is read-only and safe to run anytime. Maintain runs status's survey as its first step and adds the findings and fixes"
-
-Backend: "(Recommended) herdr directly in workspace-* now, with a HERDR_ENV=1 check and a herdr 0.9.5 version floor. Later, M3 multiplex pulls the backend parts out, and workspace-* then names multiplex, keeping a fallback line"
-
-Pin: "(Recommended) The first pin follows the workspace skills once they merge. Record it in the seventh round and STATE, and hand the pin to a Workstation session"
-
-Build branch: "(Recommended) Dogfood it: create feat/workspace-skills as a herdr worktree from develop, and work and commit there. If committing from the worktree is refused, stop and report, as the guest rules say"
-
-Who builds: "(Recommended) You start a fresh Cursor session in the new worktree's pane, with a hand-off brief I write to ~/.workers/records/. It edits inside its own checkout (no rule bent) and tests committing from a worktree. This session does the survey, the record and the plan"
-
-Socket: "(Recommended) Public skills: run the command; if refused, stop, print it for the owner and take IDs from the pasted reply. Record the finding as evidence, put it first in workstation-herdr-followups.md as a boundary gap for Workstation (Cursor's sandbox doesn't refuse the socket), and keep asking you to approve every mutating herdr command this session"
-
-After `linked_worktree_source` during survey: owner chose **1** — create sub-worktrees from the clone workspace with `--base <parent-branch>` and branch `<parent>--<name>`. Nesting is a skill convention; herdr stays flat.
+The earlier folder prediction is superseded by the survey's observed collapsed slug. Source behaviour and the review amendment below further distinguish display names from actual checkout paths.
 
 ## Survey evidence
 
@@ -107,3 +96,7 @@ After promotion, a cloud session reviewed #14 and fixed the following on the bra
 - The private Workstation skills were credited as Apache-2.0.
 - The status JSON had no field for agents in the clone's own workspace. It now has a top-level `agents` field.
 - The README and STATE wording assumed the work was still on the branch.
+
+## Further Workstation review (2026-11-16)
+
+The [PR #14 review](pr14-review.md) records additional findings at `1200a5f` and their corrections. The skill instructions now apply environment policy before socket access, validate actual 0.9.5 result envelopes, retain Git-only/unknown observations, require activity and retention checks before retirement, and avoid inferring configured roots or identities from lossy slugs. The live PR remains unmerged at this review. The earlier private survey is reported evidence; no cloud session repeated it.

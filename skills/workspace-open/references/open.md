@@ -1,27 +1,21 @@
 # open
 
-Open means: ensure a herdr workspace exists for one clone and report it. Do not create feature worktrees here (`workspace-worktree` does that).
+Ensure a Herdr attachment exists for the requested clone; no feature checkout is created here. Load the base skill's environment-policy preflight before socket commands.
 
 ## Steps
 
-1. Confirm `<ns>` and that `~/Workspaces/<ns>` is a Git checkout (has `.git`). If it is not a clone, stop: this skill only opens clone workspaces.
-2. Run `herdr workspace list`. Prefer a workspace whose `worktree.repo_root` or `worktree.checkout_path` is `~/Workspaces/<ns>` and `worktree.is_linked_worktree` is false. Take its `workspace_id`.
-3. If none matches, create once:
+1. Resolve the requested clone path (initial binding: `~/Workspaces/<ns>`). Use Git's top-level, private/common Git directories and worktree registration to confirm it is the main checkout, not just a directory with a `.git` file. Quote actual path arguments.
+2. Obtain a successful `herdr workspace list` response with `result.type: workspace_list`. Match both `worktree.repo_root` and `worktree.checkout_path` to the resolved clone, with `is_linked_worktree: false`. Select exactly one `result.workspaces[].workspace_id`. Multiple matches or missing/contradictory metadata are ambiguous: stop, never create another attachment to resolve uncertainty.
+3. Only a complete successful list with no matching attachment establishes absence. If creation is authorized, run once:
 
    ```bash
    herdr workspace create --cwd ~/Workspaces/<ns> --label <ns> --no-focus
    ```
 
-   Take the new `workspace_id` from the reply. Do not reuse a linked worktree's ID as the clone workspace.
-4. Resolve the **base branch** in that clone: local `develop` if it exists, else `main`. Report which. **Never create `develop`.**
-5. In the same list reply, note every herdr workspace that is not a clone under `~/Workspaces/` (for example `~` or `Workspaces`). Report them as outside the model. Never create, rename, close, or run worktree commands against them.
+   Require `result.type: workspace_created`; take `result.workspace.workspace_id` and validate `result.workspace.worktree` against the clone. On interrupted or malformed creation, inspect the list before retrying; retain/report a created attachment.
+4. Resolve a local base ref: `refs/heads/develop` if present, else `refs/heads/main`. If neither exists, report no supported base and stop branch-dependent work. Never create or switch either branch. Record the selected ref and observed tip.
+5. Report unrelated or out-of-binding attachments separately. A linked checkout of this clone is not an unrelated non-clone workspace. Missing metadata means unclassified, not proven non-clone; do not mutate either category.
 
 ## Report
 
-Print at least:
-
-- namespace `<ns>`
-- clone path `~/Workspaces/<ns>`
-- clone workspace ID
-- base branch name
-- non-clone workspaces seen (ids and labels only)
+Print namespace, resolved clone path (home-normalized for public notes), clone workspace ID or absence/ambiguity, base ref/tip, observation source/time and unrelated/unclassified attachments (IDs and labels only).

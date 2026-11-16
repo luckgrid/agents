@@ -60,7 +60,7 @@ These are summaries, not quotes. Under the new records rule below, records captu
 
 ## Skills built (bootstrap session)
 
-Built on `feat/workspace-skills` (a herdr worktree) after the survey and the owner's answers, and merged as #14:
+Built on `feat/workspace-skills` (a herdr worktree) after the survey and the owner's answers, proposed on open #14 (merge not yet performed):
 
 | Skill | Role |
 | --- | --- |
@@ -88,3 +88,7 @@ These are not yet decided. The guest session puts them to the owner:
 The owner requested review from a Workstation lens and common workspace/worktree/workbranch coordination and workflow ideas. The [review record](workstation-review.md) records findings and their corrections. The [standing proposal](../../architecture/workspace-coordination.md) distinguishes the public semantic model from this guest's one-clone binding and Herdr sidebar layout.
 
 The common operation names, result fields and additional skill ideas are proposals, not owner acceptance or implemented commands. The revised kickoff uses the current record convention, preserves historical wording here, tests branch cleanup without discarding an unmerged test commit, and leaves first-pin changes to Workstation's existing proof gates. No live guest survey was run by this review.
+
+## PR #14 review amendment (2026-11-16)
+
+The [further review](pr14-review.md) records ten findings and their remediation against the actual Herdr source and Workstation boundary. The skills remain on open #14 until the owner merges; earlier completion wording did not establish a merge. Owner selections from the bootstrap remain, and pin/install prerequisites still belong to Workstation.

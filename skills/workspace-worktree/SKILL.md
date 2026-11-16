@@ -12,7 +12,7 @@ compatibility: herdr >= 0.9.5; HERDR_ENV=1.
 
 # workspace-worktree
 
-Load the `workspace` skill's model and hard rules first. If `workspace` is not installed, stop. Resolve the clone workspace ID with `workspace-open` (or the same steps) before mutating.
+Load the `workspace` skill's model, environment-policy preflight and hard rules first. If `workspace` is not installed, stop. Load `workspace-open` and its `open` reference to resolve the clone ID before mutating; if unavailable, stop.
 
 ## Preconditions
 
@@ -30,4 +30,4 @@ Every `worktree create` and `worktree open` uses `--workspace <clone workspace I
 | `create` | [create](references/create.md) | New linked worktree from the clone workspace |
 | `open` | [open](references/open.md) | Reopen an existing worktree by branch or path |
 | `adopt` | [adopt](references/adopt.md) | Bring a plain Git worktree under herdr (owner runs move) |
-| `remove` | [remove](references/remove.md) | Clean remove of a linked worktree, then delete the branch |
+| `remove` | [remove](references/remove.md) | Retire one linked checkout; branch deletion is separate |

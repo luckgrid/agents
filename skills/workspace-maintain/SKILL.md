@@ -12,7 +12,7 @@ compatibility: herdr >= 0.9.5; HERDR_ENV=1.
 
 # workspace-maintain
 
-Load the `workspace` skill's model and hard rules first. If `workspace` is not installed, stop. Prefer `workspace-status` for the survey; if it is unavailable, perform the same survey steps from that skill's `survey` reference and stop if those rules are required and missing.
+Load the `workspace` skill's model, environment-policy preflight and hard rules first. If `workspace` is not installed, stop. Load `workspace-status` and its `survey` reference; if either is unavailable, stop. Before each fix, load the named `workspace-open` or `workspace-worktree` reference; stop if required rules are missing.
 
 ## Preconditions
 
@@ -21,7 +21,7 @@ test "${HERDR_ENV:-}" = 1
 herdr --version   # require 0.9.5 or newer
 ```
 
-Refresh remotes first when behind checks matter. This public skill names no sync command; Workbench's `workbench-herdr` names the guest's.
+Survey local refs without fetching or syncing. Report stale/unknown freshness; refresh, if requested, belongs to the environment's separately authorized workflow.
 
 ## Modes
 

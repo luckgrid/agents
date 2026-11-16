@@ -23,11 +23,11 @@ The owner's choice of 2026-11-14 ("wb setup copies (Recommended)", [fifth round]
 - **Conditions that still hold** from GW-ADR-0014 decision 2: local only, nothing fetched at install time; run only from `wb setup`, outside every agent's sandbox; from an export of a pinned commit, so an agent's uncommitted edit in the guest's clone is never installed.
 - **Ownership:** U16 changes only what it installed itself, recorded with each folder's digest, and never removes or replaces a folder or link it didn't put there.
 
-How it copies, links, records, drops and recovers is Workbench's to decide, on its daily-use page; until the installer change in Workstation (M0's companion) merges, that page still describes the CLI.
+How it copies, records, drops and recovers is Workbench's to decide, on its daily-use page. M0's installer companion merged as Workstation #51; first pin and runtime cell S1 remain separate Workstation actions. The seventh-round owner answer selects pinning after M10 merges rather than M2; carry that prerequisite amendment into Workstation before installation.
 
 ## What it needs from this repository
 
-- **`scripts/check.sh` passes at every commit that may be pinned.** An export of a commit with no `skills/` (M0 onwards, until M2) is a valid empty source; a child folder without `SKILL.md` is not.
+- **`scripts/check.sh` passes at every commit that may be pinned.** An export of a commit with no `skills/` (M0 onwards, until M10) is a valid empty source; a child folder without `SKILL.md` is not.
 - **Plain folders:** no symlinks, no submodules and no third-party files in a skill, which `check.sh` enforces, so a `git archive` export holds every module whole.
 - **Names in this repository's namespaces only,** so no name collides with Workbench's skills.
 

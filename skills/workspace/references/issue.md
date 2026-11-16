@@ -7,6 +7,6 @@ Include:
 - what happens
 - what was expected
 - how to reproduce
-- evidence word for word (commands, paths as `~/…`, exit codes, relevant output)
+- relevant evidence, exit codes and exact candidate revisions; preserve verbatim output privately where appropriate and mark public redactions/home-path normalization explicitly
 
-Do not invent hosts, accounts, emails, IPs, keys, or tokens. In the guest, hand filing to `workbench` (or stop if that skill is unavailable).
+Omit private identifiers and secrets from public drafts; never paste raw output merely because it is evidence. In the guest, hand filing to `workbench` (or stop if that skill is unavailable).

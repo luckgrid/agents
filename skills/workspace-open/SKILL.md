@@ -12,7 +12,7 @@ compatibility: herdr >= 0.9.5; HERDR_ENV=1.
 
 # workspace-open
 
-Load the `workspace` skill's model and hard rules first. If `workspace` is not installed, stop.
+Load the `workspace` skill's model, environment-policy preflight and hard rules first. If `workspace` is not installed, stop.
 
 ## Preconditions
 
@@ -21,7 +21,7 @@ test "${HERDR_ENV:-}" = 1
 herdr --version   # require 0.9.5 or newer
 ```
 
-Read IDs only from JSON. On socket refusal: stop, print the command, wait for the owner's paste.
+Use only validated successful JSON and exact checkout associations. Apply the base skill's policy before contacting the socket; reachability is not permission.
 
 ## Modes
 
