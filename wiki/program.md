@@ -5,8 +5,8 @@ title: Roadmap
 summary: "The refactor to fully custom skill modules (owner, 2026-11-12): M0 removes the linked upstream skills, the herdr copy and every dependency around them, and sets the module layout, with a companion in Workstation that replaces the skills CLI with a copy installer; then workbench (in Workstation), council, multiplex, wiki, workspace, grill, design-system, a site-system project skill in that repository, frugal and triage, each written in Luckgrid's own words from a reference list of reviewed skills, in three tiers whose rules only tighten downward, every skill named `<namespace>` or `<namespace>-<name>` from one registry. The earlier items P1 to P3 are folded into the modules."
 status: active
 created: 2026-11-12
-updated: 2026-11-15  # M0's done-when met on its branch, P2 (WB-06) closed; before that, M0's companion waits for Workstation's hand-off change (#44 merged); before that, sixth round: namespaces (workbench-*, workspace-*), base skills plus namespaced skills, flat folders, the wb- skills move to Workstation as workbench-*; before that, fifth round: no upstream dependencies, the skills CLI replaced by a copy installer, the herdr copy dropped in M0, M10 workspace, the tiers and conventions; before that, fourth round: M1 workbench moves to Workstation; the rename done; before that, agents monorepo: the owner's decisions after the independent review, items AG1 to AG3 after M2, M0 unchanged; before that, third round (owner): the open questions answered, the order, triage; before that, second round (owner): council, multiplex, design-system and site-system; before that, the custom-modules refactor (owner, 2026-11-12); before that, P1 to P3 from the wiki's first version
-related: [AS-REC-2026-11-14-MODULAR-REWRITE, AS-ADR-0001, AS-ARCH-AGENTS-WORKSPACE, AS-STATE, AS-RES-SKILL-REFERENCES, AS-REC-2026-11-12-SKILL-MODULES, GW-ADR-0014, GW-ARCH-WORKBENCH-AGENT-WORKFLOWS, AS-ARCH-SKILL-SOURCES, AS-ARCH-GUEST-INSTALL]
+updated: 2026-11-16  # seventh round: workspace (M10) first, for herdr workspaces and worktrees; this repository's purpose; work across workspaces; records capture intent in one schema; before that, M0's done-when met on its branch, P2 (WB-06) closed; before that, M0's companion waits for Workstation's hand-off change (#44 merged); before that, sixth round: namespaces (workbench-*, workspace-*), base skills plus namespaced skills, flat folders, the wb- skills move to Workstation as workbench-*; before that, fifth round: no upstream dependencies, the skills CLI replaced by a copy installer, the herdr copy dropped in M0, M10 workspace, the tiers and conventions; before that, fourth round: M1 workbench moves to Workstation; the rename done; before that, agents monorepo: the owner's decisions after the independent review, items AG1 to AG3 after M2, M0 unchanged; before that, third round (owner): the open questions answered, the order, triage; before that, second round (owner): council, multiplex, design-system and site-system; before that, the custom-modules refactor (owner, 2026-11-12); before that, P1 to P3 from the wiki's first version
+related: [AS-REC-2026-11-16-WORKSPACE-SKILLS, AS-REC-2026-11-14-MODULAR-REWRITE, AS-ADR-0001, AS-ARCH-AGENTS-WORKSPACE, AS-STATE, AS-RES-SKILL-REFERENCES, AS-REC-2026-11-12-SKILL-MODULES, GW-ADR-0014, GW-ARCH-WORKBENCH-AGENT-WORKFLOWS, AS-ARCH-SKILL-SOURCES, AS-ARCH-GUEST-INSTALL]
 ---
 
 # Roadmap
@@ -80,17 +80,29 @@ Four questions followed, each answered with the recommended option ([record](rec
 - **The `wb-` skills move:** M0 takes `wb-guest-rules` and `wb-herdr` out of this repository, and its Workstation companion adds them to Workbench's guest skills as `workbench-guest-rules` and `workbench-herdr`, unchanged but for their names, the links between them and one path.
 - **The planned names stand,** each a namespace owned by one repository ([registry](#namespaces-owner-2026-11-14)).
 
+### Seventh round (owner, 2026-11-16)
+
+The owner's intent, recorded in the [session record](records/2026-11-16-workspace-skills/README.md#the-owners-intent-2026-11-16). The guest session starts from its [kickoff brief](records/2026-11-16-workspace-skills/kickoff.md).
+
+- **This repository's purpose.** It is where common patterns for agents and agent workflows are recorded and kept, drawn from the owner's preferred tools, apps and configs, and used through Workstation.
+- **[M10 `workspace`](#m10-workspace) comes first,** before M2. Its first skills manage and maintain workspaces with herdr 0.9.5 as installed. A workspace is one clone in `~/Workspaces/<namespace>` with one herdr workspace of the same name, based on `develop`, or on `main` where there is none. Feature branches are herdr worktrees, nested at most two levels. Its issue, pr and release uses follow later.
+- **Across workspaces.** An agent may hand off to another workspace, or, with the owner's approval, edit skills there on a branch of its own. Workstation's `workbench-*` and site-system's `site-system` build on or use the public skills here.
+- **Records capture intent.** A record says what the owner meant, in the session's own words. It quotes the owner word for word only when asked, and asks when the intent is unclear. Records share one schema that agents follow. A Workbench tool to create and check records is proposed for a Workstation session ([wiki rules](README.md#writing-standard)).
+- **Bootstrap sessions.** Cursor, in the guest, runs with the owner approving each command. The workarounds written for Codex's sandbox don't apply there. Every configuration change is logged for the owner to judge after the bootstrap. The rules on pushing, credentials, installs and the network stay.
+- **herdr's interface** (sidebar nesting and agent counts, agent relationships, a panel toolbar and prompt drawer, and later a Workbench TUI) belongs to Workstation. The session's survey notes what herdr's plugins and CLI already allow, for a Workstation session to take up.
+
 ## Order
 
 Module numbers are IDs and don't change; the build order is:
 
 1. **M7 `site-system`**, now. It is a project skill in the site-system repository, so agents there get it once it merges, without waiting for Workbench's install step, and it helps the site prototypes due this month. Until M6 exists, it carries `design-system`'s rules for consuming a release.
 2. **M0**, the module foundation, with its Workstation companion (the copy installer) after Workstation's hand-off trust-dialog change merges (#44 merged on 2026-11-14).
-3. **M2 `council`**: with Workbench's own `workbench` skill ([M1](#m1-workbench), now in Workstation), what Workbench's F1 needs. **AG1** follows M2 and can run alongside what comes next ([agents items](#agents-monorepo-owner-2026-11-12)).
-4. **The first pin** once M2, M1's required Workbench skills and M0's Workstation installer companion have merged: this repository's first `agent_skills_commit`, U16's first install, and Workbench's cell S1. M2 alone does not satisfy the cross-repository prerequisites. Workbench's own payload skills may install before an agents pin; test that case separately.
-5. **M3 `multiplex`**, **M4 `wiki`**, **M10 `workspace`**, **M5 `grill`**.
-6. **M6 `design-system`**; M7 then points to it instead of carrying its rules.
-7. **M8 `frugal`**, **M9 `triage`**.
+3. **M10 `workspace`**, its workspace and worktree skills first (seventh round, owner, 2026-11-16); its issue, pr and release uses come later. The first pin may follow these skills, which the guest session asks the owner.
+4. **M2 `council`**: with Workbench's own `workbench` skill ([M1](#m1-workbench), now in Workstation), what Workbench's F1 needs. **AG1** follows M2 and can run alongside what comes next ([agents items](#agents-monorepo-owner-2026-11-12)).
+5. **The first pin** once M2, M1's required Workbench skills and M0's Workstation installer companion have merged: this repository's first `agent_skills_commit`, U16's first install, and Workbench's cell S1. M2 alone does not satisfy the cross-repository prerequisites. Workbench's own payload skills may install before an agents pin; test that case separately.
+6. **M3 `multiplex`**, **M4 `wiki`**, **M5 `grill`**.
+7. **M6 `design-system`**; M7 then points to it instead of carrying its rules.
+8. **M8 `frugal`**, **M9 `triage`**.
 
 ## The module shape
 
@@ -292,6 +304,8 @@ The owner's idea (2026-11-12): a broader triage module, with debugging part of i
 **Learns from:** obra/superpowers `systematic-debugging` (with its root-cause tracing, condition-based waiting and polluter-finding helpers, read as ideas); mattpocock/skills `diagnosing-bugs` and `triage`; getsentry/skills `find-bugs` and `triage-frontend-issues` (plan, then apply on approval); rtk-ai/rtk's `issue-triage` and `pr-triage`; DietrichGebert/ponytail `ponytail-debt` (tracking deliberate shortcuts); Luckgrid's stop-on-surprise rule and incident records.
 
 ## M10: `workspace`
+
+**Seventh round (owner, 2026-11-16):** built first, starting with skills that manage and maintain herdr workspaces and worktrees. The proposed skills are `workspace` as the base, plus `workspace-open`, `workspace-worktree`, `workspace-maintain`, `workspace-status` and perhaps `workspace-handoff`. The guest session settles them with the owner ([kickoff](records/2026-11-16-workspace-skills/kickoff.md#proposed-skills)). Workbench's `workbench-herdr` then narrows them for the guest. The uses below follow.
 
 Added in the fifth round (owner, 2026-11-14), from Workstation #43's proposal of a `manage-workspace` skill for release notes from a template. Built after M4, whose record conventions it follows. The generic half of working on a Luckgrid repository, in any workspace; Workbench's `issue-to-release` mode supplies the guest's half (the `wb` and `dev` commands) and points here. Modes:
 
