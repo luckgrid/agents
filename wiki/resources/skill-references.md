@@ -5,8 +5,8 @@ title: Skill references
 summary: "The skills and tools each custom module learns from, with the repository, the commit read, the licence, what it contributes, and how it may be used: ideas only, since every module is written in Luckgrid's own words (owner, 2026-11-12)."
 status: active
 created: 2026-11-12
-updated: 2026-11-15  # M0: herdr removed, the wb- skills moved to Workstation; before that, workspace (M10), fifth round; before that, site-system's sources as read for M7; before that, third round: triage; before that, second round: council, multiplex, design-system, site-system
-related: [AS-PROGRAM, AS-REC-2026-11-12-SKILL-MODULES, AS-RESOURCES]
+updated: 2026-11-16  # M10 workspace skills: herdr survey and workbench-herdr; before that, M0: herdr removed, the wb- skills moved to Workstation; before that, workspace (M10), fifth round; before that, site-system's sources as read for M7; before that, third round: triage; before that, second round: council, multiplex, design-system, site-system
+related: [AS-PROGRAM, AS-REC-2026-11-16-WORKSPACE-SKILLS, AS-REC-2026-11-12-SKILL-MODULES, AS-RESOURCES]
 ---
 
 # Skill references
@@ -134,12 +134,15 @@ Read on 2026-11-12 for the skill's first version. The private sources' commits a
 
 ## `workspace` (M10)
 
-Added in the fifth round (owner, 2026-11-14). Its public references are read in its own research step, after M4; until then it learns from Luckgrid's own sources only.
+Added in the fifth round (owner, 2026-11-14); expanded and built in the seventh round (2026-11-16, [record](../records/2026-11-16-workspace-skills/session.md)). Learns from Luckgrid's own sources and confirmed herdr 0.9.5 behaviour.
 
 | Source | Licence | Commit | What it contributes |
 | --- | --- | --- | --- |
 | Workstation #43, the owner's checks of 2026-11-14 (luckgrid/workstation, private for now) | Luckgrid's | `6bf8345` (the PR's first commit) | The proposal: release notes from a template, and a release workflow's dry run before tagging |
 | Luckgrid's PR descriptions and review records, in this repository, site-system and Workstation | Luckgrid's | as each module record names | What a PR description and a review disposition hold |
+| [herdrdev/herdr](https://github.com/herdrdev/herdr) `herdr --skill` and CLI help | Apache-2.0 | 0.9.5 (`2ecf19a`) | `HERDR_ENV=1`; syntax authority; workspace/worktree/agent JSON |
+| Luckgrid `workbench-herdr` (guest skill in Workstation) | Apache-2.0 | as installed in the guest | Clone workspace first; print refused socket commands; no `--force` / `--trust-repository`; adopt via owner move |
+| Bootstrap survey 2026-11-16 (Luckgrid session evidence) | Luckgrid's | [record](../records/2026-11-16-workspace-skills/session.md) | `linked_worktree_source`; `--` nesting; folder collapse; `already_open`; dirty remove |
 
 ## Removed in M0: the linked skills and the herdr copy
 

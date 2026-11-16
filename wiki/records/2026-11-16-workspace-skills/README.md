@@ -5,7 +5,7 @@ title: Workspace skills first, built with herdr in a bootstrap session (2026-11-
 summary: "The owner's seventh round. This repository's purpose: the place for common patterns for agents and agent workflows, from the owner's preferred tools, apps and configs, used through Workstation. workspace (M10) comes first, scoped to managing and maintaining herdr workspaces and worktrees. An agent may hand off to, or edit skills in, another workspace. Records capture intent and share one schema, which should become a Workbench tool. Cursor runs the work in bootstrap mode, from the kickoff brief beside this record. The owner's herdr interface ideas go to a Workstation session."
 status: active
 created: 2026-11-16
-updated: 2026-11-16
+updated: 2026-11-16  # bootstrap session built five workspace* skills on feat/workspace-skills; session evidence in session.md
 related: [AS-PROGRAM, AS-STATE, AS-REC-2026-11-16-WORKSPACE-SKILLS-KICKOFF, AS-REC-2026-11-14-MODULAR-REWRITE, AS-ADR-0001, GW-ADR-0017, GW-ADR-0018, WS-ADR-0007]
 ---
 
@@ -57,6 +57,21 @@ These are summaries, not quotes. Under the new records rule below, records captu
   - `develop`, `main` and `skills/herdr-workflows-1`, all at `0d53e41`;
   - Workstation on `feat/fw1-guest-rules-and-attribution`;
   - a Cursor session in the agents clone, at its workspace trust dialog.
+
+
+## Skills built (bootstrap session)
+
+On branch `feat/workspace-skills` (herdr worktree), after survey and owner answers:
+
+| Skill | Role |
+| --- | --- |
+| `workspace` | Shared model; planned issue/pr/release modes |
+| `workspace-open` | Find or create the clone's herdr workspace |
+| `workspace-worktree` | Create/open/adopt/remove via herdr (clone ID for create/open; linked ID for remove) |
+| `workspace-status` | Nested survey + JSON contract |
+| `workspace-maintain` | Report-first sweep, then each approved fix |
+
+Evidence and remediation: [session.md](session.md). Checks: `scripts/check.sh skills --namespaces workspace` → `ok: 5 skills checked`.
 
 ## Proposals from this session
 

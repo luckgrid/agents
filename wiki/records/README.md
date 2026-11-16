@@ -17,4 +17,4 @@ Dated episodes, named for the date their first content happened. Where the repos
 
 The modular rewrite's [review and corrections](2026-11-14-modular-rewrite/review.md) cover the migration source, validator paths, session hook, installer recovery and cross-repository proof gates.
 
-- [2026-11-16-workspace-skills/](2026-11-16-workspace-skills/README.md): the seventh round. `workspace` comes first, for herdr workspaces and worktrees. It also covers this repository's purpose, work across workspaces, records that capture intent in one schema, and the [kickoff brief](2026-11-16-workspace-skills/kickoff.md) for Cursor's bootstrap session.
+- [2026-11-16-workspace-skills/](2026-11-16-workspace-skills/README.md): the seventh round. `workspace` comes first; five `workspace*` skills on `feat/workspace-skills`; [kickoff](2026-11-16-workspace-skills/kickoff.md), [session evidence](2026-11-16-workspace-skills/session.md), [Workstation-lens review](2026-11-16-workspace-skills/workstation-review.md).
