@@ -49,7 +49,7 @@ herdr's sidebar stays flat. Nesting is a skill convention. `worktree list` alway
 
 ## Hard rules
 
-- Never `herdr worktree create` or `open` with a linked worktree's workspace ID.
+- Never `herdr worktree create` or `open` with a linked worktree's workspace ID; `remove` uses that linked workspace's own ID.
 - Never `--force` on `worktree remove`, never `--trust-repository`, never `git branch -D` without the owner's word.
 - Never plain `git worktree add` for feature work; use herdr so its events fire.
 - Never file, push, tag, or publish from the `issue`, `pr`, or `release` modes; in the guest, `workbench` says who does those steps. If `workbench` is not installed, stop before any guest-only action.

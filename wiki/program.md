@@ -185,7 +185,7 @@ Replaces `wb-guest-rules` and `wb-herdr`. The guest's house rules, always loaded
 
 ## M2: `council`
 
-One module for the whole review loop, replacing the planned `wb-review` and `wb-remediate` and the linked review skills. Under the sixth round's rule, the uses `wb-flow` starts explicitly in another harness (review, remediate) become `council-*` skills beside the base `council`; M2's design settles which. It is what Workbench's F1 needs, with Workbench's own `workbench` skill, so it comes right after M0. F1's first run uses one reviewer (Codex) and one author (Claude Code); the council's other lenses and models are added as F4's parallel reviewers allow.
+One module for the whole review loop, replacing the planned `wb-review` and `wb-remediate` and the linked review skills. Under the sixth round's rule, the uses `wb-flow` starts explicitly in another harness (review, remediate) become `council-*` skills beside the base `council`; M2's design settles which. It is what Workbench's F1 needs, with Workbench's own `workbench` skill. After the [seventh round](#seventh-round-owner-2026-11-16), build order places M10 before M2; F1 still needs M2 once M10 has landed. F1's first run uses one reviewer (Codex) and one author (Claude Code); the council's other lenses and models are added as F4's parallel reviewers allow.
 
 **Lenses.** Each reviewer takes one lens (a "hat") and reviews the whole change through it; no reviewer gets a slice of the diff:
 

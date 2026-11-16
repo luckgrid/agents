@@ -21,7 +21,7 @@ test "${HERDR_ENV:-}" = 1
 herdr --version   # require 0.9.5 or newer
 ```
 
-Every `worktree create` and `worktree open` uses `--workspace <clone workspace ID>`. Never pass a linked worktree's workspace ID (`linked_worktree_source`). Never `--force`, never `--trust-repository`, never plain `git worktree add`.
+Every `worktree create` and `worktree open` uses `--workspace <clone workspace ID>`. Never pass a linked worktree's workspace ID to create or open (`linked_worktree_source`). `worktree remove` is the opposite: pass the **linked worktree's own** workspace ID (not the clone's). Never `--force`, never `--trust-repository`, never plain `git worktree add`.
 
 ## Modes
 

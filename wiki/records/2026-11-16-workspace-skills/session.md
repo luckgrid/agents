@@ -5,7 +5,7 @@ title: Workspace skills bootstrap session (build and survey, 2026-11-16)
 summary: "Seventh round: workspace (M10) first, before M2 council, with expanded scope for herdr-backed workspace management. Bootstrap survey of herdr 0.9.5; owner answers on the model, five skills, herdr-direct backend, and first pin after these skills. Skills built on feat/workspace-skills from develop."
 status: active
 created: 2026-11-16
-updated: 2026-11-16
+updated: 2026-11-16  # independent review remediated remove-ID wording, adopt path collapse, status survey gaps; rebased onto #13 directory record
 related: [AS-REC-2026-11-16-WORKSPACE-SKILLS, AS-REC-2026-11-16-WORKSPACE-SKILLS-KICKOFF, AS-PROGRAM, AS-STATE, AS-REC-2026-11-14-MODULAR-REWRITE, AS-REC-2026-11-15-M0, AS-RES-SKILL-REFERENCES, AS-ARCH-WORKSPACE-COORDINATION]
 ---
 
@@ -102,8 +102,19 @@ Summary for the skills:
 | --- | --- |
 | `workspace` | Model, names, Workbench may only narrow; mode table for planned issue/pr/release |
 | `workspace-open` | Find or create herdr workspace for a clone; check base branch; report |
-| `workspace-worktree` | Create/open/adopt/remove via herdr from clone workspace ID; `--` nesting; cleanup |
+| `workspace-worktree` | Create/open/adopt via herdr from the clone workspace ID; remove with the linked worktree's own ID; `--` nesting; cleanup |
 | `workspace-maintain` | Report-first sweep, then each approved fix |
 | `workspace-status` | Nested survey + JSON contract |
 
 Built on `feat/workspace-skills` from `develop` at `0d53e41` (M0 merged as #11). Lifecycle exercise in the build session reconfirmed clone-only create/open, `--` nesting, folder collapse, `already_open`, and clean remove. Committing from the herdr worktree succeeded with the guest identity.
+
+## Independent review and remediation (2026-11-16)
+
+Findings fixed on this branch:
+
+1. `workspace-worktree` / `workspace` hard rules: create and open use the clone ID; **remove** uses the linked worktree's own workspace ID.
+2. `workspace-worktree` adopt: folder derivation collapses `--` to `-` after `/` → `-` (for example `feat/x--y` → `feat-x-y`).
+3. `workspace-status` survey: collect `non_clone_workspaces` from `workspace list`; when the clone has no herdr workspace, report with `workspace_id: null` and do not call `worktree list` without an ID.
+4. Root README and M2 program wording updated for the seventh-round order (M10 before M2).
+
+Not changed: the owner's kickoff quote keeps `vm.guest` / `lima-fedora-dev` only inside that verbatim block, as the kickoff brief required.
