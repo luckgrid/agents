@@ -13,7 +13,9 @@ related: [AS-REC-2026-11-16-WORKSPACE-SKILLS, AS-PROGRAM, AS-STATE, AS-REC-2026-
 
 You are Cursor Agent in the Workbench guest. The guest has no network, so don't try to fetch anything this brief names.
 
-**Where things stand:**
+**Review amendment (2026-11-16):** read the [common coordination proposal](../../architecture/workspace-coordination.md) and [Workstation review](workstation-review.md) before planning. The broader vocabulary is proposed; this bootstrap still proves the concrete Herdr backend. The starting refs below describe the owner's earlier screenshot. Re-read actual heads and installed rules; do not reset or overwrite concurrent work to reproduce those refs.
+
+**Where things stood at the owner's screenshot:**
 
 - **The agents workspace** (`~/Workspaces/agents`, luckgrid/agents) is on a local `develop`.
 - **The worktree:** herdr has the worktree `skills/herdr-workflows-1` open under it, branched from `develop`. That worktree is where these skills are written. `develop`, `main` and the worktree's branch all point at `0d53e41`.
@@ -60,7 +62,7 @@ The owner set this rule on 2026-11-16:
 - Evidence is quoted exactly: command output, hashes and herdr's JSON replies, with home paths written as `~`.
 - When the intent is unclear, ask.
 
-Records share one schema, so that agents can follow it. Use the front matter this wiki already uses, and keep the session record's sections as they are: the intent, what was checked, the proposals, and then what you add (questions and answers, the survey, the plan, the results). A Workbench tool to create and check records is proposed for a Workstation session. Don't build it here.
+Records share one schema, so that agents can follow it. Use the front matter and session section order in `wiki/README.md`: intent; what was checked; decisions with questions; evidence; proposals; what's next. Keep the existing session record's wording and headings as history; append dated notes there, and use the shared order for a new durable report. Private review logs retain exact evidence; public excerpts must omit secrets and private identifiers, explicitly marking any redaction or home-path normalization rather than calling an edited excerpt verbatim. A Workbench tool to create and check records is proposed for a Workstation session. Don't build it here.
 
 ## Read first
 
@@ -86,9 +88,9 @@ Write the `workspace` namespace's first skills, for managing and maintaining wor
 
 Confirm each point with the owner:
 
-- **A workspace** is one clone, `~/Workspaces/<namespace>`, and one herdr workspace labelled with the same name. It is the top-level item in herdr's sidebar.
+- **The initial Workbench binding** is one clone at `~/Workspaces/<namespace>` and one top-level herdr workspace. Match it by observed repository and checkout metadata, not the label alone. The public workspace concept may span repositories; do not turn this guest layout into a universal identity rule.
 - **Its base branch** is `develop`, or `main` where there is no `develop`. Creating `develop` with a tool comes later and is the owner's call. The agents workspace already has one.
-- **A feature branch** is a herdr worktree of the workspace, made with `herdr worktree create` and never with plain `git worktree add`. A sub-worktree is one level below it, and nesting stops there.
+- **A workbranch** is a topic branch with work intent, an explicit base ref/tip and intended integration target. Its worktree is created through herdr in this guest, never plain `git worktree add`. A proposed sub-worktree means sidebar grouping and possibly a dependent branch; it is not Git isolation or a Git worktree parent. Keep the two-level UI convention, and report unsupported nesting rather than inventing it. Use the exact creation path/ID herdr reports.
 - **Maintenance:**
   - report first: the base branch behind, merged branches and worktrees, dirty or orphaned worktrees, herdr workspaces with no clone, and clones with no workspace;
   - then act on each item the owner approves.
@@ -103,14 +105,14 @@ Flat folders, each with a `CREDITS.md`, and a mode table only where a skill has 
 
 | Skill | Does |
 | --- | --- |
-| `workspace` | The base: the model, the names, where Workbench narrows it, and a mode table for the planned issue, pr and release uses (references written later) |
+| `workspace` | The base: the common model and operation contracts, names, and where Workbench narrows it. Add mode-table rows only for reference files delivered with the skill; describe future issue, pr and release uses as roadmap prose |
 | `workspace-open` | Finds or creates the herdr workspace for a clone, checks the base branch, and reports |
 | `workspace-worktree` | Creates, opens, adopts and removes worktrees and sub-worktrees through herdr, keeps the two-level rule, and cleans up |
 | `workspace-maintain` | The report-first sweep, then each approved fix |
 | `workspace-status` | One survey across all workspaces, nested, with the agents in each workspace and worktree |
 | `workspace-handoff` (if the owner wants it) | A hand-off to a session in another workspace: what to do, on which branch, and which skills it builds on |
 
-**Tiers:** what holds anywhere goes in these public skills: herdr commands, the model, the report format. What holds only in the Workbench guest stays in Workstation's `workbench-herdr`, which may only narrow. That covers the sandbox's refusal outside bootstrap, the owner-run `git worktree move`, `~/.workers/spaces/` as herdr's worktree root, and the `wb` commands.
+**Tiers:** common coordination contracts and report semantics go in the public skills; concrete, version-checked herdr commands are their first backend. Read the [responsibility split](../../architecture/workspace-coordination.md#responsibility-split). What holds only in the Workbench guest stays in Workstation's `workbench-herdr`, which may only narrow. That covers the sandbox's refusal outside bootstrap, the owner-run `git worktree move`, `~/.workers/spaces/` as herdr's worktree root, and the `wb` commands.
 
 **Public repository:** no hostnames, user or account names, emails or IPs. Write paths as `~/…`.
 
@@ -118,18 +120,20 @@ Flat folders, each with a `CREDITS.md`, and a mode table only where a skill has 
 
 1. **Survey (Plan mode).** Record each reply in the bootstrap review file.
    - Read-only first: `herdr workspace list`, `herdr worktree list` for the agents workspace, `herdr pane list`, `git worktree list`.
+   - Before mutations, record existing checkout paths, refs, tips and active attachments. Use unique scratch names; an existing name is a conflict, never a reset. Confirm the scratch checkout and session are yours before removing anything.
    - Then, approving each command, exercise the lifecycle once:
      - a sub-worktree `scratch/herdr-survey` under `skills/herdr-workflows-1`, if herdr allows one; otherwise a scratch worktree of the agents workspace;
      - list, open and focus it;
-     - a test commit from inside a worktree;
-     - removing the scratch worktree with herdr, then `git branch -d` on its branch.
-   - Note what herdr does with nesting, labels, groups and the paths it picks.
+     - remove the clean no-commit scratch worktree with herdr, then try `git branch -d` on its branch, reporting any refusal;
+     - separately, make a test commit in a disposable scratch worktree after agreeing how its tip will be retained or discarded. An unmerged test commit can make `branch -d` refuse. Preserve it and report; do not integrate a test commit into `develop` just for cleanup or use `-D` without the owner's explicit approval.
+   - Note what herdr does with nesting, labels, groups and the paths it picks. Record actual Git base/dependency relationships separately from sidebar grouping. Probe read-only duplicate-label/attachment and provider-refusal handling; do not claim unavailable Herdr state means no active sessions.
+   - If creation partly succeeds, report the surviving branch/worktree and inspect before retrying. Do not remove it automatically to rerun the survey.
    - Note what `herdr plugin --help` and `herdr agent --help` say a plugin or the CLI can read or change: sidebar items, labels, colours, per-agent metadata, parent and child relationships.
 2. **Questions for the owner,** one at a time, recommended option first:
    - each point of the model;
    - the skill names, and whether `workspace-status` folds into `workspace-maintain` and `workspace-handoff` is wanted;
    - herdr used directly in `workspace-*` now, with M3 `multiplex` extracting a backend later (recommended), or `multiplex` first;
-   - the first `agent_skills_commit` pin right after these skills, so the guest can use them (recommended), or after M2;
+   - whether to propose the first `agent_skills_commit` pin after these skills instead of after M2. Until Workstation explicitly revises that prerequisite and proves its install/namespace composition and cell S1 gates, keep the existing after-M2 rule;
    - whether `workbench-herdr`'s narrowing is edited in a Workstation worktree from this session, or handed off (recommended: hand off);
    - anything the survey contradicted.
 3. **Plan.** Add the agreed plan to the session record, then ask the owner to approve it.
@@ -146,7 +150,8 @@ Flat folders, each with a `CREDITS.md`, and a mode table only where a skill has 
 6. **Hand-off notes** in `~/.workers/records/`, not committed:
    - `workspace-skills-report.md`: branch, head, commits, check outputs, what wasn't done, open questions;
    - `workstation-herdr-followups.md`, for a Workstation session:
-     - the narrowing `workbench-herdr` needs so it defers to `workspace-*`;
+     - the narrowing `workbench-herdr` needs so it defers to `workspace-*`, with the proposal and exact agents revision linked; no duplicated common status ledger or new `ws` mutation authority;
+     - shared-repository serialization, one writer per checkout, and the boundary between guest `develop` integration and owner promotion/publication;
      - the record-schema tool;
      - each of the owner's herdr interface ideas, with what the survey showed a plugin or the CLI can and can't do, and what would need a fork;
      - the config changes from the bootstrap review file.
@@ -156,7 +161,7 @@ Flat folders, each with a `CREDITS.md`, and a mode table only where a skill has 
 
 - the owner approved the plan;
 - the agreed skills pass `check.sh`, and each mutating command in them was seen working in the survey;
-- the scratch worktree and branch are gone;
+- the no-commit scratch worktree and branch are gone; the test-commit fixture is removed only with approved disposition, or explicitly reported as retained with its exact tip and cleanup blocker;
 - the record and STATE say what was done;
 - the bootstrap review file lists every approval and config change.
 

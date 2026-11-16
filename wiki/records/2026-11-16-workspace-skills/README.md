@@ -68,3 +68,9 @@ These are not yet decided. The guest session puts them to the owner:
   - fixed section names for each kind of record: the intent, what was checked, the decisions, the evidence and what's next.
 
   A Workbench command would create a record and check it against the schema. That command is for a Workstation session to design. This repository's M4 `wiki` would teach the schema.
+
+## Workstation review amendment (2026-11-16)
+
+The owner requested review from a Workstation lens and common workspace/worktree/workbranch coordination and workflow ideas. The [review record](workstation-review.md) records findings and their corrections. The [standing proposal](../../architecture/workspace-coordination.md) distinguishes the public semantic model from this guest's one-clone binding and Herdr sidebar layout.
+
+The common operation names, result fields and additional skill ideas are proposals, not owner acceptance or implemented commands. The revised kickoff uses the current record convention, preserves historical wording here, tests branch cleanup without discarding an unmerged test commit, and leaves first-pin changes to Workstation's existing proof gates. No live guest survey was run by this review.

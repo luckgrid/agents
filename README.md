@@ -6,11 +6,11 @@ Agent Skills modules for the Workbench guest's harnesses (Claude Code, Codex and
 
 ## Skills
 
-None on `main` until M2. The modules, their order and the namespaces registry are in the [roadmap](wiki/program.md); Workbench's own skills (`workbench-*`) are in Workstation.
+None on `main` since M0. M10's workspace skills come next; the first install pin remains a separate Workstation decision. The modules, their order and the namespaces registry are in the [roadmap](wiki/program.md); Workbench's own skills (`workbench-*`) are in Workstation.
 
 ## Wiki
 
-This README is the entry point and holds the rules. The [wiki](wiki/README.md) holds the details: how the repository works and why, where it stands ([STATE](wiki/records/STATE.md)), the [roadmap](wiki/program.md), and dated records of each change. Records follow Luckgrid's shared wiki template (see `wiki/README.md`), and quote evidence and the owner's decisions word for word. Every change is recorded, review rounds included, so nothing from a session goes unrecorded.
+This README is the entry point and holds the rules. The [wiki](wiki/README.md) holds the details: how the repository works and why, where it stands ([STATE](wiki/records/STATE.md)), the [roadmap](wiki/program.md), and dated records of each change. Records follow Luckgrid's shared wiki template (see `wiki/README.md`), and preserve evidence exactly while summarising the owner's intent faithfully, quoting the owner only when asked. Record material changes, decisions, evidence and review rounds; incidental internal steps need no separate record.
 
 ## No secrets
 
