@@ -5,7 +5,7 @@ title: Workspace skills first, built with herdr in a bootstrap session (2026-11-
 summary: "The owner's seventh round. This repository's purpose: the place for common patterns for agents and agent workflows, from the owner's preferred tools, apps and configs, used through Workstation. workspace (M10) comes first, scoped to managing and maintaining herdr workspaces and worktrees. An agent may hand off to, or edit skills in, another workspace. Records capture intent and share one schema, which should become a Workbench tool. Cursor runs the work in bootstrap mode, from the kickoff brief beside this record. The owner's herdr interface ideas go to a Workstation session."
 status: active
 created: 2026-11-16
-updated: 2026-11-16
+updated: 2026-11-16  # bootstrap session built five workspace* skills on feat/workspace-skills; session evidence in session.md
 related: [AS-PROGRAM, AS-STATE, AS-REC-2026-11-16-WORKSPACE-SKILLS-KICKOFF, AS-REC-2026-11-14-MODULAR-REWRITE, AS-ADR-0001, GW-ADR-0017, GW-ADR-0018, WS-ADR-0007]
 ---
 
@@ -58,6 +58,20 @@ These are summaries, not quotes. Under the new records rule below, records captu
   - Workstation on `feat/fw1-guest-rules-and-attribution`;
   - a Cursor session in the agents clone, at its workspace trust dialog.
 
+## Skills built (bootstrap session)
+
+Built on `feat/workspace-skills` (a herdr worktree) after the survey and the owner's answers, proposed on open #14 (merge not yet performed):
+
+| Skill | Role |
+| --- | --- |
+| `workspace` | Shared model; planned issue/pr/release modes |
+| `workspace-open` | Find or create the clone's herdr workspace |
+| `workspace-worktree` | Create/open/adopt/remove via herdr (clone ID for create/open; linked ID for remove) |
+| `workspace-status` | Nested survey + JSON contract |
+| `workspace-maintain` | Report-first sweep, then each approved fix |
+
+Evidence and remediation: [session.md](session.md). Checks: `scripts/check.sh skills --namespaces workspace` → `ok: 5 skills checked`.
+
 ## Proposals from this session
 
 These are not yet decided. The guest session puts them to the owner:
@@ -74,3 +88,7 @@ These are not yet decided. The guest session puts them to the owner:
 The owner requested review from a Workstation lens and common workspace/worktree/workbranch coordination and workflow ideas. The [review record](workstation-review.md) records findings and their corrections. The [standing proposal](../../architecture/workspace-coordination.md) distinguishes the public semantic model from this guest's one-clone binding and Herdr sidebar layout.
 
 The common operation names, result fields and additional skill ideas are proposals, not owner acceptance or implemented commands. The revised kickoff uses the current record convention, preserves historical wording here, tests branch cleanup without discarding an unmerged test commit, and leaves first-pin changes to Workstation's existing proof gates. No live guest survey was run by this review.
+
+## PR #14 review amendment (2026-11-16)
+
+The [further review](pr14-review.md) records ten findings and their remediation against the actual Herdr source and Workstation boundary. The skills remain on open #14 until the owner merges; earlier completion wording did not establish a merge. Owner selections from the bootstrap remain, and pin/install prerequisites still belong to Workstation.
