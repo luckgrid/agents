@@ -37,7 +37,7 @@ Portable notes use repository locators (for example `luckgrid/agents`), branch n
 - One writer per checkout; one integrator per shared target. A handoff does not authorize editing another session's checkout.
 - Refresh Git registration, refs/tips and (when used) Herdr association before mutation after resume.
 - Partial or unavailable Git or Herdr observations stay explicit; never invent a clean or idle state.
-- Keep promote, exact-candidate check, PR create/update, landing and cleanup as distinct owner steps when the note asks for publication. Name `workbench-handoff` for the guest/dev packet when installed; if it is unavailable, stop before guest-only publication steps and keep the public fields above.
+- Keep promote, exact-candidate check, PR create/update, landing and cleanup as distinct owner steps when the note asks for publication. Name the environment's publication skill for the host packet (in Workbench, `workbench-handoff`) when installed; if it is unavailable, stop before environment-only publication steps and keep the public fields above.
 
 ## Modes
 
