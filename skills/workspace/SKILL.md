@@ -5,8 +5,8 @@ description: >
   base branch, nested feature worktrees, and issue/pr/release drafting.
   Use when opening or surveying a repo workspace, creating feature worktrees,
   or drafting issue, PR, or release text. Names workspace-open, workspace-worktree,
-  workspace-status, and workspace-maintain for management workflows. Requires
-  herdr 0.9.5+ with HERDR_ENV=1 for herdr-backed steps.
+  workspace-status, workspace-maintain, and workspace-handoff for management
+  workflows. Requires herdr 0.9.5+ with HERDR_ENV=1 for herdr-backed steps.
 license: Apache-2.0
 compatibility: herdr >= 0.9.5; HERDR_ENV=1 for herdr-backed steps.
 ---
@@ -24,9 +24,9 @@ herdr --version   # require 0.9.5 or newer
 
 If either check fails, say so and stop herdr-backed steps. Never install or upgrade herdr. The recorded behaviour is for 0.9.5. For a newer version, check installed help and response shapes before using these instructions; the version floor alone promises no compatibility. Never run bare `herdr` (it attaches the TUI). Use `herdr --skill` and `herdr <group> --help` for syntax.
 
-Before any socket or Git write, load the environment/project rules that govern this session. In Workbench, load `workbench-guest-rules` and `workbench-herdr`; if required rules are unavailable, stop. Ordinary owner-run socket policy applies before attempting a command, even if the socket is technically reachable. Only an explicit session exception permits direct bootstrap commands. If installed policy and these instructions disagree, follow the restriction and hand off the discrepancy; do not infer that a documented future FW step is enabled.
+Before any socket or Git write, load the environment/project rules that govern this session. In Workbench, load `workbench-guest-rules` and `workbench-herdr`; if required rules are unavailable, stop. Those rules decide who may run socket commands (in Workbench, an operator session runs them and workers hand them to it); reachability alone is not permission. If installed policy and these instructions disagree, follow the more restrictive one and report the discrepancy; do not infer that a documented future step is enabled.
 
-Read IDs from complete successful JSON replies, checking `result.type` and the requested checkout association. Reject an `error` envelope, missing metadata, unknown shapes or multiple matches. Never guess an ID or select by label. After a refusal, stop and report the exact command for authorized owner execution; use a fresh validated reply before continuing.
+Read IDs from complete successful JSON replies, checking `result.type` and the requested checkout association. Reject an `error` envelope, missing metadata, unknown shapes or multiple matches. Never guess an ID or select by label. After a refusal, stop and report the exact command for whoever the environment's rules authorize to run it; use a fresh validated reply before continuing.
 
 ## Model
 
@@ -51,6 +51,7 @@ herdr's sidebar stays flat. Nesting is a display convention, not Git isolation o
 | `workspace-worktree` | Create, open, adopt, or remove worktrees via the clone workspace ID |
 | `workspace-status` | Nested text survey plus fenced JSON (read-only) |
 | `workspace-maintain` | Run status first, then each approved fix |
+| `workspace-handoff` | Kickoff, progress/blocker handoff, review request, and resume notes |
 
 ## Hard rules
 
@@ -60,7 +61,7 @@ herdr's sidebar stays flat. Nesting is a display convention, not Git isolation o
 - Removal requires no active users/processes, preservation or explicit abandonment of the exact tip, and checks for tracked, untracked and ignored data. Unavailable activity data is not idle; branch deletion needs separate authorization.
 
 - Never `herdr worktree create` or `open` with a linked worktree's workspace ID; `remove` uses that linked workspace's own ID.
-- Never `--force` on `worktree remove`, never `--trust-repository`, never `git branch -D` without the owner's word.
+- Never `--force` on `worktree remove`, never `--trust-repository`, never `git branch -D` without the owner's word or an environment rule that allows it (in Workbench, an operator's `test/<topic>` discard).
 - Never plain `git worktree add` for feature work; use herdr so its events fire.
 - Never file, push, tag, or publish from the `issue`, `pr`, or `release` modes; in the guest, `workbench` says who does those steps. If `workbench` is not installed, stop before any guest-only action.
 - Status is read-only: use local refs and state their limits; never fetch or sync as part of a survey. If fresher data is needed, request the authorized environment workflow separately, then survey again.

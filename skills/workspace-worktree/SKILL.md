@@ -29,5 +29,5 @@ Every `worktree create` and `worktree open` uses `--workspace <clone workspace I
 | --- | --- | --- |
 | `create` | [create](references/create.md) | New linked worktree from the clone workspace |
 | `open` | [open](references/open.md) | Reopen an existing worktree by branch or path |
-| `adopt` | [adopt](references/adopt.md) | Bring a plain Git worktree under herdr (owner runs move) |
+| `adopt` | [adopt](references/adopt.md) | Bring a plain Git worktree under herdr (the environment may require the owner to run the move) |
 | `remove` | [remove](references/remove.md) | Retire one linked checkout; branch deletion is separate |

@@ -19,3 +19,4 @@ The modular rewrite's [review and corrections](2026-11-14-modular-rewrite/review
 
 - [2026-11-16-workspace-skills/](2026-11-16-workspace-skills/README.md): the seventh round. `workspace` comes first; five `workspace*` skills (#14); [kickoff](2026-11-16-workspace-skills/kickoff.md), [session evidence](2026-11-16-workspace-skills/session.md), [Workstation-lens review](2026-11-16-workspace-skills/workstation-review.md), [PR #14 review](2026-11-16-workspace-skills/pr14-review.md).
 - [2026-11-17-workspace-maintain.md](2026-11-17-workspace-maintain.md): Workspaces maintenance sweep; #14 on main; leftover branches tidied; guest-local `develop` on four clones; herdr and empty `spaces/` cleanup.
+- [2026-11-18-workspace-handoff.md](2026-11-18-workspace-handoff.md): `workspace-handoff` skill (kickoff, handoff, review-request, resume); M10/M1 continuity refinement; Workstation companion on a separate branch.
