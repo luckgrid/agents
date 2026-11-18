@@ -52,4 +52,4 @@ Progress or blocker note for another session, role or repository. Fill every req
 - The **candidate tip** is the full SHA the recipient must re-read. If the recipient sees a different `HEAD` or branch tip, treat checks and review coverage as stale until re-run at the new tip.
 - Portable copies stay free of `/home/…` paths and Herdr IDs. A Workbench-local copy under `~/…` may add a "local attachment" section the recipient discards when moving notes.
 - Blockers name the exact refused command or missing authorization; do not work around guest boundaries.
-- For publication or host steps, point at `workbench-handoff` `dev` when available; otherwise list the public next action and stop.
+- For publication or host steps, point at the environment's publication skill when available (in Workbench, `workbench-handoff`, its `dev` mode); otherwise list the public next action and stop.

@@ -71,3 +71,11 @@ A Claude review on #16 at `c99400f` found five issues, and a ChatGPT cloud reche
 These follow Workstation's agent-operated bootstrap policy (Workstation #61, `wiki/architecture/guest-bootstrap-workflow.md`). Workbench's own skills implement it in Workstation #60.
 
 **Deferred:** the changed-SHA dogfood (a handoff at one SHA, then a resume that detects the next). It goes to the first guest operator session after merge, because the cloud session can't write guest notes.
+
+### Recheck (ChatGPT, read only, at `6963014`)
+
+| ID | Finding | Disposition |
+| --- | --- | --- |
+| C16-1 (blocker) | `workspace-handoff`'s hard rule still made cleanup an owner step, against `resume.md` and Workbench's operator | Fixed: promote, check, PR and landing stay host-owner steps; cleanup is a separate step run by whoever the environment's rules authorize (in Workbench, the operator) |
+| C16-2 | `workspace-worktree`'s `remove.md` kept owner-only abandonment, confirmation and `-D` | Fixed: the environment's rules decide, and where they grant nothing it is the owner. Workbench's disposable `test/<topic>` branches go to the operator's `wb-flow tidy` instead of these steps |
+| C16-3 (nit) | `handoff.md` named `workbench-handoff` directly | Fixed: the environment's publication skill, with `workbench-handoff` as Workbench's |
