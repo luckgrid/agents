@@ -2,24 +2,25 @@
 id: AS-STATE
 kind: state
 title: State
-summary: "Where this repository (luckgrid/agents) stands. M0 merged (#11); U16 copy installer merged in Workstation (#51); no agents commit pinned yet. Seventh round: workspace (M10) merged as #14; five workspace* skills on main; first agent_skills_commit still open (with M0 companion and M1 Workbench skills). Common coordination API proposed (#13)."
+summary: "Where this repository (luckgrid/agents) stands. M0 merged (#11); U16 copy installer merged in Workstation (#51); no agents commit pinned yet. Seventh round: workspace (M10) merged as #14; workspace-handoff refinement on feat/workspace-handoff (not on main until merged). First agent_skills_commit still open (with M1 Workbench skills). Common coordination API proposed (#13)."
 status: active
 created: 2026-11-12
-updated: 2026-11-17  # Workspaces maintain: #14 on main; leftover branches tidied; guest-local develop on four clones; before that, M10 on open #14 after review remediation
-related: [AS-REC-2026-11-17-WORKSPACE-MAINTAIN, AS-REC-2026-11-16-WORKSPACE-PR14-REVIEW, AS-ARCH-WORKSPACE-COORDINATION, AS-REC-2026-11-16-WORKSPACE-REVIEW, AS-REC-2026-11-16-WORKSPACE-SKILLS, AS-REC-2026-11-16-WORKSPACE-SESSION, AS-REC-2026-11-14-MODULAR-REWRITE, AS-ADR-0001, AS-ARCH-AGENTS-WORKSPACE, AS-RES-AGENTS-LINEAGE, AS-REC-2026-11-12-SKILL-MODULES, AS-RES-SKILL-REFERENCES, AS-PROGRAM, AS-ARCH-SKILL-SOURCES, AS-ARCH-GUEST-INSTALL, GW-ADR-0014]
+updated: 2026-11-18  # workspace-handoff skill and M10/M1 continuity record; before that, Workspaces maintain 2026-11-17
+related: [AS-REC-2026-11-18-WORKSPACE-HANDOFF, AS-REC-2026-11-17-WORKSPACE-MAINTAIN, AS-REC-2026-11-16-WORKSPACE-PR14-REVIEW, AS-ARCH-WORKSPACE-COORDINATION, AS-REC-2026-11-16-WORKSPACE-REVIEW, AS-REC-2026-11-16-WORKSPACE-SKILLS, AS-REC-2026-11-16-WORKSPACE-SESSION, AS-REC-2026-11-14-MODULAR-REWRITE, AS-ADR-0001, AS-ARCH-AGENTS-WORKSPACE, AS-RES-AGENTS-LINEAGE, AS-REC-2026-11-12-SKILL-MODULES, AS-RES-SKILL-REFERENCES, AS-PROGRAM, AS-ARCH-SKILL-SOURCES, AS-ARCH-GUEST-INSTALL, GW-ADR-0014]
 ---
 
 # State
 
-**As of 2026-11-17.** Runtime results remain as their records give them; the documentation research baseline is recorded in the [agents monorepo session](2026-11-12-agents-monorepo.md). Workspaces hygiene for this guest is in the [maintain session](2026-11-17-workspace-maintain.md).
+**As of 2026-11-18.** Runtime results remain as their records give them; the documentation research baseline is recorded in the [agents monorepo session](2026-11-12-agents-monorepo.md). Workspaces hygiene for this guest is in the [maintain session](2026-11-17-workspace-maintain.md). Handoff refinement is in the [handoff session](2026-11-18-workspace-handoff.md).
 
 ## Where it stands
 
 | Area | Position |
 | --- | --- |
 | Skills on `main` | **Five** after M10/#14 (`8a106a4`, 2026-11-16): `workspace`, `workspace-open`, `workspace-worktree`, `workspace-status`, `workspace-maintain` ([session](2026-11-16-workspace-skills/session.md), [maintain](2026-11-17-workspace-maintain.md)). Before M0 there were nine; M0 left none until #14 |
+| `feat/workspace-handoff` | **In progress:** adds `workspace-handoff` (six skills when checked on the branch); scoped M10/M1 continuity; does not reorder M2/M3 ([record](2026-11-18-workspace-handoff.md)) |
 | `feat/workspace-skills` | **Removed** in the 2026-11-17 maintain pass: same five skills as `main`, older wording, no merge ([maintain](2026-11-17-workspace-maintain.md)) |
-| `scripts/check.sh` on `main` (since #11) | For modules, with a folder argument and `--namespaces`. `scripts/check.sh --self-test`: `ok: self-test, 36 cases as expected`. `scripts/check.sh skills --namespaces workspace` → `ok: 5 skills checked` |
+| `scripts/check.sh` on `main` (since #11) | For modules, with a folder argument and `--namespaces`. `scripts/check.sh --self-test`: `ok: self-test, 36 cases as expected`. On `main`: `scripts/check.sh skills --namespaces workspace` → `ok: 5 skills checked`. On `feat/workspace-handoff` before merge: `ok: 6 skills checked` |
 | M0, merged as #11 (`0d53e41`) | **No skills.** M0 removed the six links, the three submodules, `upstream.toml` and the `herdr` copy, and `wb-guest-rules` and `wb-herdr`, which move to Workstation as `workbench-guest-rules` and `workbench-herdr` in M0's companion (merged as Workstation #51, `1827922`, 2026-11-15). Their source is `f2e2bde` ([record](2026-11-15-m0.md)) |
 | In the guest | **No pin yet.** Workbench's U16 copies skills itself since Workstation #51, installing `workbench-guest-rules` and `workbench-herdr` from Workbench's payload ([guest install](../architecture/guest-install.md)). The five `workspace*` skills are on `main` but not installed until `agent_skills_commit` |
 | Common coordination API | **Proposed** by the Workstation-lens review of #13: workspace/repository/worktree/workbranch distinctions, native authority, operation contracts, writer/integrator coordination and hand-off/recovery; no runtime API ([proposal](../architecture/workspace-coordination.md), [review](2026-11-16-workspace-skills/workstation-review.md)) |
@@ -40,8 +41,8 @@ related: [AS-REC-2026-11-17-WORKSPACE-MAINTAIN, AS-REC-2026-11-16-WORKSPACE-PR14
 | M0: remove the linked skills, the herdr copy, the two `wb-` skills and every dependency around the upstream skills; `check.sh` (with a folder argument and namespaces) and the README for modules | **Done:** merged as #11 (`0d53e41`, 2026-11-15) ([record](2026-11-15-m0.md)) | [M0](../program.md#m0-the-module-foundation) |
 | M0's companion in Workstation: the skills CLI and its `package.json` removed; `workbench-guest-rules` and `workbench-herdr` added to Workbench's guest skills, `roles.toml`'s skill names in the `workbench` namespace; U16 copies skill folders from two sources; GW-ADR-0014 decisions 1 and 2 amended | **Done:** merged as Workstation #51 (`1827922`, 2026-11-15) | [M0](../program.md#m0-the-module-foundation) |
 | M1: `workbench` (the base skill and the `workbench-*` skills: WC13's role routines, and `workbench-guest-rules` and `workbench-herdr` from M0's companion) | **Moved to Workstation:** written there, shipped with Workbench and installed guest-wide by U16 | [M1](../program.md#m1-workbench) |
-| M10: `workspace`: herdr management skills first (seventh round); later issue, pr and release | **Done on main:** squash-merged as #14 (`8a106a4`, 2026-11-16); leftover `feat/workspace-skills` removed 2026-11-17 ([maintain](2026-11-17-workspace-maintain.md)) | [M10](../program.md#m10-workspace) |
-| First pin: this repository's first `agent_skills_commit`, U16's first install, cell S1 | **Open:** M10 is on main; still needs M1's required Workbench skills and the owner's pin hand-off (seventh-round answer) | [order](../program.md#order) |
+| M10: `workspace`: herdr management skills first (seventh round); later issue, pr and release | **Done on main:** squash-merged as #14 (`8a106a4`, 2026-11-16); leftover `feat/workspace-skills` removed 2026-11-17 ([maintain](2026-11-17-workspace-maintain.md)). **Handoff refinement:** `workspace-handoff` on `feat/workspace-handoff` ([record](2026-11-18-workspace-handoff.md)) | [M10](../program.md#m10-workspace) |
+| First pin: this repository's first `agent_skills_commit`, U16's first install, cell S1 | **Open:** M10 on main; handoff skill pending merge; still needs M1's required Workbench skills (base + handoff at minimum; role skills still missing) and the owner's pin hand-off | [order](../program.md#order) |
 | M2: `council` (takes in `wb-review`, `wb-remediate`; reviewers with lenses, in rounds) | After M10's workspace skills (seventh round); Workbench's step F1 needs it and Workbench's `workbench` skill | [M2](../program.md#m2-council) |
 | AG1: Rust validator replaces `check.sh`; Moon admitted for this repository | After M2; alongside M3 to M9 | [agents items](../program.md#agents-monorepo-owner-2026-11-12) |
 | AG2: shared user-level instructions for Claude Code and Codex | After AG1 | [steps](../architecture/agents-workspace.md#steps-and-proof-gates) |

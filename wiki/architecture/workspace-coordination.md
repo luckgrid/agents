@@ -5,13 +5,15 @@ title: Common workspace coordination and workflow API
 summary: "Proposed shared vocabulary and operation contracts for workspaces, repositories, worktrees, workbranches and hand-offs, with Herdr as the first concrete backend and Workbench supplying guest restrictions."
 status: proposed
 created: 2026-11-16
-updated: 2026-11-16
-related: [AS-PROGRAM, AS-ARCH-SKILL-SOURCES, AS-ARCH-AGENTS-WORKSPACE, AS-REC-2026-11-16-WORKSPACE-REVIEW]
+updated: 2026-11-18
+related: [AS-PROGRAM, AS-ARCH-SKILL-SOURCES, AS-ARCH-AGENTS-WORKSPACE, AS-REC-2026-11-16-WORKSPACE-REVIEW, AS-REC-2026-11-18-WORKSPACE-HANDOFF]
 ---
 
 # Common workspace coordination and workflow API
 
 **Proposal, not an implemented CLI or an accepted schema.** The owner requested a Workstation-lens review of agents #13 and common coordination and workflow ideas on 2026-11-16. This page proposes a shared semantic API: the same inputs, results and refusal meanings across skills, native commands and eventual UI consumers. The first implementation stays small: workspace skills calling the observed Herdr 0.9.5 commands. No daemon, central ledger, generic adapter framework or new `ws` mutation commands are needed.
+
+**Partial implementation (2026-11-18):** `workspace-handoff` implements the handoff/resume note contract (portable fields, recipient revalidation, changed-SHA invalidation) as skill guidance and templates. It does not add a machine API, ledger or orchestration framework.
 
 The one-clone-per-namespace arrangement and two sidebar levels remain the current Workbench convention. They are one binding of this model, not universal constraints on every public workspace.
 
@@ -120,7 +122,7 @@ Keep `workspace` as the namespace. Start with the already proposed skills; extra
 | `workspace-worktree` | Prepare, adopt and retire checkouts | Occupied branch, dirty checkout, failed attachment, surviving work |
 | `workspace-status` | Reconcile Git and Herdr observations | Herdr denied/unavailable alongside successful Git query |
 | `workspace-maintain` | Report drift and cleanup candidates, apply approved actions | Active session, stale head and squash-merged topic preservation |
-| `workspace-handoff` | Hand off and resume work across sessions/repositories | Receiving session detects changed candidate tip |
+| `workspace-handoff` (built 2026-11-18) | Hand off and resume work across sessions/repositories | Receiving session detects changed candidate tip |
 | `workspace-workbranch` (later) | Base/target selection, dependent topics and integration hand-off | Two topic branches and one serialized integrator |
 | `workspace-coordinate` (later) | Allocate checkout writers, responsibilities and dependencies | Two sessions avoid one checkout and shared target races |
 | `workspace-workflow` (later, only if needed) | Compose prepare, implement, verify, review, integrate and retire | Interrupted run resumes without duplicate mutation |

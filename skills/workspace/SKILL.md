@@ -5,8 +5,8 @@ description: >
   base branch, nested feature worktrees, and issue/pr/release drafting.
   Use when opening or surveying a repo workspace, creating feature worktrees,
   or drafting issue, PR, or release text. Names workspace-open, workspace-worktree,
-  workspace-status, and workspace-maintain for management workflows. Requires
-  herdr 0.9.5+ with HERDR_ENV=1 for herdr-backed steps.
+  workspace-status, workspace-maintain, and workspace-handoff for management
+  workflows. Requires herdr 0.9.5+ with HERDR_ENV=1 for herdr-backed steps.
 license: Apache-2.0
 compatibility: herdr >= 0.9.5; HERDR_ENV=1 for herdr-backed steps.
 ---
@@ -51,6 +51,7 @@ herdr's sidebar stays flat. Nesting is a display convention, not Git isolation o
 | `workspace-worktree` | Create, open, adopt, or remove worktrees via the clone workspace ID |
 | `workspace-status` | Nested text survey plus fenced JSON (read-only) |
 | `workspace-maintain` | Run status first, then each approved fix |
+| `workspace-handoff` | Kickoff, progress/blocker handoff, review request, and resume notes |
 
 ## Hard rules
 
