@@ -53,6 +53,12 @@ Distinguished: **owner direction** (templates, Control default, Audit Controller
 
 ## What's next
 
-- Workstation: `workstation-tab-profile-discovery.md` and wiki/layout design.
+- Workstation: `workstation-tab-profile-discovery.md` and wiki/layout design (exported tip `dd82619…` on Workstation).
 - Agents: hold this tip in the publication queue; continue review/retention pilots without waiting on tab templates.
 - Joint QA/prototype milestone later: idempotent Control template on a **new** disposable workspace (not overwriting standing sessions), plus one Audit two-perspective run wired through existing council emit.
+
+## Following-session notes (owner-reported; documentation only)
+
+- herdr sidebar labels in new summaries: **Home** (home-folder scope) and **Workspaces** (workspace-directory orchestration). Resolve live identity by checkout metadata, not stale labels/IDs.
+- Desired later hierarchy: Workspaces as a root/group of collapsible repository workspaces with collapsible child worktrees; grouping must not change Git ownership. Evaluate native herdr nesting vs plugin/upstream/herdr-core later — not selected or built in this discovery.
+- Owner intent (unverified here): Omarchy dual-boot trial with desktop agents and a newer Herdr app (owner-described as herdr-core-based), mobile pairing/sync and remote devices over Tailscale; prefer reusable workflow/context contracts over environment-specific customization. Distinguish connectivity, terminal attachment, Git sync, record sync and publication authority; a Tailscale link alone does not sync repos or prove toolchain parity.
