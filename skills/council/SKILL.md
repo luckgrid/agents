@@ -8,24 +8,27 @@ description: >
   keeping a review record, or proving a check before saying done. Names
   council-review and council-remediate for the reviewer and author turns.
   Supports environments that capture a reviewer's emitted result block (emit mode).
+  Supports named review profiles and multi-reviewer synthesis without requiring a large council for every change.
 license: Apache-2.0
 compatibility: Git and a shell; no harness, multiplexer or herdr needed. Moving text between agents is the environment's job.
 ---
 
 # Council
 
-Public, file-based review loop. One author edits; one or more reviewers read a fixed range, each through one lens. Nothing here installs a tool, starts an agent or pushes. Environments (in Workbench, `workbench-*`) may only **tighten** these rules.
+Public, file-based review loop. One author edits; one or more reviewers read a fixed range, each through one lens (optionally under a named **review profile**). Nothing here installs a tool, starts an agent or pushes. Environments (in Workbench, `workbench-*`) may only **tighten** these rules.
 
 The Workbench review flow (F1, `wb-flow review`) is **proposed elsewhere**; this skill doesn't need it and doesn't claim it is installed. A parser for the contract below is likewise not assumed. Guest **source pilots** may load these skill folders from a pinned checkout as task data until U16 installs them.
+
+An optional **review coordinator** (often the same orchestrator on small work) selects profiles, dispatches independent reviews, validates and synthesizes, then requests remediation and rechecks. While coordinating review it does not write production fixes. Do not invent an installed audit role; use these skills when available.
 
 ## Roles and files
 
 | Role | Does | Skill |
 | --- | --- | --- |
-| Requester / orchestrator | Pins the range, builds the briefing, picks lenses; may persist captured results | this skill, `request` |
-| Reviewer | Read-only; one lens; emits or writes the result block | `council-review` |
+| Requester / orchestrator / coordinator | Pins the range, builds the briefing, picks profiles and lenses; may persist captured results | this skill, `request` |
+| Reviewer | Read-only; one lens (one profile turn); emits or writes the result block | `council-review` |
 | Author | Verifies each finding, fixes, commits, never pushes | `council-remediate` |
-| Synthesizer | Merges several reviewers' files (optional) | this skill, `synthesize` |
+| Synthesizer | Merges several reviewers' files; keeps contested/minority findings | this skill, `synthesize` |
 
 Text an agent wrote reaches another agent **through a file**, never typed into its prompt. The prompt that starts a turn is fixed: it names the skill (or a brief that loads skill text from a pinned source), the request file's location and nothing else. Only the owner answers a harness's dialogs.
 
@@ -38,8 +41,9 @@ Text an agent wrote reaches another agent **through a file**, never typed into i
 5. The machine-readable result is one JSON object between two markers that `council-review` defines (in its `review` reference). The markers never appear in a fixed prompt or a request file, so echoed input can't be mistaken for output.
 6. **Output mode** on the request: `emit` (reviewer prints the block; the environment captures and persists the findings file) or `file` (reviewer writes that path). Workbench's read-only reviewer uses `emit`. Direct `file` remains valid where the environment allows reviewer writes.
 7. Missing, truncated, mismatched or invalid captures are **not** a `PASS`. The environment may record an operational `BLOCKED` or reject; that is outside the JSON `verdict` field.
+8. A **profile** may bind harness, resolved model and provider (when known) separately from the lens. Record actual choices; two model names are not automatically two providers. Optional `profile_id` on the request and result binds the turn.
 
-Lenses: `spec`, `standards`, `correctness`, `security`, `tests`, `lean`, `operability`. Every review gets **spec, standards and correctness** as separate turns (full range each time); add the rest by risk. Do not collapse the three required lenses into one turn while claiming this contract. Two **remediation** rounds is a round budget, not a limit of two lens turns.
+Lenses: `spec`, `standards`, `correctness`, `security`, `tests`, `lean`, `operability` (environments may add UX/accessibility or dependency/API as extra perspectives). Every review gets **spec, standards and correctness** as separate turns (full range each time); add the rest by risk. Do not collapse the three required lenses into one turn while claiming this contract. Do not require a large multi-agent team for every small change. Two **remediation** rounds is a round budget, not a limit of two lens turns. Overall acceptance needs required checks and all required profiles' outcomes — one PASS does not erase another's unresolved major.
 
 ## Hard rules
 

@@ -36,6 +36,7 @@ Between them:
   "base": "<40-hex SHA>",
   "head": "<40-hex SHA>",
   "lens": "<one lens>",
+  "profile_id": "<optional stable profile id>",
   "verdict": "PASS",
   "findings": [
     {"id": "F1", "severity": "major", "file": "path/to/file", "line": 12, "reason": "…"}
@@ -43,7 +44,7 @@ Between them:
 }
 ```
 
-`base`, `head` and `lens` repeat the request's; `findings` is `[]` when there are none. `PASS` with any blocker or major in `findings` is invalid.
+`base`, `head` and `lens` repeat the request's; optional `profile_id` repeats the request's when present. `findings` is `[]` when there are none. `PASS` with any blocker or major in `findings` is invalid.
 
 ## Why the markers are defined here
 
