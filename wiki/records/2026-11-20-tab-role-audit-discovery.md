@@ -5,7 +5,7 @@ title: Control–Record–Audit role and profile discovery
 summary: "Discovery-only: portable vocabulary for harness profiles vs tab roles vs audit assignments; Audit Controller and Record duties; handoff artifacts; council one-lens fit. Layout/ratios remain Workstation. No live session rearrange."
 status: active
 created: 2026-11-20
-updated: 2026-11-20
+updated: 2026-11-20  # standards review minors: records index + evidence locators
 related: [AS-STATE, AS-ARCH-CONTROL-RECORD-AUDIT, AS-ARCH-WORKSPACE-COORDINATION, AS-PROGRAM]
 ---
 
@@ -19,12 +19,12 @@ Coordinate discovery and wiki design before broader implementation of workspace 
 
 | Source | Result |
 | --- | --- |
-| Controller handoff `2026-11-20-workspace-tabs-and-profile-discovery.md` | Assignment text; owner tab templates; five conceptual layers |
-| Local council tip lineage `91fc63a…` / profiles catalog | Execution profiles, emit adapter, dual-profile pilot evidence |
-| `workspace-coordination`, handoff, retention guidance | Existing portable handoff and durable-evidence rules |
-| `M3-MULTIPLEX-DESIGN.md` | Design-only; herdr sequence abstraction later |
-| Workstation `workstation-herdr-capabilities.md` | Live-proved herdr ops; Cursor reviewer BLOCKED; not a tab-template matrix |
-| `workstation-tab-profile-discovery.md` | **Not present yet** — coordinate when Workstation exports |
+| Controller handoff `~/…/records/controller/handoffs/2026-11-20-workspace-tabs-and-profile-discovery.md` | Assignment text; owner tab templates; five conceptual layers |
+| Council tip `91fc63aca70d43543f43fc758ef488368e0373a8` on `feat/retain-worker-context`; profiles catalog `~/…/records/agents-workspace/REVIEW-PROFILES.md` | Execution profiles, emit adapter, dual-profile pilot evidence |
+| `wiki/architecture/workspace-coordination.md`; `skills/workspace-handoff/**`; `skills/workspace-maintain/references/retention.md` | Existing portable handoff and durable-evidence rules |
+| Guest note `~/…/records/agents-workspace/M3-MULTIPLEX-DESIGN.md` | Design-only; herdr sequence abstraction later |
+| Guest note `~/…/records/workstation-herdr-capabilities.md` | Live-proved herdr ops; Cursor reviewer BLOCKED; not a tab-template matrix |
+| Guest note `~/…/records/workstation-tab-profile-discovery.md` | **Not present yet** — coordinate when Workstation exports |
 
 Distinguished: **owner direction** (templates, Control default, Audit Controller + specialty labels), **interpretation** (2–4 specialist panes as grid meaning), **proposal** (this record / architecture page), **not implemented** (layout templates, dedicated audit skill).
 
@@ -42,7 +42,7 @@ Distinguished: **owner direction** (templates, Control default, Audit Controller
 ## Evidence
 
 - Architecture page added: `wiki/architecture/control-record-audit.md`.
-- Export: `~/…/records/agents-workspace/tab-role-audit-discovery.md`.
+- Export: `~/…/records/agents-workspace/tab-role-audit-discovery.md` (guest coordination export; not a wiki page).
 - Walkthrough scenario on the architecture page (Control request → two Audit perspectives → Record index → later Control resume).
 - No history prune; no layout apply; no `~/.config/herdr` edits.
 
