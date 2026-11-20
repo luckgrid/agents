@@ -1,0 +1,65 @@
+---
+name: council
+description: >
+  Review-and-remediate loop between files and roles: pin a base and head commit,
+  brief reviewers once, collect findings in a fixed contract (verdict, at most ten
+  evidence-backed findings, JSON between markers), synthesize, record and verify.
+  Use when preparing a review request, merging findings from several reviewers,
+  keeping a review record, or proving a check before saying done. Names
+  council-review and council-remediate for the reviewer and author turns.
+license: Apache-2.0
+compatibility: Git and a shell; no harness, multiplexer or herdr needed. Moving text between agents is the environment's job.
+---
+
+# Council
+
+Public, file-based review loop. One author edits; one or more reviewers read a fixed range, each through one lens, and write findings to a file. Nothing here installs a tool, starts an agent or pushes. Environments (in Workbench, `workbench-*`) may only **tighten** these rules.
+
+The Workbench review flow (F1, `wb-flow review`) is **proposed elsewhere**; this skill doesn't need it and doesn't claim it is installed. A parser for the contract below is likewise not assumed.
+
+## Roles and files
+
+| Role | Does | Skill |
+| --- | --- | --- |
+| Requester | Pins the range, builds the briefing, picks lenses | this skill, `request` |
+| Reviewer | Read-only; one lens; writes the findings file | `council-review` |
+| Author | Verifies each finding, fixes, commits, never pushes | `council-remediate` |
+| Synthesizer | Merges several reviewers' files (optional) | this skill, `synthesize` |
+
+Text an agent wrote reaches another agent **through a file**, never typed into its prompt. The prompt that starts a turn is fixed: it names the skill, the request file's location and nothing else. Only the owner answers a harness's dialogs.
+
+## Findings contract (frozen for this slice)
+
+1. The request fixes a **base** and a **head** commit (full SHAs) and **one lens** per reviewer turn. A branch name alone is not a fixed point.
+2. The result has a **verdict**: `PASS` (no blocker or major) or `CHANGES`.
+3. **At most ten** findings, each with a severity, a file, a line and a reason backed by evidence read in the code.
+4. Severities: `blocker`, `major`, `minor`, `nit`.
+5. The machine-readable result is one JSON object between two markers that `council-review` defines (in its `review` reference). The markers never appear in a fixed prompt or a request file, so echoed input can't be mistaken for output.
+
+Lenses: `spec`, `standards`, `correctness`, `security`, `tests`, `lean`, `operability`. Every review gets spec, standards and correctness; add the rest by risk.
+
+## Hard rules
+
+- Reviewers are read-only and see a crafted briefing, never the author's session.
+- Every reviewer reviews the whole range through its lens; no one gets a slice.
+- A moved head invalidates the review: a new request, not a continued one.
+- Public-safe files: `~/…` paths, no hostnames, accounts, emails or live session IDs.
+- Name the skill you rely on, with a one-line fallback if it is missing (below). If a required rule source is unavailable, stop.
+- Never install, update or configure tools to run a council.
+
+| Needs | Fallback if missing |
+| --- | --- |
+| `council-review` | The reviewer follows the contract above from this page alone, read-only |
+| `council-remediate` | The author verifies each finding, fixes what holds up, and prints the new head |
+| An environment's review flow | Hand the request file to the reviewer by hand; read the findings file back |
+
+## Modes
+
+| Mode | Reference | Use |
+| --- | --- | --- |
+| `request` | [request](references/request.md) | Pin the range and build the briefing pack |
+| `synthesize` | [synthesize](references/synthesize.md) | Merge several findings files |
+| `record` | [record](references/record.md) | Keep the review and its dispositions |
+| `verify` | [verify](references/verify.md) | Run the check and read it before claiming done |
+
+`review` and `recheck` are `council-review`; `remediate` is `council-remediate`.
