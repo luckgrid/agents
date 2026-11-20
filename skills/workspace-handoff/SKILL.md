@@ -3,10 +3,12 @@ name: workspace-handoff
 description: >
   Hand off and resume bounded work across sessions, roles or repositories:
   kickoff notes, progress or blocker handoffs, review requests pinned to exact
-  commits, and post-landing resume. Durable evidence stays discoverable after
+  commits, post-landing resume, and portable bulk-transfer packaging for
+  owner-run host publication scripts. Durable evidence stays discoverable after
   workers and worktrees close; ordinary cleanup is not history prune. Loads
   workspace base rules. Use when leaving work for another actor, picking up a
-  note, or invalidating stale checks after a tip moves. No central ledger.
+  note, invalidating stale checks after a tip moves, or staging an inspectable
+  publication package for the environment's file exchange. No central ledger.
 license: Apache-2.0
 compatibility: herdr >= 0.9.5 when Herdr observations are included; HERDR_ENV=1 for those steps.
 ---
@@ -40,6 +42,7 @@ Portable notes use repository locators (for example `luckgrid/agents`), branch n
 - Refresh Git registration, refs/tips and (when used) Herdr association before mutation after resume.
 - Partial or unavailable Git or Herdr observations stay explicit; never invent a clean or idle state.
 - When the note asks for publication, keep promote, exact-candidate check, PR create/update and landing as distinct host-owner steps. Cleanup is a separate step too, run by whoever the environment's rules authorize (in Workbench, the operator), not necessarily the owner. Resource cleanup (workers, eligible worktrees, panes) must leave retained history intact; context pruning is an explicit environment action, not part of ordinary done/tidy. Name the environment's publication skill for the host packet (in Workbench, `workbench-handoff`) when installed; if it is unavailable, stop before environment-only publication steps and keep the public fields above.
+- Bulk publication helpers (inspectable scripts staged through the environment’s file exchange) reduce repeated typing; they do not auto-approve pushes or replace separate owner checks. See `bulk-transfer`.
 
 ## Modes
 
@@ -49,3 +52,4 @@ Portable notes use repository locators (for example `luckgrid/agents`), branch n
 | `handoff` | [handoff](references/handoff.md) | Progress or blocker handoff |
 | `review-request` | [review-request](references/review-request.md) | Review pinned to base and candidate commits |
 | `resume` | [resume](references/resume.md) | Revalidate and continue, or record post-landing state |
+| `bulk-transfer` | [bulk-transfer](references/bulk-transfer.md) | Inspectable host script/manifest via environment file exchange |

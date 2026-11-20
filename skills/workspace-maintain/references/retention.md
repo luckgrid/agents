@@ -4,11 +4,12 @@ Distinguish **resource cleanup** from **context pruning**. Public methods stay e
 
 ## Durable context (retain by default)
 
-Keep briefs, findings, dispositions, review/profile/model provenance, check receipts and logs those receipts name, admission/publication/dependency history, and session summaries that later agents need. Typical durable homes (environment-owned paths; write as `~/…` in portable notes):
+Keep briefs, findings, dispositions, review/profile/model provenance, check receipts and logs those receipts name, admission/publication/dependency history, session summaries that later agents need, and **staged exchange packages** (archives, checksums, transfer README) with their receipts. Typical durable homes (environment-owned paths; write as `~/…` in portable notes):
 
 - Environment records / boards / program notes
 - Historical run folders (requests, handoffs, findings, receipts) once written
 - Admission or publication evidence the environment keeps outside a disposable checkout
+- File-exchange outbox/received sets that still document a publication checkpoint (do not delete merely because a script finished)
 
 A landed branch, clean worktree, closed pane, completed run or old record is **not** by itself permission to delete that history. Age, size or count alone must not silently remove it. Ordinary maintain/sweep, worktree remove, agent-stop and “feature done” cleanup remove **execution resources**, not retained context.
 
