@@ -53,7 +53,7 @@ Distinguished: **owner direction** (templates, Control default, Audit Controller
 
 ## What's next
 
-- Workstation: `workstation-tab-profile-discovery.md` and wiki/layout design (exported tip `dd82619…` on Workstation).
+- Workstation: `workstation-tab-profile-discovery.md` and wiki/layout design (exported tip `dd826197321fe412057fc4864231b4fbcb289b03` on Workstation `feat/workspace-tabs-discovery`).
 - Agents: hold this tip in the publication queue; continue review/retention pilots without waiting on tab templates.
 - Joint QA/prototype milestone later: idempotent Control template on a **new** disposable workspace (not overwriting standing sessions), plus one Audit two-perspective run wired through existing council emit.
 
