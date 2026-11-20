@@ -37,8 +37,18 @@ Revalidate before continuing, or record state after work lands. Always re-read r
 - …
 ```
 
+## Resume from durable history (checkout may be gone)
+
+When the original worktree or worker session is already closed:
+
+1. Open the handoff/board/result locators in the environment's records or run notes (`~/…`).
+2. Re-read repository, branch, base/head SHAs, run id and linked findings/receipts; judge freshness and conflicting outcomes from that provenance.
+3. Revalidate Git state at the named tips (or report unknown if refs were deleted); do not invent a checkout.
+4. Continue only the authorized next action. Ordinary cleanup that already ran is not a reason to delete those records. Explicit history prune, if any, is an environment preview/apply step outside this resume.
+
 ## Rules for this mode
 
 - Squash merges break naive ancestry checks: retain the pre-land candidate SHA and the preservation evidence before deleting branches.
 - Closing a Herdr sidebar item does not approve worktree removal.
 - Cross-repository resumes track each repo's tip separately; there is no atomic multi-repo transaction.
+- Completing a feature and removing an eligible worktree must leave briefs, findings and receipts discoverable; see `workspace-maintain` `retention`.

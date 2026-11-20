@@ -27,6 +27,7 @@ It follows Luckgrid's shared wiki template, the wiki structure kept in luckgrid/
 | What the guest's install step needs from this repository | [architecture/guest-install.md](architecture/guest-install.md) |
 | Which skills each planned module learns from, and under which licence | [resources/skill-references.md](resources/skill-references.md) |
 | What is open and what is next | [records/STATE.md](records/STATE.md), then [program.md](program.md) |
+| Control / Record / Audit roles vs harness profiles (proposed) | [architecture/control-record-audit.md](architecture/control-record-audit.md) |
 
 ## Writing standard
 
