@@ -52,6 +52,7 @@ Lenses: `spec`, `standards`, `correctness`, `security`, `tests`, `lean`, `operab
 - A moved head invalidates the review: a new request, not a continued one. Never overwrite an earlier accepted receipt.
 - Findings artifacts are immutable for the author; dispositions go in a new file.
 - An author's rejection needs evidence; a recheck must re-verify it — no automatic acceptance of a rejection.
+- Retain raw captures, findings, dispositions, synthesis and rechecks as durable evidence (including multi-profile rounds); ordinary cleanup is not prune — see `record` and the environment's retention rules.
 - Public-safe files: `~/…` paths, no hostnames, accounts, emails or live session IDs in portable notes.
 - Name the skill you rely on, with a one-line fallback if it is missing (below). If a required rule source is unavailable, stop.
 - Never install, update or configure tools to run a council.
