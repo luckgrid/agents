@@ -4,17 +4,20 @@ Distinguish **resource cleanup** from **context pruning**. Public methods stay e
 
 ## Durable context (retain by default)
 
-Keep briefs, findings, dispositions, review/profile/model provenance, check receipts and logs those receipts name, admission/publication/dependency history, and session summaries that later agents need. Typical durable homes (environment-owned paths; write as `~/…` in portable notes):
+Keep briefs, findings, dispositions, review/profile/model provenance, check receipts and logs those receipts name, admission/publication/dependency history, session summaries that later agents need, **package identity / inventory / digests / provenance** for bulk-transfer artifacts, and durable exchange **manifests and receipts**. Typical durable homes (environment-owned paths; write as `~/…` in portable notes):
 
 - Environment records / boards / program notes
 - Historical run folders (requests, handoffs, findings, receipts) once written
 - Admission or publication evidence the environment keeps outside a disposable checkout
+- File-exchange manifests, receipts, digests and decisions that document a publication checkpoint (do not delete merely because a script finished or a PR landed)
 
 A landed branch, clean worktree, closed pane, completed run or old record is **not** by itself permission to delete that history. Age, size or count alone must not silently remove it. Ordinary maintain/sweep, worktree remove, agent-stop and “feature done” cleanup remove **execution resources**, not retained context.
 
+**Exchange staging vs durable evidence:** Redundant outbox/received **staging copies** (spent set duplicates after durable evidence is recorded elsewhere) may be retired only under an **authorized, verified exchange-cleanup procedure** owned by the environment. Public skills do not invent that procedure or its commands. Successful transfer, script finish or ordinary resource cleanup never authorizes deleting durable manifests, receipts, checks or decisions.
+
 ## Transient resources (may clean when authorized)
 
-Owned idle panes, eligible clean worktrees, task fixtures, temporary staging and genuinely transient locks/process state — when the environment’s rules and this skill’s activity/retention/ignored-data checks allow. Preserve the **execution result** (receipt, findings path, candidate SHA evidence) outside the checkout before removing scaffolding. Do not make every cache or stopped-process lock permanent.
+Owned idle panes, eligible clean worktrees, task fixtures, temporary staging and genuinely transient locks/process state — when the environment’s rules and this skill’s activity/retention/ignored-data checks allow. Preserve the **execution result** (receipt, findings path, candidate SHA evidence, package identity) outside the checkout before removing scaffolding. Do not make every cache or stopped-process lock permanent. Do not treat exchange staging cleanup as ordinary transient cleanup unless the environment’s verified exchange-cleanup procedure says so.
 
 ## Before removing a checkout
 
