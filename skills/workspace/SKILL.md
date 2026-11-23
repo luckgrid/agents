@@ -59,7 +59,6 @@ herdr's sidebar stays flat. Nesting is a display convention, not Git isolation o
 - Before mutation, refresh Git registration, exact refs/tips, checkout path and Herdr association. Refuse occupied branches, conflicting destinations and ambiguous matches. Preflight reads alone are not atomic.
 - On interrupted or partial creation/move/open, inspect and report surviving state before any authorized retry; never reset, delete, stash or recreate unrelated work to force success.
 - Removal requires no active users/processes, preservation or explicit abandonment of the exact tip, and checks for tracked, untracked and ignored data. Unavailable activity data is not idle; branch deletion needs separate authorization. Preserve durable briefs, findings, receipts and recovery evidence outside the checkout before removal; ordinary cleanup is not permission to prune retained history (see `workspace-maintain` `retention`).
-
 - Never `herdr worktree create` or `open` with a linked worktree's workspace ID; `remove` uses that linked workspace's own ID.
 - Never `--force` on `worktree remove`, never `--trust-repository`, never `git branch -D` without the owner's word or an environment rule that allows it (in Workbench, an operator's `test/<topic>` discard).
 - Never plain `git worktree add` for feature work; use herdr so its events fire.
