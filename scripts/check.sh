@@ -53,6 +53,32 @@ def unquote(value):
     return value
 
 
+def strip_yaml_comment(value):
+    """Strip a YAML comment outside quotes, where # starts after whitespace."""
+    quote = None
+    i = 0
+    while i < len(value):
+        char = value[i]
+        if quote == "'":
+            if char == "'":
+                if i + 1 < len(value) and value[i + 1] == "'":
+                    i += 2
+                    continue
+                quote = None
+        elif quote == '"':
+            if char == "\\":
+                i += 2
+                continue
+            if char == '"':
+                quote = None
+        elif char in "'\"":
+            quote = char
+        elif char == "#" and (i == 0 or value[i - 1].isspace()):
+            return value[:i].rstrip()
+        i += 1
+    return value
+
+
 def front_matter(text, where, errors):
     """Top-level fields of the front matter, or None if it has none.
 
@@ -78,8 +104,7 @@ def front_matter(text, where, errors):
             fields[key] = "\n".join(p.strip() for p in parts[1:])
         else:
             value = " ".join(p.strip() for p in parts).strip()
-            if not value.startswith(("'", '"')):
-                value = re.sub(r"(?:^|\s)#.*$", "", value)
+            value = strip_yaml_comment(value)
             fields[key] = unquote(value)
 
     for n, line in enumerate(lines[1:end], 2):
@@ -154,9 +179,14 @@ def tables(lines):
     while i + 1 < len(lines):
         head, sep = lines[i].strip(), lines[i + 1].strip()
         if re.match(r"^\|?\s*:?-+:?\s*(\|\s*:?-+:?\s*)*\|?$", sep) and "|" in head:
+            header_cells = re.split(r"(?<!\\)\|", head.strip().strip("|"))
+            column_count = len(header_cells)
             rows, i = [], i + 2
             while i < len(lines) and "|" in lines[i]:
-                cells = re.split(r"(?<!\\)\|", lines[i].strip().strip("|"))
+                row_line = lines[i].strip()
+                cells = re.split(r"(?<!\\)\|", row_line.strip("|"))
+                if len(cells) != column_count:
+                    break
                 rows.append([c.strip() for c in cells])
                 i += 1
             found.append(rows)
@@ -386,8 +416,8 @@ def self_test():
         expect("multiline-link", check_skill(d, ("fixture",)), "does not resolve to a file")
         d = copy("yaml-inline-comments")
         skill_text = (d / "SKILL.md").read_text(encoding="utf-8")
-        skill_text = skill_text.replace("name: fixture", "name: fixture # module name")
-        skill_text = skill_text.replace("description: A module for scripts/check.sh --self-test, not a real skill. Nothing installs it.", "description: A module for scripts/check.sh --self-test. # fixture")
+        skill_text = skill_text.replace("name: fixture", 'name: "fixture" # module name')
+        skill_text = skill_text.replace("description: A module for scripts/check.sh --self-test, not a real skill. Nothing installs it.", 'description: "A # module for scripts/check.sh --self-test." # fixture')
         (d / "SKILL.md").write_text(skill_text, encoding="utf-8")
         expect("yaml-inline-comments", check_skill(d, ("fixture",)), None)
         d = copy("yaml-comment-only-description")
@@ -405,6 +435,12 @@ def self_test():
         )
         (d / "SKILL.md").write_text(skill_text, encoding="utf-8")
         expect("mode-table-without-outer-pipes", check_skill(d, ("fixture",)), None)
+        parsed = tables(["| Mode | Reference | Use |", "| --- | --- | --- |", "| `check` | check.md | Test |", "Use A | B for comparison"])
+        if len(parsed) != 1 or len(parsed[0]) != 1:
+            failures.append(f"self-test table-followed-by-prose: expected one row, got {parsed!r}")
+        else:
+            passed += 1
+            print("pass table-followed-by-prose: prose excluded")
 
         empty = pathlib.Path(tmp, "empty", "skills")
         empty.mkdir(parents=True)
