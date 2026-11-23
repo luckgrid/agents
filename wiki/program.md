@@ -2,7 +2,7 @@
 id: AS-PROGRAM
 kind: roadmap
 title: Roadmap
-summary: "The refactor to fully custom skill modules (owner, 2026-11-12): M0 removes the linked upstream skills, the herdr copy and every dependency around them, and sets the module layout, with a companion in Workstation that replaces the skills CLI with a copy installer; then workbench (in Workstation), council, multiplex, wiki, workspace, grill, design-system, a site-system project skill in that repository, frugal and triage, each written in Luckgrid's own words from a reference list of reviewed skills, in three tiers whose rules only tighten downward, every skill named `<namespace>` or `<namespace>-<name>` from one registry. Seventh round (2026-11-16): M10 workspace first before M2, expanded to herdr-backed management skills, first pin after those skills merge. The earlier items P1 to P3 are folded into the modules."
+summary: "The refactor to fully custom skill modules (owner, 2026-11-12): M0 removes the linked upstream skills, the herdr copy and every dependency around them, and sets the module layout, with a companion in Workstation that replaces the skills CLI with a copy installer; then workbench (in Workstation), council, orchestration, wiki, workspace, grill, design-system, a site-system project skill in that repository, frugal and triage, each written in Luckgrid's own words from a reference list of reviewed skills, in three tiers whose rules only tighten downward, every skill named `<namespace>` or `<namespace>-<name>` from one registry. Seventh round (2026-11-16): M10 workspace first before M2, expanded to herdr-backed management skills, first pin after those skills merge. The earlier items P1 to P3 are folded into the modules."
 status: active
 created: 2026-11-12
 updated: 2026-11-16  # seventh round: M10 first; five workspace* skills built; pin after M10; purpose/across-workspaces/intent records from #13; M0 merged #11; before that, sixth/fifth rounds and earlier history
@@ -40,7 +40,7 @@ The owner's choices the same day, when asked:
 The owner's feedback, word for word, is in the [record](records/2026-11-12-skill-modules.md#second-round-the-owners-feedback-2026-11-12). It changed three things:
 
 - **`council`, not `peer-review`:** review and remediation by several models, each with a different lens, in rounds. The owner chose `council` over `audit` (which reads as a one-off inspection), `crosscheck` and `peer-review`.
-- **`multiplex`, not `herdr`:** a name of Luckgrid's own that doesn't clash with herdr's `herdr` skill, for multiplexers and session managers of any kind, with herdr as the default because Workbench uses it.
+- **`orchestration`, not `herdr`:** the owner amended M3 on 2026-11-23. It covers reusable coordination of agents, tasks, workflows, handoffs and execution systems; Herdr is one supported implementation environment, not the definition of the namespace. The original `multiplex` rationale is preserved in the dated decision record.
 - **Two new modules:** `design-system` and `site-system`, focused on those repositories' decisions and architecture, so work on them stays on its rails. `site-system` is a **project skill in the site-system repository** (owner's choice), since that repository is private; `design-system` is public and goes here.
 
 ### Third round (owner, 2026-11-12)
@@ -59,7 +59,7 @@ The owner answered the open questions ([record](records/2026-11-12-skill-modules
 
 The owner asked for a plan to carry out the rewrite, and added: "since the upstream skills are getting removed, let's remove any dependencies around them - this should remove the need for package.json and shells.sh cli". Six questions followed, each answered with the recommended option ([record](records/2026-11-14-modular-rewrite/README.md#the-owners-choices-2026-11-14)). The guest session starts from its [kickoff brief](records/2026-11-14-modular-rewrite/kickoff.md).
 
-- **No upstream dependencies:** M0 removes the submodules, `upstream.toml` and the copied `herdr` too. [M3](#m3-multiplex)'s herdr reference defers to `herdr --skill`.
+- **No upstream dependencies:** M0 removes the submodules, `upstream.toml` and the copied `herdr` too. [M3](#m3-orchestration)'s Herdr mapping defers to `herdr --skill`.
 - **No installer CLI:** the skills CLI (skills.sh) and its `package.json` in Workstation go. `wb setup` (U16) copies skill folders itself from two sources: this repository's `git archive` export at the pinned commit, and Workbench's own `packages/workbench/guest/skills/`. GW-ADR-0014 decisions 1 and 2 are amended in Workstation, by M0's [companion](#m0-the-module-foundation), from the agents session (the owner's rule of 2026-11-13).
 - **Public use:** copy a `skills/<name>` folder into a harness's skills folder, or use any Agent Skills installer; none is tested here.
 - **A new module, [M10 `workspace`](#m10-workspace)**, after M4: Workstation #43's proposed `manage-workspace` skill, named to match the others.
@@ -78,7 +78,7 @@ Four questions followed, each answered with the recommended option ([record](rec
 - **Base skill plus namespaced skills:** a module name is a namespace. Its base skill carries the name alone (`workbench`) and holds the shared rules, with a mode table for small uses. Anything invoked explicitly, or that must load on its own description, is its own skill, `<namespace>-<name>` (`workbench-guest-rules`, `workbench-code`, `workbench-plan`). `roles.toml` names that skill directly (`$workbench-code` for Codex), so it needs no `mode` key.
 - **Flat folders:** `skills/workbench-code/` beside `skills/workbench/`, the same in a repository, installed, and read in place; the prefix does the grouping.
 - **The `wb-` skills move:** M0 takes `wb-guest-rules` and `wb-herdr` out of this repository, and its Workstation companion adds them to Workbench's guest skills as `workbench-guest-rules` and `workbench-herdr`, unchanged but for their names, the links between them and one path.
-- **The planned names stand,** each a namespace owned by one repository ([registry](#namespaces-owner-2026-11-14)).
+- **The planned names stand,** each a namespace owned by one repository ([registry](#namespaces-owner-2026-11-14)), as amended for M3 by [AS-ADR-0002](records/decisions/0002-orchestration-namespace.md).
 
 ### Seventh round (owner, 2026-11-16)
 
@@ -86,7 +86,7 @@ The owner's intent, recorded in the [session record](records/2026-11-16-workspac
 
 - **This repository's purpose.** It is where common patterns for agents and agent workflows are recorded and kept, drawn from the owner's preferred tools, apps and configs, and used through Workstation.
 - **[M10 `workspace`](#m10-workspace) comes first,** before M2. Its first skills manage and maintain workspaces with herdr 0.9.5 as installed. The initial Workbench binding is one clone in `~/Workspaces/<namespace>` with a matching herdr workspace, based on `develop`, or on `main` where there is none. Feature checkouts use herdr; the two sidebar levels are a UI convention, not a Git worktree hierarchy. The broader [coordination proposal](architecture/workspace-coordination.md) separates workspace, repository, worktree, workbranch and session. Its issue, pr and release uses follow later.
-- **Five skills built** in the bootstrap session: base `workspace` plus `workspace-open`, `workspace-worktree`, `workspace-status` and `workspace-maintain`, talking to herdr directly (`HERDR_ENV=1`, version floor 0.9.5) until M3 `multiplex` extracts the backend. Nesting is `<parent>--<name>` from the **clone** workspace ID.
+- **Five skills built** in the bootstrap session: base `workspace` plus `workspace-open`, `workspace-worktree`, `workspace-status` and `workspace-maintain`, talking to herdr directly (`HERDR_ENV=1`, version floor 0.9.5) until M3 `orchestration` provides reusable backend guidance. Nesting is `<parent>--<name>` from the **clone** workspace ID.
 - **Across workspaces.** An agent may hand off to another workspace, or, with the owner's approval, edit skills there on a branch of its own. Workstation's `workbench-*` and site-system's `site-system` build on or use the public skills here.
 - **Records capture intent.** A record says what the owner meant, in the session's own words. It quotes the owner word for word only when asked, and asks when the intent is unclear. Records share one schema that agents follow. A Workbench tool to create and check records is proposed for a Workstation session ([wiki rules](README.md#writing-standard)). The [session](records/2026-11-16-workspace-skills/session.md) records the owner's selected options as faithful summaries, retaining survey results as labelled evidence.
 - **The first pin** follows these workspace skills once they merge (and still needs M0's Workstation installer companion and M1's required Workbench skills). It no longer waits for M2.
@@ -102,7 +102,7 @@ Module numbers are IDs and don't change; the build order is:
 3. **M10 `workspace`**: base skill plus `workspace-*` management skills ([seventh round](#seventh-round-owner-2026-11-16)); issue, pr and release uses follow later.
 4. **The first pin** once M10, M1's required Workbench skills and M0's Workstation installer companion have merged: this repository's first `agent_skills_commit`, U16's first install, and Workbench's cell S1. M10 alone does not satisfy the cross-repository prerequisites. Workbench's own payload skills may install before an agents pin; test that case separately.
 5. **M2 `council`**: with Workbench's own `workbench` skill ([M1](#m1-workbench), now in Workstation), what Workbench's F1 needs. **AG1** follows M2 and can run alongside what comes next ([agents items](#agents-monorepo-owner-2026-11-12)).
-6. **M3 `multiplex`**, **M4 `wiki`**, **M5 `grill`**. After M3, `workspace-*` names `multiplex` for backend steps and keeps a fallback line.
+6. **M3 `orchestration`**, **M4 `wiki`**, **M5 `grill`**. After M3, `workspace-*` names `orchestration` for backend steps and keeps a fallback line.
 7. **M6 `design-system`**; M7 then points to it instead of carrying its rules.
 8. **M8 `frugal`**, **M9 `triage`**.
 
@@ -144,7 +144,7 @@ The registry: each namespace, the repository that owns it, and its tier. A new n
 | Namespace | Owner | Tier | Roadmap |
 | --- | --- | --- | --- |
 | `council` | luckgrid/agents | public | [M2](#m2-council) |
-| `multiplex` | luckgrid/agents | public | [M3](#m3-multiplex) |
+| `orchestration` | luckgrid/agents | public | [M3](#m3-orchestration) |
 | `wiki` | luckgrid/agents | public | [M4](#m4-wiki) |
 | `workspace` | luckgrid/agents | public | [M10](#m10-workspace) |
 | `grill` | luckgrid/agents | public | [M5](#m5-grill) |
@@ -212,17 +212,19 @@ The request mode picks the lenses for a change: every review gets spec, standard
 - **verify:** run the check and read its output before claiming anything is done;
 - **record:** the reviews word for word, then a remediation section per finding (fixed with its commit, not fixed and why, or an owner question), as Luckgrid's review records do.
 
-Fixed prompts only: text an agent wrote moves to another agent through files, never typed into its prompt (GW-ADR-0014 decision 5), and only the owner answers a harness's dialogs. Driving several harnesses is `multiplex`'s and `wb-flow`'s job; `council` says what each reviewer does.
+Fixed prompts only: text an agent wrote moves to another agent through files, never typed into its prompt (GW-ADR-0014 decision 5), and only the owner answers a harness's dialogs. Driving several harnesses is `orchestration`'s and `wb-flow`'s job; `council` says what each reviewer does.
 
 **Learns from:** microsoft/vscode-team-kit `council-review` (model-pinned reviewers, consensus, anonymized cross-review); dotnet/fsharp `review-council` (a briefing pack, dimensions × models); Mozilla.ai's Star Chamber (consensus across providers, debate rounds); laststance/skills `x-agents-cross-review` (every agent reviews the full scope through its own perspective); obra/superpowers (requesting, receiving, verification); mattpocock/skills `code-review`; DietrichGebert/ponytail `ponytail-review`; getsentry/skills `code-review` and `security-review`; trailofbits/skills `differential-review` (ideas only, CC-BY-SA-4.0); Anthropic's code-review plugin (ideas only, proprietary terms); and Luckgrid's own review prompts and records.
 
-## M3: `multiplex`
+## M3: `orchestration`
 
-Takes over from the copied `herdr` skill, which M0 removes (fifth round). Terminal multiplexers and session managers through one set of workflows, with a reference per backend. The backends are Workbench's [session backends](https://github.com/luckgrid/workstation/blob/main/wiki/workbench/session-backends.md): herdr the default, tmux the fallback, TUIOS under evaluation; herdr-core's `hc` later, if a Core trial starts. Rex is a terminal app, not a backend.
+Reusable coordination guidance for agents, tasks, workflows, handoffs and execution systems. The module defines portable concepts and maps them to supported environments; it is not a Herdr adapter package or a new executable API. Herdr is one supported mapping, and Workbench continues to own guest operation policy.
 
-- **Core (`SKILL.md`):** find which backend the agent runs in (`HERDR_ENV=1` for herdr; `TMUX` for tmux; each backend's own marker), read that backend's reference, and stop if there is none; the installed binary's own help or skill is the authority for syntax; never install, update or upgrade a backend; in the guest, `workbench`'s rules decide what may run.
-- **Workflows (`references/`),** each written once and mapped to every backend that can do it: dispatch and wait (start a named agent, the status vocabulary, prompt and wait, read the result); worktrees (create through the backend so its events fire, the removal order, never force); status labels for active, blocked, hand-off and done; sidecars for long-running observable work; orchestration (fan work out to workers and audit their results before closing a pane, with `council` for review); handing the orchestrator role between harnesses.
-- **Backends (`references/<backend>.md`):** herdr first, from the owner's 2026-11-11 decisions: a thin layer that checks `HERDR_ENV=1` and a version floor and defers to `herdr --skill`, with third-party facts only once `herdr <group> --help` confirms them (H1, H3). tmux's covers what it can do (panes, send-keys, capture) and says what it can't (agent status). TUIOS's waits for its evaluation, and keeps off what that evaluation keeps off (Inbox approvals, agent mail, plugins, remote and web).
+- **Core (`SKILL.md`):** identify a supported execution environment and read its mapping; report unavailable capabilities explicitly; defer syntax and current behavior to the installed system's help; do not install or update execution systems.
+- **Workflows (`references/`):** coordinate bounded task assignment, observe native dispatch/status/wait features where available, manage worktrees through an authorized backend lifecycle, and pass results through durable files that recipients revalidate. No handoff is typed into a foreign pane.
+- **Environment mappings:** Herdr requires `HERDR_ENV=1`, checks the 0.9.5 floor and defers to `herdr --skill` and relevant `--help`. tmux is a bounded alternative for pane interaction; it does not provide native agent identity/status or worktree lifecycle here. Unsupported operations remain unavailable rather than being simulated. Other environments can be added when a consumer needs them and evidence supports the mapping.
+
+The original M3 `multiplex` proposal and its session-manager framing remain in dated records; [AS-ADR-0002](records/decisions/0002-orchestration-namespace.md) records the owner's amendment.
 
 **Learns from:** herdrdev/herdr's own skill; shunk031/skills, gregbarbosa/skills (no licence, facts only), whamp/skills, dmmulroy/skills, davidondrej/skills, callstack/agent-device `dogfood` (the thin shape), yangyang0507/herdr-skill (no licence; TUI and Core), devarfeen/agent-skills-kit; tmux's manual; TUIOS's documentation; Workbench's session backends page.
 
@@ -308,7 +310,7 @@ The owner's idea (2026-11-12): a broader triage module, with debugging part of i
 
 ## M10: `workspace`
 
-**Seventh round (owner, 2026-11-16):** built first, starting with skills that manage and maintain herdr workspaces and worktrees. The bootstrap session settled five skills with the owner ([session](records/2026-11-16-workspace-skills/session.md), [kickoff](records/2026-11-16-workspace-skills/kickoff.md#proposed-skills)): `workspace` as the base, plus `workspace-open`, `workspace-worktree`, `workspace-maintain` and `workspace-status`. **Handoff refinement (2026-11-18):** `workspace-handoff` is built (kickoff, handoff, review-request, resume). This is a scoped completion of M10 handoff continuity and the companion M1 Workbench guidance in Workstation; it does not reorder M2 `council`, M3 `multiplex` or the wider Workstation refactor. Workbench's `workbench-herdr` and `workbench-handoff` then narrow guest/dev steps. The uses below follow. The [coordination API proposal](architecture/workspace-coordination.md) adds workbranch, coordination and workflow ideas as later candidates, with expected-head checks, single-writer/integrator responsibilities, partial failures and resumable hand-offs. It proposes a shared semantic contract, not a new executable CLI or an expansion of `ws` authority.
+**Seventh round (owner, 2026-11-16):** built first, starting with skills that manage and maintain herdr workspaces and worktrees. The bootstrap session settled five skills with the owner ([session](records/2026-11-16-workspace-skills/session.md), [kickoff](records/2026-11-16-workspace-skills/kickoff.md#proposed-skills)): `workspace` as the base, plus `workspace-open`, `workspace-worktree`, `workspace-maintain` and `workspace-status`. **Handoff refinement (2026-11-18):** `workspace-handoff` is built (kickoff, handoff, review-request, resume). This is a scoped completion of M10 handoff continuity and the companion M1 Workbench guidance in Workstation; it does not reorder M2 `council`, M3 `orchestration` or the wider Workstation refactor. Workbench's `workbench-herdr` and `workbench-handoff` then narrow guest/dev steps. The uses below follow. The [coordination API proposal](architecture/workspace-coordination.md) adds workbranch, coordination and workflow ideas as later candidates, with expected-head checks, single-writer/integrator responsibilities, partial failures and resumable hand-offs. It proposes a shared semantic contract, not a new executable CLI or an expansion of `ws` authority.
 
 Added in the fifth round (owner, 2026-11-14), from Workstation #43's proposal of a `manage-workspace` skill for release notes from a template. These issue, pr and release uses follow M4's record conventions; the seventh round moves the initial workspace/worktree skills earlier. The generic half of working on a Luckgrid repository, in any workspace; Workbench may only narrow these rules and supplies the guest half (for example `issue-to-release` with `wb` commands).
 
@@ -318,7 +320,7 @@ Added in the fifth round (owner, 2026-11-14), from Workstation #43's proposal of
 - **pr:** a PR description: what and why, each commit, the checks run with their output, what wasn't checked, and the review rounds with their dispositions;
 - **release:** release notes from a template, from the merged PRs since the last tag, and the checks before a tag (a dry run of the release workflow first, as the wiki-reader 0.1.12 redo would have needed).
 
-**Namespaced skills:** `workspace-open` (find or create the clone workspace), `workspace-worktree` (create, open, adopt, remove), `workspace-status` (nested text tree plus fenced JSON, no orchestrator field), `workspace-maintain` (status survey first, then each approved fix), `workspace-handoff` (kickoff, progress/blocker handoff, review request pinned to commits, resume with revalidation). Backend is herdr directly until M3; status stays read-only and reports local-ref freshness; refreshing through the environment's workflow is a separate authorized action.
+**Namespaced skills:** `workspace-open` (find or create the clone workspace), `workspace-worktree` (create, open, adopt, remove), `workspace-status` (nested text tree plus fenced JSON, no orchestrator field), `workspace-maintain` (status survey first, then each approved fix), `workspace-handoff` (kickoff, progress/blocker handoff, review request pinned to commits, resume with revalidation). Backend is herdr directly until M3 `orchestration`; status stays read-only and reports local-ref freshness; refreshing through the environment's workflow is a separate authorized action.
 
 It never files, pushes, tags or publishes; in the guest, `workbench` says who does. **Learns from:** Luckgrid's own PR descriptions, release records and the owner's checks of 2026-11-14 (Workstation #43); herdr 0.9.5 and the 2026-11-16 bootstrap survey; `workbench-herdr`'s shape. References are listed under [skill references](resources/skill-references.md#workspace-m10).
 
@@ -346,11 +348,11 @@ Kept so that the records' links still resolve. Each is now part of a module.
 
 ### P1: a thin herdr skill
 
-The owner's decision 1 of 2026-11-11. Now part of [M3](#m3-multiplex).
+The owner's decision 1 of 2026-11-11. Now part of [M3](#m3-orchestration).
 
 ### P1b: confirmed facts in `wb-herdr`
 
-The owner's decision 3 of 2026-11-11. Now part of [M3](#m3-multiplex): third-party facts go into its herdr reference once `--help` confirms them.
+The owner's decision 3 of 2026-11-11. Now part of [M3](#m3-orchestration): third-party facts go into its herdr reference once `--help` confirms them.
 
 ### P2: WB-06, helpers the linked skills name
 
