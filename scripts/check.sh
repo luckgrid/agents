@@ -14,7 +14,7 @@ import os, pathlib, re, shutil, sys, tempfile, urllib.parse
 
 # This repository's namespaces. Source: the namespaces registry in
 # wiki/program.md (owner, 2026-11-14); change both together.
-NAMESPACES = ("council", "multiplex", "wiki", "workspace", "grill", "design-system", "frugal", "triage")
+NAMESPACES = ("council", "orchestration", "wiki", "workspace", "grill", "design-system", "frugal", "triage")
 # The fields the Agent Skills specification lists for SKILL.md's front matter.
 FIELDS = {"name", "description", "license", "compatibility", "metadata", "allowed-tools"}
 NAME_RE = re.compile(r"^[a-z0-9]+(-[a-z0-9]+)*$")

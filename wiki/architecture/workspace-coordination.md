@@ -57,7 +57,7 @@ A branch dependency, a checkout's creation base, a filesystem path and a sidebar
 | Owner | Responsibility |
 | --- | --- |
 | `agents` / `workspace-*` | Common vocabulary, operation preconditions, continuity reports and reusable workflows; concrete Herdr command instructions initially |
-| `multiplex` (M3, later) | Reusable terminal/session mechanics extracted only after working examples establish the boundary |
+| `orchestration` (M3, later) | Reusable coordination of agents, tasks, workflows, handoffs, and execution systems; Herdr is one supported environment, not the namespace definition |
 | Git | Refs, commits, checkout/index state, registration and conflicts |
 | Herdr | Workspace/pane/session topology and native lifecycle operations |
 | Workbench in Workstation | Guest policy, approved paths, sandbox refusals, commit/integration helpers, promotion and host hand-offs |
@@ -131,7 +131,7 @@ Keep `workspace` as the namespace. Start with the already proposed skills; extra
 
 The latter workflows may fit modes or references of existing skills; split them only when independent invocation needs justify it. The common vocabulary does not require an orchestrator, headless agents or a live coordination service. Generic integration concepts may be documented now; actual Workbench integration instructions wait for the relevant admitted FW step.
 
-First prove the read-only mapping and one disposable lifecycle with the installed Herdr pin. Capture a narrow reusable report and one hand-off. Then extract M3 session mechanics from observed duplication. Defer schema tooling and additional backend implementations until a consumer needs them. First pin and cell S1 remain Workstation decisions; this proposal does not advance those gates.
+First prove the read-only mapping and one disposable lifecycle with the installed Herdr pin. Capture a narrow reusable report and one hand-off. Then extract M3 coordination guidance from observed duplication. Defer schema tooling and additional backend implementations until a consumer needs them. First pin and cell S1 remain Workstation decisions; this proposal does not advance those gates.
 
 ## Acceptance examples for the guest implementation
 
