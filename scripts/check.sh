@@ -233,7 +233,15 @@ def tables(lines):
             while i < len(lines) and "|" in lines[i]:
                 row_line = lines[i].strip()
                 cells = [c.strip() for c in re.split(r"(?<!\\)\|", row_line.strip("|"))]
+                outer = row_line.startswith("|") and row_line.endswith("|")
                 if len(cells) != column_count:
+                    # Wrong-width outer-piped lines are malformed table rows,
+                    # not silent end-of-table. Other wrong-width lines end the
+                    # table as following prose or a different structure.
+                    if outer:
+                        issues.append(f"mode-table has an invalid data row {row_line!r}")
+                        i += 1
+                        continue
                     break
                 if cells and MODE_CELL_RE.match(cells[0]):
                     rows.append(cells)
@@ -241,21 +249,10 @@ def tables(lines):
                     continue
                 # Same column count but not a mode row: outer-piped lines are
                 # malformed table rows; otherwise treat as following prose.
-                if row_line.startswith("|") and row_line.endswith("|"):
+                if outer:
                     issues.append(f"mode-table has an invalid data row {row_line!r}")
                     i += 1
-                    while i < len(lines) and "|" in lines[i]:
-                        cont = lines[i].strip()
-                        cont_cells = [c.strip() for c in re.split(r"(?<!\\)\|", cont.strip("|"))]
-                        if len(cont_cells) != column_count:
-                            break
-                        if cont.startswith("|") and cont.endswith("|") and not (
-                            cont_cells and MODE_CELL_RE.match(cont_cells[0])
-                        ):
-                            issues.append(f"mode-table has an invalid data row {cont!r}")
-                            i += 1
-                            continue
-                        break
+                    continue
                 break
             found.append((rows, issues))
         else:
@@ -537,6 +534,12 @@ def self_test():
         else:
             passed += 1
             print("pass table-malformed-extra-row: invalid row reported")
+        parsed = tables(["| Mode | Reference |", "| --- | --- |", "| `check` | check.md |", "| too | many | cells | here |"])
+        if len(parsed) != 1 or len(parsed[0][0]) != 1 or not any("invalid data row" in x for x in parsed[0][1]):
+            failures.append(f"self-test table-malformed-wrong-width: expected one row plus invalid-row issue, got {parsed!r}")
+        else:
+            passed += 1
+            print("pass table-malformed-wrong-width: wrong-width row reported")
         parsed = tables(["| Mode | Reference | Use |", "| --- | --- |", "| `check` | check.md | when |"])
         if parsed:
             failures.append(f"self-test table-header-sep-mismatch: expected no table, got {parsed!r}")
