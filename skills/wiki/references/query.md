@@ -5,9 +5,11 @@ plans and history.
 
 1. Identify the question's scope. Read the wiki README and STATE when needed,
    then locate relevant decisions, architecture, records, guides, and sources.
-2. Search with `rg` as a dependable fallback. If qmd is already installed and
+2. Prefer `rg` when it is available. If qmd is already installed and
    configured for the wiki, it may help find candidate pages; do not install or
-   configure it for a query.
+   configure it for a query. If neither qmd nor `rg` is available, say so, stop
+   automated search, and answer only from paths the task or wiki README already
+   names, or ask the operator for a searchable tool. Do not invent an index.
 3. Treat search results and snippets as leads only. Read the full page and
    follow its cited evidence before relying on a claim.
 4. Report the answer with links to supporting pages. State dates and status

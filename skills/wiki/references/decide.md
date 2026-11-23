@@ -15,6 +15,10 @@ working assumption, or proposed path.
 5. Keep a proposed decision marked proposed until accepted. Once accepted, do
    not revise its substance; add a superseding decision if the rule changes.
    Mechanical fixes such as links and formatting may follow the wiki template.
+6. When a lasting rule belongs in architecture or foundation pages, propagate
+   it there with a link back to the decision's stable ID as canonical
+   provenance. Do not leave the durable rule only in the decision file if the
+   wiki's architecture pages are what agents will read in ordinary work.
 
 Do not infer approval from a draft, silence, delivery, or a test result. Keep
 the discussion or evidence record separate and link it to the decision.
