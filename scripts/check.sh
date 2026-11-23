@@ -190,10 +190,15 @@ def tables(lines):
                 # it does not have the table row's boundary markers.
                 if outer_pipes and not (row_line.startswith("|") and row_line.endswith("|")):
                     break
-                cells = re.split(r"(?<!\\)\|", row_line.strip("|"))
+                cells = [c.strip() for c in re.split(r"(?<!\\)\|", row_line.strip("|"))]
                 if len(cells) != column_count:
                     break
-                rows.append([c.strip() for c in cells])
+                # Mode-table data rows start with a backticked mode word.
+                # Without that, same-width prose (piped or unpiped) stops the
+                # table instead of becoming a fake row.
+                if not cells or not MODE_CELL_RE.match(cells[0]):
+                    break
+                rows.append(cells)
                 i += 1
             found.append(rows)
         else:
@@ -447,6 +452,12 @@ def self_test():
         else:
             passed += 1
             print("pass table-followed-by-prose: prose excluded")
+        parsed = tables(["Mode | Reference", "--- | ---", "`check` | check.md", "Use A | B for comparison"])
+        if len(parsed) != 1 or len(parsed[0]) != 1:
+            failures.append(f"self-test unpiped-table-followed-by-prose: expected one row, got {parsed!r}")
+        else:
+            passed += 1
+            print("pass unpiped-table-followed-by-prose: prose excluded")
 
         empty = pathlib.Path(tmp, "empty", "skills")
         empty.mkdir(parents=True)
