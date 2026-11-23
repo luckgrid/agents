@@ -179,17 +179,11 @@ def tables(lines):
     while i + 1 < len(lines):
         head, sep = lines[i].strip(), lines[i + 1].strip()
         if re.match(r"^\|?\s*:?-+:?\s*(\|\s*:?-+:?\s*)*\|?$", sep) and "|" in head:
-            outer_pipes = head.startswith("|") and head.endswith("|")
             header_cells = re.split(r"(?<!\\)\|", head.strip().strip("|"))
             column_count = len(header_cells)
             rows, i = [], i + 2
             while i < len(lines) and "|" in lines[i]:
                 row_line = lines[i].strip()
-                # With outer pipes, require them on data rows too. A prose
-                # sentence can contain the right number of separators, but
-                # it does not have the table row's boundary markers.
-                if outer_pipes and not (row_line.startswith("|") and row_line.endswith("|")):
-                    break
                 cells = [c.strip() for c in re.split(r"(?<!\\)\|", row_line.strip("|"))]
                 if len(cells) != column_count:
                     break
@@ -446,12 +440,26 @@ def self_test():
         )
         (d / "SKILL.md").write_text(skill_text, encoding="utf-8")
         expect("mode-table-without-outer-pipes", check_skill(d, ("fixture",)), None)
+        d = copy("mode-table-mixed-pipes")
+        skill_text = (d / "SKILL.md").read_text(encoding="utf-8")
+        skill_text = skill_text.replace(
+            "| `check` | [check](references/check.md) | When the self-test runs |",
+            "`check` | [check](references/check.md) | When the self-test runs",
+        )
+        (d / "SKILL.md").write_text(skill_text, encoding="utf-8")
+        expect("mode-table-mixed-pipes", check_skill(d, ("fixture",)), None)
         parsed = tables(["| Mode | Reference |", "| --- | --- |", "| `check` | check.md |", "Use A | B for comparison"])
         if len(parsed) != 1 or len(parsed[0]) != 1:
             failures.append(f"self-test table-followed-by-prose: expected one row, got {parsed!r}")
         else:
             passed += 1
             print("pass table-followed-by-prose: prose excluded")
+        parsed = tables(["| Mode | Reference |", "| --- | --- |", "`check` | check.md", "Use A | B for comparison"])
+        if len(parsed) != 1 or len(parsed[0]) != 1:
+            failures.append(f"self-test mixed-table-followed-by-prose: expected one row, got {parsed!r}")
+        else:
+            passed += 1
+            print("pass mixed-table-followed-by-prose: prose excluded")
         parsed = tables(["Mode | Reference", "--- | ---", "`check` | check.md", "Use A | B for comparison"])
         if len(parsed) != 1 or len(parsed[0]) != 1:
             failures.append(f"self-test unpiped-table-followed-by-prose: expected one row, got {parsed!r}")
