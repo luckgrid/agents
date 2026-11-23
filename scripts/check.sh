@@ -19,7 +19,7 @@ NAMESPACES = ("council", "multiplex", "wiki", "workspace", "grill", "design-syst
 FIELDS = {"name", "description", "license", "compatibility", "metadata", "allowed-tools"}
 NAME_RE = re.compile(r"^[a-z0-9]+(-[a-z0-9]+)*$")
 SCHEME_RE = re.compile(r"^[A-Za-z][A-Za-z0-9+.-]*:")
-INLINE_LINK_RE = re.compile(r"\]\(\s*(<[^>]*>|[^)\s]+)(?:\s+[\"'(][^)]*)?\)")
+INLINE_LINK_RE = re.compile(r"\]\(\s*(<[^>]*>|[^)\s]+)(?:\s+[\"'(][^)]*)?\s*\)", re.S)
 REF_DEF_RE = re.compile(r"^\s{0,3}\[[^\]]+\]:\s*(<[^>]*>|\S+)")
 FENCE_RE = re.compile(r"^\s{0,3}(`{3,}|~{3,})")
 MODE_CELL_RE = re.compile(r"^`([^`]+)`$")
@@ -77,7 +77,10 @@ def front_matter(text, where, errors):
         elif parts and parts[0] == "":
             fields[key] = "\n".join(p.strip() for p in parts[1:])
         else:
-            fields[key] = unquote(" ".join(p.strip() for p in parts).strip())
+            value = " ".join(p.strip() for p in parts).strip()
+            if not value.startswith(("'", '"')):
+                value = re.sub(r"(?:^|\s)#.*$", "", value)
+            fields[key] = unquote(value)
 
     for n, line in enumerate(lines[1:end], 2):
         if not line.strip() or line.lstrip().startswith("#"):
@@ -134,13 +137,15 @@ def outside_code(text, spans=True):
 
 
 def links(lines):
+    text = "\n".join(lines)
+    for m in INLINE_LINK_RE.finditer(text):
+        target = m.group(1)
+        yield text.count("\n", 0, m.start()) + 1, target[1:-1] if target.startswith("<") else target
     for n, line in enumerate(lines, 1):
-        targets = [m.group(1) for m in INLINE_LINK_RE.finditer(line)]
         m = REF_DEF_RE.match(line)
         if m:
-            targets.append(m.group(1))
-        for t in targets:
-            yield n, t[1:-1] if t.startswith("<") else t
+            target = m.group(1)
+            yield n, target[1:-1] if target.startswith("<") else target
 
 
 def tables(lines):
@@ -148,9 +153,9 @@ def tables(lines):
     found, i = [], 0
     while i + 1 < len(lines):
         head, sep = lines[i].strip(), lines[i + 1].strip()
-        if head.startswith("|") and re.match(r"^\|?\s*:?-+:?\s*(\|\s*:?-+:?\s*)*\|?$", sep):
+        if re.match(r"^\|?\s*:?-+:?\s*(\|\s*:?-+:?\s*)*\|?$", sep) and "|" in head:
             rows, i = [], i + 2
-            while i < len(lines) and lines[i].strip().startswith("|"):
+            while i < len(lines) and "|" in lines[i]:
                 cells = re.split(r"(?<!\\)\|", lines[i].strip().strip("|"))
                 rows.append([c.strip() for c in cells])
                 i += 1
@@ -374,6 +379,32 @@ def self_test():
         with open(d / "SKILL.md", "a", encoding="utf-8") as f:
             f.write("\nA line.\n" * 250)
         expect("long-skill-md", check_skill(d, ("fixture",)), None, warn=f"lines (the specification suggests at most {MAX_LINES})")
+
+        d = copy("multiline-link")
+        with open(d / "SKILL.md", "a", encoding="utf-8") as f:
+            f.write("\n[missing](\nreferences/missing.md\n)\n")
+        expect("multiline-link", check_skill(d, ("fixture",)), "does not resolve to a file")
+        d = copy("yaml-inline-comments")
+        skill_text = (d / "SKILL.md").read_text(encoding="utf-8")
+        skill_text = skill_text.replace("name: fixture", "name: fixture # module name")
+        skill_text = skill_text.replace("description: A module for scripts/check.sh --self-test, not a real skill. Nothing installs it.", "description: A module for scripts/check.sh --self-test. # fixture")
+        (d / "SKILL.md").write_text(skill_text, encoding="utf-8")
+        expect("yaml-inline-comments", check_skill(d, ("fixture",)), None)
+        d = copy("yaml-comment-only-description")
+        skill_text = (d / "SKILL.md").read_text(encoding="utf-8").replace(
+            "description: A module for scripts/check.sh --self-test, not a real skill. Nothing installs it.",
+            "description: # deliberately absent",
+        )
+        (d / "SKILL.md").write_text(skill_text, encoding="utf-8")
+        expect("yaml-comment-only-description", check_skill(d, ("fixture",)), "description missing")
+        d = copy("mode-table-without-outer-pipes")
+        skill_text = (d / "SKILL.md").read_text(encoding="utf-8")
+        skill_text = skill_text.replace(
+            "| Mode | Reference | Use |\n| --- | --- | --- |\n| `check` | [check](references/check.md) | When the self-test runs |",
+            "Mode | Reference | Use\n--- | --- | ---\n`check` | [check](references/check.md) | When the self-test runs",
+        )
+        (d / "SKILL.md").write_text(skill_text, encoding="utf-8")
+        expect("mode-table-without-outer-pipes", check_skill(d, ("fixture",)), None)
 
         empty = pathlib.Path(tmp, "empty", "skills")
         empty.mkdir(parents=True)
