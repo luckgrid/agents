@@ -20,8 +20,11 @@ target, output location, and stop condition.
 
 Audit every result against its brief: inspect the changed paths, candidate
 revision, check output, and open questions. A completion label is an observation,
-not verification. Use a review workflow such as `council` when the environment
-and task call for one. Close sessions only after preserving needed evidence and
+not verification. Prefer the installed `council` / `council-review` skills for
+independent review when they are available; if they are not installed, use the
+environment's admitted review route (for example Workbench's reviewer role and
+a read-only brief) and say which fallback you used. Do not invent a parallel
+review framework. Close sessions only after preserving needed evidence and
 when authorized to do so.
 
 For partial failures, record what succeeded, what remains, and the next safe

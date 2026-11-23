@@ -6,13 +6,23 @@ summary: "The owner amends the planned M3 namespace from `multiplex` to `orchest
 status: accepted
 created: 2026-11-23
 updated: 2026-11-23
-related: [AS-PROGRAM, AS-ARCH-WORKSPACE-COORDINATION, AS-ARCH-AGENTS-WORKSPACE, AS-ADR-0001]
+related: [AS-PROGRAM, AS-ARCH-WORKSPACE-COORDINATION, AS-ARCH-AGENTS-WORKSPACE, AS-ARCH-SKILL-SOURCES, AS-ARCH-CONTROL-RECORD-AUDIT, AS-ADR-0001, AS-STATE]
 ---
 
 # Name M3 orchestration
 
-**Status:** accepted by the owner for this branch (2026-11-23; authoritative
-branch amendment).
+**Status:** accepted by the owner (2026-11-23). The decision binds naming and
+scope; the module files on this branch are **draft source** until they merge
+to main. Workbench pinning, guest installation, harness loading and runtime
+admission remain separate gates and are not claimed by this ADR.
+
+**Provenance:** owner amendment to the Agents modular-rewrite program
+([AS-PROGRAM](../../program.md), M3), narrowing the earlier planned
+`multiplex` namespace recorded in dated skill-module records (2026-11-12
+second round). Architecture context:
+[workspace coordination](../../architecture/workspace-coordination.md),
+[agents workspace](../../architecture/agents-workspace.md),
+[skill sources](../../architecture/skill-sources.md).
 
 ## The owner's decision
 
