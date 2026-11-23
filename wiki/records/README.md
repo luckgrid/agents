@@ -22,3 +22,4 @@ The modular rewrite's [review and corrections](2026-11-14-modular-rewrite/review
 - [2026-11-18-workspace-handoff.md](2026-11-18-workspace-handoff.md): `workspace-handoff` skill (kickoff, handoff, review-request, resume); M10/M1 continuity refinement; Workstation companion on a separate branch.
 - [2026-11-20-tab-role-audit-discovery.md](2026-11-20-tab-role-audit-discovery.md): Control / Record / Audit tab-role discovery (proposed architecture; layout remains Workstation).
 - [2026-11-20-bulk-transfer-handoff.md](2026-11-20-bulk-transfer-handoff.md): portable bulk-transfer / file-exchange handoff method (does not amend closeout freeze tip).
+  Concurrent PRs that also append to this index (for example #22) must keep **both** their new lines and this one when integrating; do not rebase solely to dodge the overlap.

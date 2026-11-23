@@ -42,7 +42,7 @@ Portable notes use repository locators (for example `luckgrid/agents`), branch n
 - Refresh Git registration, refs/tips and (when used) Herdr association before mutation after resume.
 - Partial or unavailable Git or Herdr observations stay explicit; never invent a clean or idle state.
 - When the note asks for publication, keep promote, exact-candidate check, PR create/update and landing as distinct host-owner steps. Cleanup is a separate step too, run by whoever the environment's rules authorize (in Workbench, the operator), not necessarily the owner. Resource cleanup (workers, eligible worktrees, panes) must leave retained history intact; context pruning is an explicit environment action, not part of ordinary done/tidy. Name the environment's publication skill for the host packet (in Workbench, `workbench-handoff`) when installed; if it is unavailable, stop before environment-only publication steps and keep the public fields above.
-- Bulk publication helpers (inspectable scripts staged through the environment’s file exchange) reduce repeated typing; they do not auto-approve pushes or replace separate owner checks. See `bulk-transfer`.
+- Bulk publication helpers (inspectable scripts staged through the environment’s file exchange) reduce repeated typing. Keep package identity, quarantine/inspection, safe extraction, acceptance, script review, execution and publication as separate owner actions; successful transfer never implies script-execution or publication authority. See `bulk-transfer`.
 
 ## Modes
 
