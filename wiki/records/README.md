@@ -33,3 +33,4 @@ The modular rewrite's [review and corrections](2026-11-14-modular-rewrite/review
 - [2026-11-24-ag1-1-validator-parity.md](2026-11-24-ag1-1-validator-parity.md): AG1.1 Cargo agents-check baseline lock and compare harness; shell checker retained.
 - [2026-11-24-session-capability-prep.md](2026-11-24-session-capability-prep.md): orchestration/workspace consumer inventory; session-view prep; Herdr kept operational.
 - [2026-11-24-autonomous-workflow-contracts.md](2026-11-24-autonomous-workflow-contracts.md): proposed portable coordination, PR-independent delivery, lifecycle hooks, provenance and harness-neutral continuity research.
+- [2026-11-24-merge-batch.md](2026-11-24-merge-batch.md): owner-authorized squash landing of #23, #25, #27 and #26 — published, landed and squash SHAs, branch fixes, checks; source only.
