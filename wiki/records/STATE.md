@@ -2,11 +2,11 @@
 id: AS-STATE
 kind: state
 title: State
-summary: "Where this repository (luckgrid/agents) stands. #24 squash-merged to main at cf86b6a… (2026-11-24): validator issue-12 coverage, M2 council, M3 orchestration, M4 wiki, bulk-transfer handoff. Eleven skills on main as source only—not pinned, not guest-installed. First agent_skills_commit still open. Draft #23 holds workspace-owned integration-delivery architecture. M5 grill is next."
+summary: "Where this repository (luckgrid/agents) stands. #24 on main at cf86b6a… (eleven skills, source only). Post-#24 STATE reconciliation and integration-delivery docs on the documentation candidate. M5 grill is draft source on feat/grill-module until merge; still not pinned or installed. First agent_skills_commit open."
 status: active
 created: 2026-11-12
-updated: 2026-11-24  # post-#24 STATE reconciliation: merged source vs pin/install; issue #12 closeout evidence
-related: [AS-REC-2026-11-24-ISSUE-12-CLOSEOUT, AS-REC-2026-11-24-INTEGRATION-DELIVERY, AS-ARCH-INTEGRATION-DELIVERY, AS-ADR-0002, AS-REC-2026-11-20-TAB-ROLE-AUDIT, AS-ARCH-CONTROL-RECORD-AUDIT, AS-REC-2026-11-18-WORKSPACE-HANDOFF, AS-REC-2026-11-17-WORKSPACE-MAINTAIN, AS-REC-2026-11-16-WORKSPACE-PR14-REVIEW, AS-ARCH-WORKSPACE-COORDINATION, AS-REC-2026-11-16-WORKSPACE-REVIEW, AS-REC-2026-11-16-WORKSPACE-SKILLS, AS-REC-2026-11-16-WORKSPACE-SESSION, AS-REC-2026-11-14-MODULAR-REWRITE, AS-ADR-0001, AS-ARCH-AGENTS-WORKSPACE, AS-RES-AGENTS-LINEAGE, AS-REC-2026-11-12-SKILL-MODULES, AS-RES-SKILL-REFERENCES, AS-PROGRAM, AS-ARCH-SKILL-SOURCES, AS-ARCH-GUEST-INSTALL, GW-ADR-0014]
+updated: 2026-11-24  # M5 grill draft source on feat/grill-module; post-#24 closeout retained
+related: [AS-REC-2026-11-24-GRILL, AS-REC-2026-11-24-ISSUE-12-CLOSEOUT, AS-REC-2026-11-24-INTEGRATION-DELIVERY, AS-ARCH-INTEGRATION-DELIVERY, AS-ADR-0002, AS-REC-2026-11-20-TAB-ROLE-AUDIT, AS-ARCH-CONTROL-RECORD-AUDIT, AS-REC-2026-11-18-WORKSPACE-HANDOFF, AS-REC-2026-11-17-WORKSPACE-MAINTAIN, AS-REC-2026-11-16-WORKSPACE-PR14-REVIEW, AS-ARCH-WORKSPACE-COORDINATION, AS-REC-2026-11-16-WORKSPACE-REVIEW, AS-REC-2026-11-16-WORKSPACE-SKILLS, AS-REC-2026-11-16-WORKSPACE-SESSION, AS-REC-2026-11-14-MODULAR-REWRITE, AS-ADR-0001, AS-ARCH-AGENTS-WORKSPACE, AS-RES-AGENTS-LINEAGE, AS-REC-2026-11-12-SKILL-MODULES, AS-RES-SKILL-REFERENCES, AS-PROGRAM, AS-ARCH-SKILL-SOURCES, AS-ARCH-GUEST-INSTALL, GW-ADR-0014]
 ---
 
 # State
@@ -53,7 +53,7 @@ related: [AS-REC-2026-11-24-ISSUE-12-CLOSEOUT, AS-REC-2026-11-24-INTEGRATION-DEL
 | AG3: settings and sandbox baseline with the agent-config overlay (stricter wins); GW-ADR-0011 amendment and gate A2 in Workstation | After AG2 | [steps](../architecture/agents-workspace.md#steps-and-proof-gates) |
 | M3: `orchestration` | **Merged source** on `main` via #24 with [AS-ADR-0002](decisions/0002-orchestration-namespace.md). Not pinned, not guest-installed. Historical dated records keep the earlier `multiplex` plan. `workspace-*` may name `orchestration` with a herdr-direct fallback once callers adopt it; that is documentation/method, not an install | [M3](../program.md#m3-orchestration), [AS-ADR-0002](decisions/0002-orchestration-namespace.md) |
 | M4: `wiki` | **Merged source** on `main` via #24. Not pinned or guest-installed | [M4](../program.md#m4-wiki) |
-| M5: `grill` | **Next** after M4 source on main | [M5](../program.md#m5-grill) |
+| M5: `grill` | **Draft source** on `feat/grill-module`: `skills/grill/` (modes grill, with-docs, choices). Not merged, not pinned, not guest-installed ([record](2026-11-24-grill-module.md)) | [M5](../program.md#m5-grill) |
 | Workspace-owned integration delivery | **Proposed** architecture + session on draft [#23](https://github.com/luckgrid/agents/pull/23); not installed | [architecture](../architecture/integration-delivery.md), [record](2026-11-24-workspace-owned-integration-delivery.md) |
 | M6: `design-system`; M7 then points to it | After M5 | [M6](../program.md#m6-design-system) |
 | M8: `frugal`; rtk and qmd as separate Workbench catalog items | After M6 | [M8](../program.md#m8-frugal) |
