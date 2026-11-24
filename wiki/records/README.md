@@ -32,3 +32,4 @@ The modular rewrite's [review and corrections](2026-11-14-modular-rewrite/review
 - [2026-11-24-grill-reference-audit.md](2026-11-24-grill-reference-audit.md): M5 grill scoped reference audit and questioning contract (AS-ADR-0003 D3).
 - [2026-11-24-ag1-1-validator-parity.md](2026-11-24-ag1-1-validator-parity.md): AG1.1 Cargo agents-check baseline lock and compare harness; shell checker retained.
 - [2026-11-24-session-capability-prep.md](2026-11-24-session-capability-prep.md): orchestration/workspace consumer inventory; session-view prep; Herdr kept operational.
+- [2026-11-24-autonomous-workflow-contracts.md](2026-11-24-autonomous-workflow-contracts.md): proposed portable coordination, PR-independent delivery, lifecycle hooks, provenance and harness-neutral continuity research.
