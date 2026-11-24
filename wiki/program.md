@@ -261,6 +261,8 @@ Replaces `grill-me` and `grilling`, and adds what `grill-with-docs` does. Modes:
 
 **Learns from:** mattpocock/skills `grilling`, `grill-me`, `grill-with-docs` and `domain-modeling`; obra/superpowers `brainstorming`. It comes after `wiki`, since its docs mode writes through `wiki`'s conventions.
 
+**Status (2026-11-24):** merged source on `main` via [#25](https://github.com/luckgrid/agents/pull/25) (`skills/grill/` with modes `grill`, `with-docs`, `choices`). Not pinned, not guest-installed. See [session](records/2026-11-24-grill-module.md).
+
 ## M6: `design-system`
 
 Work on, or with, luckgrid/design-system (public), so changes stay on its rails. Its repository and documentation decide; this module points the agent at them in the right order and carries the rails that are easiest to break:
