@@ -4,6 +4,7 @@
 //! extracted Python body from `docs/baseline-check.py` for comparison.
 
 use agents_check::{run_native, RunOptions};
+use clap::error::ErrorKind;
 use clap::{Parser, ValueEnum};
 use std::env;
 use std::io::Write;
@@ -87,8 +88,46 @@ fn run_baseline(root: &Path, argv: &[String]) -> i32 {
     }
 }
 
+fn usage_unknown(option: &str) -> ! {
+    // Match scripts/check.sh unknown-option wording (exit 2).
+    eprintln!("FAIL unknown option {option}");
+    eprintln!("usage: agents-check [--namespaces a,b,...] [<skills folder>]");
+    eprintln!("       agents-check --self-test");
+    std::process::exit(2);
+}
+
+fn parse_args() -> Args {
+    match Args::try_parse() {
+        Ok(args) => args,
+        Err(err) => {
+            if err.kind() == ErrorKind::UnknownArgument {
+                let unknown = env::args()
+                    .skip(1)
+                    .find(|a| {
+                        if a == "--" {
+                            return false;
+                        }
+                        let name = a.split_once('=').map(|(n, _)| n).unwrap_or(a.as_str());
+                        matches!(name.chars().next(), Some('-'))
+                            && !matches!(
+                                name,
+                                "--namespaces"
+                                    | "--self-test"
+                                    | "--engine"
+                                    | "--help"
+                                    | "-h"
+                            )
+                    })
+                    .unwrap_or_else(|| "unknown".into());
+                usage_unknown(&unknown);
+            }
+            err.exit();
+        }
+    }
+}
+
 fn main() {
-    let args = Args::parse();
+    let args = parse_args();
     let root = find_repo_root();
 
     match args.engine {
