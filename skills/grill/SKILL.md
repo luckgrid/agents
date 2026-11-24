@@ -38,3 +38,4 @@ choices from silence, drafts or passing checks. Prefer loading `wiki` when
 | `grill` | [grill](references/grill.md) | Rounds over a design tree until the frontier is empty |
 | `with-docs` | [with-docs](references/with-docs.md) | Grill against a wiki; write settled decisions through `wiki` |
 | `choices` | [choices](references/choices.md) | Prefer harness multiple-choice when available |
+| `questioning-contract` | [questioning-contract](references/questioning-contract.md) | Settled independent-primitive contract (AS-ADR-0003 D3) |
