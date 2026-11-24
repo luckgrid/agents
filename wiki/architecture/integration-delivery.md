@@ -95,6 +95,12 @@ The Workspaces Controller oversees **cross-repository coordination, changes in p
 - Workstation's [inbox and PR strategies PR #100](https://github.com/luckgrid/workstation/pull/100) and [agile program PR #101](https://github.com/luckgrid/workstation/pull/101) are related **proposals**, not installed delivery tooling. A dependency-aware landing batch is not necessarily a Git stack or a combined PR.
 - File-exchange/archive extraction admission, root credentials, guest-to-host publication and install policy remain environment owned. This pattern grants none of them.
 
+## Bounded host-side batches (portable contract)
+
+A single accepted delivery can trigger multiple **separate, individually guarded** host actions, such as closing and retiring superseded PR branches. Workbench owns the actual commands and credential boundary. A proposed batch is a **fixed, previewed plan** with exact targets, expected states and allowed operations, not blanket permission to run later mutations. One explicit owner confirmation may authorize all matching *routine* steps; the first warning, drift, denial or unexpected side effect stops remaining work. Every item still rechecks its native authority and expected head, and the interrupted batch retains receipts for a safe inspect-and-resume. Do not pipe a repeated `yes` into an interactive command or suppress a native safeguard.
+
+For Workbench's detailed design and owner-requested `wb done` use case, see [Workstation PR #102](https://github.com/luckgrid/workstation/pull/102). This portable principle neither installs a batch executor nor grants cross-guest publication authority.
+
 ## Initial proof scenarios (proposed)
 
 1. Two builders work in independent guest checkouts; one integrator combines checked tips; **exactly one integrated draft PR** is created, reviewed and subsequently updated at a new SHA after one builder fixes a finding. No duplicate PR or lost receipt.
