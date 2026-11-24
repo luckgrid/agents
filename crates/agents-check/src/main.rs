@@ -1,11 +1,9 @@
 //! AG1.1 skill-module validator CLI.
 //!
-//! Behavioral engine for this tip: the extracted baseline from `scripts/check.sh`
-//! (see `docs/baseline-check.py`), executed with `python3 -I` so CLI/exit/corpus
-//! stay locked while the Cargo workspace and compare harness land. A native Rust
-//! engine is the follow-on within AG1.1 before cutover; `scripts/check.sh` remains
-//! the shipped baseline until parity is independently reviewed.
+//! Default engine is the native Rust port. `--engine baseline` still runs the
+//! extracted Python body from `docs/baseline-check.py` for comparison.
 
+use agents_check::{run_native, RunOptions};
 use clap::{Parser, ValueEnum};
 use std::env;
 use std::io::Write;
@@ -18,6 +16,8 @@ const BASELINE_PY: &str = include_str!("../docs/baseline-check.py");
 enum Engine {
     /// Extracted baseline (identical logic to scripts/check.sh Python body).
     Baseline,
+    /// Native Rust port (default). Does not exec check.sh or Python.
+    Native,
 }
 
 #[derive(Parser, Debug)]
@@ -35,8 +35,8 @@ struct Args {
     #[arg(long = "self-test")]
     self_test: bool,
 
-    /// Validation engine (AG1.1 ships baseline lock only).
-    #[arg(long = "engine", value_enum, default_value_t = Engine::Baseline)]
+    /// Validation engine.
+    #[arg(long = "engine", value_enum, default_value_t = Engine::Native)]
     engine: Engine,
 
     /// Skills folder (default: skills/ under repository root).
@@ -48,7 +48,6 @@ fn find_repo_root() -> PathBuf {
     if let Ok(p) = env::var("AGENTS_CHECK_ROOT") {
         return PathBuf::from(p);
     }
-    // Prefer cwd when it contains scripts/check.sh; else walk up from exe.
     let cwd = env::current_dir().unwrap_or_else(|_| PathBuf::from("."));
     if cwd.join("scripts/check.sh").is_file() {
         return cwd;
@@ -92,19 +91,26 @@ fn main() {
     let args = Args::parse();
     let root = find_repo_root();
 
-    let mut py_argv: Vec<String> = Vec::new();
-    if let Some(ns) = &args.namespaces {
-        py_argv.push("--namespaces".into());
-        py_argv.push(ns.clone());
-    }
-    if args.self_test {
-        py_argv.push("--self-test".into());
-    } else if let Some(folder) = &args.skills_folder {
-        py_argv.push(folder.display().to_string());
-    }
-
     match args.engine {
+        Engine::Native => {
+            let opts = RunOptions {
+                namespaces: args.namespaces,
+                self_test: args.self_test,
+                skills_folder: args.skills_folder,
+            };
+            std::process::exit(run_native(&root, &opts));
+        }
         Engine::Baseline => {
+            let mut py_argv: Vec<String> = Vec::new();
+            if let Some(ns) = &args.namespaces {
+                py_argv.push("--namespaces".into());
+                py_argv.push(ns.clone());
+            }
+            if args.self_test {
+                py_argv.push("--self-test".into());
+            } else if let Some(folder) = &args.skills_folder {
+                py_argv.push(folder.display().to_string());
+            }
             let code = run_baseline(&root, &py_argv);
             std::process::exit(code);
         }

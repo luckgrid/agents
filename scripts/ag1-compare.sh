@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Compare scripts/check.sh and crates/agents-check (baseline engine) on the same
+# Compare scripts/check.sh and crates/agents-check --engine native on the same
 # invocations. Ordinary validation stays offline/read-only. Exit 0 only when
 # both exit statuses and stdout match for each case.
 set -euo pipefail
@@ -27,7 +27,7 @@ compare() {
   set +e
   "$root/scripts/check.sh" "$@" >"$a_out" 2>&1
   a_ec=$?
-  AGENTS_CHECK_ROOT="$root" "$bin" --engine baseline "$@" >"$b_out" 2>&1
+  AGENTS_CHECK_ROOT="$root" "$bin" --engine native "$@" >"$b_out" 2>&1
   b_ec=$?
   set -e
   if [[ "$a_ec" -ne "$b_ec" ]]; then
@@ -46,4 +46,4 @@ compare self-test --self-test
 compare skills-default
 compare skills-workspace --namespaces workspace skills
 
-echo "ok: ag1-compare matched check.sh and agents-check"
+echo "ok: ag1-compare matched check.sh and agents-check --engine native"

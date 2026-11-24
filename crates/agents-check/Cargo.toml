@@ -6,6 +6,10 @@ license.workspace = true
 description = "AG1.1 skill-module validator (parity with scripts/check.sh)"
 publish = false
 
+[lib]
+name = "agents_check"
+path = "src/lib.rs"
+
 [[bin]]
 name = "agents-check"
 path = "src/main.rs"
