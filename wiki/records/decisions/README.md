@@ -4,3 +4,4 @@ Decision records for this repository, numbered in order. Each carries an `AS-ADR
 
 - [0001 Agents monorepo](0001-agents-monorepo.md): expand into an agents monorepo renamed `luckgrid/agents`; skills as a package; public config defaults with a private overlay; Rust after M2; Claude Code and Codex for the first shared-config proof (owner, 2026-11-12).
 - [0002 Orchestration namespace](0002-orchestration-namespace.md): amend M3's namespace from `multiplex` to `orchestration`, with Herdr as one supported environment and historical records preserved (owner, 2026-11-23).
+- [0003 Portable skill capability evolution](0003-portable-skill-capabilities.md): accepted D1–D8/D10 and revised D9 capability archetypes, including `session-view` and multiple session capabilities; implementation remains separately gated.

@@ -50,3 +50,7 @@ or Herdr-core dependency follows from this naming decision.
 The original 2026-11-12 namespace choice and subsequent `multiplex` proposal
 remain historical evidence. This amendment changes current M3 naming and scope
 without rewriting that record.
+
+## Later amendment (2026-11-24)
+
+The owner selected `conduct` as the future target and separated session capability archetypes from backend implementations in [AS-ADR-0003](0003-portable-skill-capabilities.md). This page preserves the 2026-11-23 decision and its original source context. Actual `orchestration` source remains until a reviewed compatible migration; backend-specific behavior must retain a functioning replacement.

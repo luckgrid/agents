@@ -5,8 +5,8 @@ title: Roadmap
 summary: "The refactor to fully custom skill modules (owner, 2026-11-12): M0 removes the linked upstream skills, the herdr copy and every dependency around them, and sets the module layout, with a companion in Workstation that replaces the skills CLI with a copy installer; then workbench (in Workstation), council, orchestration, wiki, workspace, grill, design-system, a site-system project skill in that repository, frugal and triage, each written in Luckgrid's own words from a reference list of reviewed skills, in three tiers whose rules only tighten downward, every skill named `<namespace>` or `<namespace>-<name>` from one registry. Seventh round (2026-11-16): M10 workspace first before M2, expanded to herdr-backed management skills, first pin after those skills merge. The earlier items P1 to P3 are folded into the modules."
 status: active
 created: 2026-11-12
-updated: 2026-11-16  # seventh round: M10 first; five workspace* skills built; pin after M10; purpose/across-workspaces/intent records from #13; M0 merged #11; before that, sixth/fifth rounds and earlier history
-related: [AS-ARCH-WORKSPACE-COORDINATION, AS-REC-2026-11-16-WORKSPACE-SKILLS, AS-REC-2026-11-16-WORKSPACE-SESSION, AS-REC-2026-11-14-MODULAR-REWRITE, AS-ADR-0001, AS-ARCH-AGENTS-WORKSPACE, AS-STATE, AS-RES-SKILL-REFERENCES, AS-REC-2026-11-12-SKILL-MODULES, GW-ADR-0014, GW-ARCH-WORKBENCH-AGENT-WORKFLOWS, AS-ARCH-SKILL-SOURCES, AS-ARCH-GUEST-INSTALL]
+updated: 2026-11-24  # accepted skill-capability target and dependency-driven work packages
+related: [AS-ADR-0003, AS-ARCH-SKILL-CAPABILITY-EVOLUTION, AS-REC-2026-11-24-SKILL-SYSTEM-PLANNING, AS-ARCH-WORKSPACE-COORDINATION, AS-REC-2026-11-16-WORKSPACE-SKILLS, AS-REC-2026-11-16-WORKSPACE-SESSION, AS-REC-2026-11-14-MODULAR-REWRITE, AS-ADR-0001, AS-ARCH-AGENTS-WORKSPACE, AS-STATE, AS-RES-SKILL-REFERENCES, AS-REC-2026-11-12-SKILL-MODULES, GW-ADR-0014, GW-ARCH-WORKBENCH-AGENT-WORKFLOWS, AS-ARCH-SKILL-SOURCES, AS-ARCH-GUEST-INSTALL]
 ---
 
 # Roadmap
@@ -105,6 +105,12 @@ Module numbers are IDs and don't change; the build order is:
 6. **M3 `orchestration`**, **M4 `wiki`**, **M5 `grill`**. After M3, `workspace-*` names `orchestration` for backend steps and keeps a fallback line.
 7. **M6 `design-system`**; M7 then points to it instead of carrying its rules.
 8. **M8 `frugal`**, **M9 `triage`**.
+
+## Skill capability evolution (owner, 2026-11-24)
+
+[AS-ADR-0003](records/decisions/0003-portable-skill-capabilities.md) records the owner's accepted D1–D8/D10 and revised D9: `conduct` is M3's future target; portable workspace and multiple session capability archetypes separate from backend realization; `session-view` rather than `session-window`; independent `grill`, expanded Council with bounded delegated decisions, `write`, selectable wiki profiles, narrow math/verification and AG1.1 parity before AG1.2 expansion. The [target architecture](architecture/skill-capability-evolution.md) and [dependency-driven work packages](records/2026-11-24-skill-system-planning.md) govern the planning direction. D9's exact additional skill names and operation contracts are specification work. The owner prefers Kitty and Herdr Core in place of tmux and Zellij for forward-looking session capability research alongside current Herdr; this changes the comparison targets, not the current runtime.
+
+This amendment preserves existing M/AG IDs and historical rounds. The earlier order is superseded for future scheduling where the dependency-driven plan differs; the registry and module sections below describe existing names and historical plans until their reviewed source migrations. Do not register target names as shipped. M10 completion remains historical; portability is a follow-up. Wiki evidence blocks its structural refactor, not unrelated work. Workstation owns concrete runtime, adapters and installed pins. Source merge, pin, installation and live adoption remain separate gates. No new dependency, hook, privileged operation or admission is authorized.
 
 ## The module shape
 
@@ -335,7 +341,7 @@ It never files, pushes, tags or publishes; in the guest, `workbench` says who do
 
 ## Open questions for the owner
 
-None open: the three from the first rounds were answered on 2026-11-12 ([third round](#third-round-owner-2026-11-12)).
+The original three questions were answered on 2026-11-12 ([third round](#third-round-owner-2026-11-12)). The 2026-11-24 direction is accepted; exact session capability taxonomy, migration contracts and implementation proof remain specification work (see [planning](records/2026-11-24-skill-system-planning.md)).
 
 ## After the modules
 
