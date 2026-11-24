@@ -36,7 +36,7 @@ The logical delivery identifier should link existing requests, branches, checks,
 | --- | --- | --- | --- |
 | **Integrated** | Workstreams together form one tightly coupled outcome or one intended acceptance/release | Component worktrees remain local; integrate, then **one PR for the integrated branch**; remediation updates that same PR | Source checks plus independent integrated-head review and combined tests |
 | **Independent** | Each change can be accepted, merged, deployed or reverted separately | **One PR per independently accepted change**, no extra aggregate PR | Each PR reviewed on its own; a local combined candidate may be used to check compatibility without publishing it |
- 
+
 Select the strategy **before parallel builders start**, based on actual dependency, risk and acceptance boundaries. The operator may propose changing strategy when scope changes, but must preserve prior evidence and obtain the owner's direction for any already-published PRs; do not silently create duplicate publication surfaces or rewrite history. A shared release schedule alone does not require one combined PR. A temporary integration qualification is not a publication obligation.
 
 ## Integrated delivery flow
