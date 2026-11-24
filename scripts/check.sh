@@ -14,12 +14,12 @@ import os, pathlib, re, shutil, sys, tempfile, urllib.parse
 
 # This repository's namespaces. Source: the namespaces registry in
 # wiki/program.md (owner, 2026-11-14); change both together.
-NAMESPACES = ("council", "multiplex", "wiki", "workspace", "grill", "design-system", "frugal", "triage")
+NAMESPACES = ("council", "orchestration", "wiki", "workspace", "grill", "design-system", "frugal", "triage")
 # The fields the Agent Skills specification lists for SKILL.md's front matter.
 FIELDS = {"name", "description", "license", "compatibility", "metadata", "allowed-tools"}
 NAME_RE = re.compile(r"^[a-z0-9]+(-[a-z0-9]+)*$")
 SCHEME_RE = re.compile(r"^[A-Za-z][A-Za-z0-9+.-]*:")
-INLINE_LINK_RE = re.compile(r"\]\(\s*(<[^>]*>|[^)\s]+)(?:\s+[\"'(][^)]*)?\)")
+INLINE_LINK_RE = re.compile(r"\]\(\s*(<[^>]*>|[^)\s]+)(?:\s+[\"'(][^)]*)?\s*\)", re.S)
 REF_DEF_RE = re.compile(r"^\s{0,3}\[[^\]]+\]:\s*(<[^>]*>|\S+)")
 FENCE_RE = re.compile(r"^\s{0,3}(`{3,}|~{3,})")
 MODE_CELL_RE = re.compile(r"^`([^`]+)`$")
@@ -53,6 +53,46 @@ def unquote(value):
     return value
 
 
+def strip_yaml_comment(value):
+    """Strip a YAML comment outside quotes, where # starts after whitespace.
+
+    Plain scalars may contain apostrophes (for example don't); those are not
+    quote delimiters. Quoted tracking applies only when the value starts with
+    a single or double quote.
+    """
+    if not value:
+        return value
+    if value[0] not in "'\"":
+        i = 0
+        while i < len(value):
+            if value[i] == "#" and (i == 0 or value[i - 1].isspace()):
+                return value[:i].rstrip()
+            i += 1
+        return value
+    quote = None
+    i = 0
+    while i < len(value):
+        char = value[i]
+        if quote == "'":
+            if char == "'":
+                if i + 1 < len(value) and value[i + 1] == "'":
+                    i += 2
+                    continue
+                quote = None
+        elif quote == '"':
+            if char == "\\":
+                i += 2
+                continue
+            if char == '"':
+                quote = None
+        elif char in "'\"":
+            quote = char
+        elif char == "#" and (i == 0 or value[i - 1].isspace()):
+            return value[:i].rstrip()
+        i += 1
+    return value
+
+
 def front_matter(text, where, errors):
     """Top-level fields of the front matter, or None if it has none.
 
@@ -77,7 +117,9 @@ def front_matter(text, where, errors):
         elif parts and parts[0] == "":
             fields[key] = "\n".join(p.strip() for p in parts[1:])
         else:
-            fields[key] = unquote(" ".join(p.strip() for p in parts).strip())
+            value = " ".join(p.strip() for p in parts).strip()
+            value = strip_yaml_comment(value)
+            fields[key] = unquote(value)
 
     for n, line in enumerate(lines[1:end], 2):
         if not line.strip() or line.lstrip().startswith("#"):
@@ -134,27 +176,85 @@ def outside_code(text, spans=True):
 
 
 def links(lines):
+    """Inline links within blank-line paragraphs, plus reference definitions.
+
+    A multiline target may span lines inside one paragraph, but must not cross
+    a blank-line paragraph boundary.
+    """
+    start = 1
+    buf = []
+    def flush():
+        nonlocal start, buf
+        if not buf:
+            return
+        text = "\n".join(buf)
+        for m in INLINE_LINK_RE.finditer(text):
+            target = m.group(1)
+            yield start + text.count("\n", 0, m.start()), (
+                target[1:-1] if target.startswith("<") else target
+            )
+        start += len(buf)
+        buf = []
+
+    for line in lines:
+        if line.strip() == "":
+            yield from flush()
+            start += 1
+            continue
+        buf.append(line)
+    yield from flush()
     for n, line in enumerate(lines, 1):
-        targets = [m.group(1) for m in INLINE_LINK_RE.finditer(line)]
         m = REF_DEF_RE.match(line)
         if m:
-            targets.append(m.group(1))
-        for t in targets:
-            yield n, t[1:-1] if t.startswith("<") else t
+            target = m.group(1)
+            yield n, target[1:-1] if target.startswith("<") else target
 
 
 def tables(lines):
-    """Each Markdown table as a list of data rows, each a list of cells."""
+    """Each Markdown table as (data rows, issues).
+
+    Data rows keep only mode-table cells (backticked first cell). A same-width
+    continuation with outer pipes that is not a mode row is a malformed table
+    row (reported in issues), not silently dropped. Other same-width pipe
+    lines without outer pipes end the table as following prose. Header and
+    separator column counts must match or the pair is not a table.
+    """
     found, i = [], 0
     while i + 1 < len(lines):
         head, sep = lines[i].strip(), lines[i + 1].strip()
-        if head.startswith("|") and re.match(r"^\|?\s*:?-+:?\s*(\|\s*:?-+:?\s*)*\|?$", sep):
-            rows, i = [], i + 2
-            while i < len(lines) and lines[i].strip().startswith("|"):
-                cells = re.split(r"(?<!\\)\|", lines[i].strip().strip("|"))
-                rows.append([c.strip() for c in cells])
+        if re.match(r"^\|?\s*:?-+:?\s*(\|\s*:?-+:?\s*)*\|?$", sep) and "|" in head:
+            header_cells = re.split(r"(?<!\\)\|", head.strip().strip("|"))
+            sep_cells = re.split(r"(?<!\\)\|", sep.strip().strip("|"))
+            column_count = len(header_cells)
+            if len(sep_cells) != column_count:
                 i += 1
-            found.append(rows)
+                continue
+            rows, issues, i = [], [], i + 2
+            while i < len(lines) and "|" in lines[i]:
+                row_line = lines[i].strip()
+                cells = [c.strip() for c in re.split(r"(?<!\\)\|", row_line.strip("|"))]
+                outer = row_line.startswith("|") and row_line.endswith("|")
+                if len(cells) != column_count:
+                    # Wrong-width outer-piped lines are malformed table rows,
+                    # not silent end-of-table. Other wrong-width lines end the
+                    # table as following prose or a different structure.
+                    if outer:
+                        issues.append(f"mode-table has an invalid data row {row_line!r}")
+                        i += 1
+                        continue
+                    break
+                if cells and MODE_CELL_RE.match(cells[0]):
+                    rows.append(cells)
+                    i += 1
+                    continue
+                # Same column count but not a mode row: outer-piped lines are
+                # malformed table rows; otherwise treat as following prose.
+                if outer:
+                    issues.append(f"mode-table has an invalid data row {row_line!r}")
+                    i += 1
+                    continue
+                break
+            found.append((rows, issues))
         else:
             i += 1
     return found
@@ -246,15 +346,17 @@ def check_skill(folder, namespaces):
 
     if refs:
         stems = {r.stem for r in refs}
-        best, best_hits = None, 0
-        for rows in tables(outside_code(text, spans=False)):
+        best, best_hits, best_issues = None, 0, []
+        for rows, issues in tables(outside_code(text, spans=False)):
             words = [MODE_CELL_RE.match(row[0]).group(1) for row in rows if row and MODE_CELL_RE.match(row[0])]
             hits = len(stems & set(words))
             if hits > best_hits:
-                best, best_hits = rows, hits
+                best, best_hits, best_issues = rows, hits, issues
         if best is None:
             errors.append(f"{where}: no mode table whose first cells are the references' mode words in backticks")
         else:
+            for issue in best_issues:
+                errors.append(f"{where}: {issue}")
             seen = {}
             for row in best:
                 m = MODE_CELL_RE.match(row[0]) if row else None
@@ -374,6 +476,96 @@ def self_test():
         with open(d / "SKILL.md", "a", encoding="utf-8") as f:
             f.write("\nA line.\n" * 250)
         expect("long-skill-md", check_skill(d, ("fixture",)), None, warn=f"lines (the specification suggests at most {MAX_LINES})")
+
+        d = copy("multiline-link")
+        with open(d / "SKILL.md", "a", encoding="utf-8") as f:
+            f.write("\n[missing](\nreferences/missing.md\n)\n")
+        expect("multiline-link", check_skill(d, ("fixture",)), "does not resolve to a file")
+        d = copy("yaml-inline-comments")
+        skill_text = (d / "SKILL.md").read_text(encoding="utf-8")
+        skill_text = skill_text.replace("name: fixture", 'name: "fixture" # module name')
+        skill_text = skill_text.replace("description: A module for scripts/check.sh --self-test, not a real skill. Nothing installs it.", 'description: "A # module for scripts/check.sh --self-test." # fixture')
+        (d / "SKILL.md").write_text(skill_text, encoding="utf-8")
+        expect("yaml-inline-comments", check_skill(d, ("fixture",)), None)
+        d = copy("yaml-comment-only-description")
+        skill_text = (d / "SKILL.md").read_text(encoding="utf-8").replace(
+            "description: A module for scripts/check.sh --self-test, not a real skill. Nothing installs it.",
+            "description: # deliberately absent",
+        )
+        (d / "SKILL.md").write_text(skill_text, encoding="utf-8")
+        expect("yaml-comment-only-description", check_skill(d, ("fixture",)), "description missing")
+        d = copy("mode-table-without-outer-pipes")
+        skill_text = (d / "SKILL.md").read_text(encoding="utf-8")
+        skill_text = skill_text.replace(
+            "| Mode | Reference | Use |\n| --- | --- | --- |\n| `check` | [check](references/check.md) | When the self-test runs |",
+            "Mode | Reference | Use\n--- | --- | ---\n`check` | [check](references/check.md) | When the self-test runs",
+        )
+        (d / "SKILL.md").write_text(skill_text, encoding="utf-8")
+        expect("mode-table-without-outer-pipes", check_skill(d, ("fixture",)), None)
+        d = copy("mode-table-mixed-pipes")
+        skill_text = (d / "SKILL.md").read_text(encoding="utf-8")
+        skill_text = skill_text.replace(
+            "| `check` | [check](references/check.md) | When the self-test runs |",
+            "`check` | [check](references/check.md) | When the self-test runs",
+        )
+        (d / "SKILL.md").write_text(skill_text, encoding="utf-8")
+        expect("mode-table-mixed-pipes", check_skill(d, ("fixture",)), None)
+        parsed = tables(["| Mode | Reference |", "| --- | --- |", "| `check` | check.md |", "Use A | B for comparison"])
+        if len(parsed) != 1 or len(parsed[0][0]) != 1 or parsed[0][1]:
+            failures.append(f"self-test table-followed-by-prose: expected one row no issues, got {parsed!r}")
+        else:
+            passed += 1
+            print("pass table-followed-by-prose: prose excluded")
+        parsed = tables(["| Mode | Reference |", "| --- | --- |", "`check` | check.md", "Use A | B for comparison"])
+        if len(parsed) != 1 or len(parsed[0][0]) != 1 or parsed[0][1]:
+            failures.append(f"self-test mixed-table-followed-by-prose: expected one row no issues, got {parsed!r}")
+        else:
+            passed += 1
+            print("pass mixed-table-followed-by-prose: prose excluded")
+        parsed = tables(["Mode | Reference", "--- | ---", "`check` | check.md", "Use A | B for comparison"])
+        if len(parsed) != 1 or len(parsed[0][0]) != 1 or parsed[0][1]:
+            failures.append(f"self-test unpiped-table-followed-by-prose: expected one row no issues, got {parsed!r}")
+        else:
+            passed += 1
+            print("pass unpiped-table-followed-by-prose: prose excluded")
+        parsed = tables(["| Mode | Reference |", "| --- | --- |", "| `check` | check.md |", "| ghost | missing.md |"])
+        if len(parsed) != 1 or len(parsed[0][0]) != 1 or not any("invalid data row" in x for x in parsed[0][1]):
+            failures.append(f"self-test table-malformed-extra-row: expected one row plus invalid-row issue, got {parsed!r}")
+        else:
+            passed += 1
+            print("pass table-malformed-extra-row: invalid row reported")
+        parsed = tables(["| Mode | Reference |", "| --- | --- |", "| `check` | check.md |", "| too | many | cells | here |"])
+        if len(parsed) != 1 or len(parsed[0][0]) != 1 or not any("invalid data row" in x for x in parsed[0][1]):
+            failures.append(f"self-test table-malformed-wrong-width: expected one row plus invalid-row issue, got {parsed!r}")
+        else:
+            passed += 1
+            print("pass table-malformed-wrong-width: wrong-width row reported")
+        parsed = tables(["| Mode | Reference | Use |", "| --- | --- |", "| `check` | check.md | when |"])
+        if parsed:
+            failures.append(f"self-test table-header-sep-mismatch: expected no table, got {parsed!r}")
+        else:
+            passed += 1
+            print("pass table-header-sep-mismatch: not a table")
+        d = copy("yaml-plain-apostrophe-comment")
+        skill_text = (d / "SKILL.md").read_text(encoding="utf-8").replace(
+            "description: A module for scripts/check.sh --self-test, not a real skill. Nothing installs it.",
+            "description: don't strip the apostrophe # trailing comment",
+        )
+        (d / "SKILL.md").write_text(skill_text, encoding="utf-8")
+        expect("yaml-plain-apostrophe-comment", check_skill(d, ("fixture",)), None)
+        d = copy("multiline-link-across-paragraph")
+        with open(d / "SKILL.md", "a", encoding="utf-8") as f:
+            f.write("\n[missing](\n\nreferences/missing.md\n)\n")
+        # Blank line breaks the link; the orphan target must not be checked as a link.
+        expect("multiline-link-across-paragraph", check_skill(d, ("fixture",)), None)
+        d = copy("mode-table-malformed-row")
+        skill_text = (d / "SKILL.md").read_text(encoding="utf-8")
+        skill_text = skill_text.replace(
+            "| `check` | [check](references/check.md) | When the self-test runs |",
+            "| `check` | [check](references/check.md) | When the self-test runs |\n| ghost | missing.md | When broken |",
+        )
+        (d / "SKILL.md").write_text(skill_text, encoding="utf-8")
+        expect("mode-table-malformed-row", check_skill(d, ("fixture",)), "invalid data row")
 
         empty = pathlib.Path(tmp, "empty", "skills")
         empty.mkdir(parents=True)

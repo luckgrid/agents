@@ -2,16 +2,16 @@
 id: AS-STATE
 kind: state
 title: State
-summary: "Where this repository (luckgrid/agents) stands. M0 merged (#11); U16 copy installer merged in Workstation (#51); no agents commit pinned yet. Seventh round: workspace (M10) merged as #14; workspace-handoff merged as #16 (`3a6bbbf`, 2026-11-18). M2 `council` source (council, council-review, council-remediate) and Control–Record–Audit discovery with #17 (2026-11-20), not installed. First agent_skills_commit still open (with M1 Workbench skills). Common coordination API proposed (#13)."
+summary: "Where this repository (luckgrid/agents) stands. M0 merged (#11); U16 copy installer merged in Workstation (#51); no agents commit pinned yet. Seventh round: workspace (M10) merged as #14; workspace-handoff merged as #16 (`3a6bbbf`, 2026-11-18). M2 `council` source with #17 (2026-11-20), not installed. M3 namespace amended to `orchestration` (AS-ADR-0002); module is draft source on a feature branch until merge, pin and guest install. First agent_skills_commit still open. Common coordination API proposed (#13)."
 status: active
 created: 2026-11-12
-updated: 2026-11-20  # closeout: merge #16-on-main STATE (docs A) with Control–Record–Audit discovery; earlier history in git log
-related: [AS-REC-2026-11-20-TAB-ROLE-AUDIT, AS-ARCH-CONTROL-RECORD-AUDIT, AS-REC-2026-11-18-WORKSPACE-HANDOFF, AS-REC-2026-11-17-WORKSPACE-MAINTAIN, AS-REC-2026-11-16-WORKSPACE-PR14-REVIEW, AS-ARCH-WORKSPACE-COORDINATION, AS-REC-2026-11-16-WORKSPACE-REVIEW, AS-REC-2026-11-16-WORKSPACE-SKILLS, AS-REC-2026-11-16-WORKSPACE-SESSION, AS-REC-2026-11-14-MODULAR-REWRITE, AS-ADR-0001, AS-ARCH-AGENTS-WORKSPACE, AS-RES-AGENTS-LINEAGE, AS-REC-2026-11-12-SKILL-MODULES, AS-RES-SKILL-REFERENCES, AS-PROGRAM, AS-ARCH-SKILL-SOURCES, AS-ARCH-GUEST-INSTALL, GW-ADR-0014]
+updated: 2026-11-23  # M3 orchestration namespace amendment (AS-ADR-0002); draft source vs merged/installed gates
+related: [AS-ADR-0002, AS-REC-2026-11-20-TAB-ROLE-AUDIT, AS-ARCH-CONTROL-RECORD-AUDIT, AS-REC-2026-11-18-WORKSPACE-HANDOFF, AS-REC-2026-11-17-WORKSPACE-MAINTAIN, AS-REC-2026-11-16-WORKSPACE-PR14-REVIEW, AS-ARCH-WORKSPACE-COORDINATION, AS-REC-2026-11-16-WORKSPACE-REVIEW, AS-REC-2026-11-16-WORKSPACE-SKILLS, AS-REC-2026-11-16-WORKSPACE-SESSION, AS-REC-2026-11-14-MODULAR-REWRITE, AS-ADR-0001, AS-ARCH-AGENTS-WORKSPACE, AS-RES-AGENTS-LINEAGE, AS-REC-2026-11-12-SKILL-MODULES, AS-RES-SKILL-REFERENCES, AS-PROGRAM, AS-ARCH-SKILL-SOURCES, AS-ARCH-GUEST-INSTALL, GW-ADR-0014]
 ---
 
 # State
 
-**As of 2026-11-20.** Runtime results remain as their records give them; the documentation research baseline is recorded in the [agents monorepo session](2026-11-12-agents-monorepo.md). Workspaces hygiene for this guest is in the [maintain session](2026-11-17-workspace-maintain.md). Handoff refinement is in the [handoff session](2026-11-18-workspace-handoff.md). Control–Record–Audit tab-role discovery is proposed in [architecture](../architecture/control-record-audit.md) and the [discovery record](2026-11-20-tab-role-audit-discovery.md) (layout remains Workstation).
+**As of 2026-11-23.** Runtime results remain as their records give them; the documentation research baseline is recorded in the [agents monorepo session](2026-11-12-agents-monorepo.md). Workspaces hygiene for this guest is in the [maintain session](2026-11-17-workspace-maintain.md). Handoff refinement is in the [handoff session](2026-11-18-workspace-handoff.md). Control–Record–Audit tab-role discovery is proposed in [architecture](../architecture/control-record-audit.md) and the [discovery record](2026-11-20-tab-role-audit-discovery.md) (layout remains Workstation).
 
 ## Where it stands
 
@@ -49,8 +49,8 @@ related: [AS-REC-2026-11-20-TAB-ROLE-AUDIT, AS-ARCH-CONTROL-RECORD-AUDIT, AS-REC
 | AG1: Rust validator replaces `check.sh`; Moon admitted for this repository | After M2; alongside M3 to M9 | [agents items](../program.md#agents-monorepo-owner-2026-11-12) |
 | AG2: shared user-level instructions for Claude Code and Codex | After AG1 | [steps](../architecture/agents-workspace.md#steps-and-proof-gates) |
 | AG3: settings and sandbox baseline with the agent-config overlay (stricter wins); GW-ADR-0011 amendment and gate A2 in Workstation | After AG2 | [steps](../architecture/agents-workspace.md#steps-and-proof-gates) |
-| M3: `multiplex` (replaces `herdr`; herdr the default backend, H1 and H3); then `workspace-*` names it | After M2 | [M3](../program.md#m3-multiplex) |
-| M4: `wiki` | After M3 | [M4](../program.md#m4-wiki) |
+| M3: `orchestration` (amends the planned `multiplex` name; portable coordination; Herdr one supported mapping) | **Draft source** on `feat/orchestration-module` with [AS-ADR-0002](decisions/0002-orchestration-namespace.md): module, registry and roadmap updated in that branch. Not merged to main, not pinned, not guest-installed. Historical dated records keep the earlier `multiplex` plan. After merge, `workspace-*` may name `orchestration` with a herdr-direct fallback | [M3](../program.md#m3-orchestration), [AS-ADR-0002](decisions/0002-orchestration-namespace.md) |
+| M4: `wiki` | After M3 (suggested sequence; no hard prerequisite established) | [M4](../program.md#m4-wiki) |
 | M5: `grill` | After M4 | [M5](../program.md#m5-grill) |
 | M6: `design-system`; M7 then points to it | After M5 | [M6](../program.md#m6-design-system) |
 | M8: `frugal`; rtk and qmd as separate Workbench catalog items | After M6 | [M8](../program.md#m8-frugal) |
@@ -64,6 +64,7 @@ The owner's decisions that bind this repository, newest first. Groundwork's GW-A
 
 | Date | Decision | Where recorded |
 | --- | --- | --- |
+| 2026-11-23 | M3 namespace amended from planned `multiplex` to `orchestration`: portable agent/task/workflow/handoff coordination; Herdr is a supported environment, not the namespace definition. Draft source on the feature branch until merge, pin and install remain separate gates. Historical `multiplex` wording in dated records is preserved | [AS-ADR-0002](decisions/0002-orchestration-namespace.md), [M3](../program.md#m3-orchestration) |
 | 2026-11-20 | Control/Record/Audit: public method separates harness profile, standing tab role and per-audit assignment; Audit uses council + role brief; Record indexes durable evidence; layout/ratios are Workstation; specialty panes are examples not mandatory agents; discovery only—no session rearrange | [architecture](../architecture/control-record-audit.md), [record](2026-11-20-tab-role-audit-discovery.md) |
 | 2026-11-16 | Seventh round: this repository records common patterns for agents and agent workflows, from the owner's preferred tools, apps and configs, used through Workstation. `workspace` (M10) comes first, for herdr workspaces (one per namespace folder, on `develop` or else `main`) and worktrees (nested at most two levels as a UI convention). Agents may hand off to another workspace, or edit skills there on a branch of its own with approval. Records capture intent, not quotes unless asked, in one schema; a Workbench tool for it is proposed. Cursor bootstrap sessions run with the owner approving each command, and config changes are logged for later review. Bootstrap session answers: five `workspace*` skills; herdr-direct until M3; first pin after these skills merge; nesting `<parent>--<name>` from the clone workspace ID | [record](2026-11-16-workspace-skills/README.md#the-owners-intent-2026-11-16), [session](2026-11-16-workspace-skills/session.md) |
 | 2026-11-15 | M0 in the guest: `check.sh`'s root check stays strict where the sandbox shows a placeholder at a removed path; the owner runs it outside the sandbox, and that run is the evidence. The owner removes a file the sandbox mounts read-only (`.gitmodules`) | [record](2026-11-15-m0.md#the-owners-choices-2026-11-15) |

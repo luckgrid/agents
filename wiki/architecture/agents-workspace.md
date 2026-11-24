@@ -27,7 +27,7 @@ The [decision](../records/decisions/0001-agents-monorepo.md) records what the ow
 A directory is created when it has content, not ahead of time. Not planned:
 
 - **`providers/` and `adapters/`.** What a provider supports is recorded in the harness README that uses it, with evidence. A separate description package would copy native state that goes stale.
-- **Session backends** (herdr, tmux, TUIOS). Their settings belong to Workbench, behind its adapter contract (WS-ADR-0004 decision 9); the [`multiplex`](../program.md#m3-multiplex) module describes how agents use them.
+- **Session backends** (herdr, tmux, TUIOS). Their settings belong to Workbench, behind its adapter contract (WS-ADR-0004 decision 9); the [`orchestration`](../program.md#m3-orchestration) module describes portable coordination and maps supported environments.
 - **A `tools/` package.** A reusable tool gets its own directory when one exists. A module that needs a tool checks for it and never installs it.
 
 ## Who interprets which configuration
