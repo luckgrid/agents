@@ -1,6 +1,6 @@
 # questioning-contract
 
-Settled contract for `grill` as an **independently reusable questioning primitive** ([AS-ADR-0003](../../../wiki/records/decisions/0003-portable-skill-capabilities.md) D3). Council may compose this method later; this skill does not implement Council expansion.
+Settled contract for `grill` as an **independently reusable questioning primitive** (AS-ADR-0003 D3). Council may compose this method later; this skill does not implement Council expansion.
 
 ## Method
 
