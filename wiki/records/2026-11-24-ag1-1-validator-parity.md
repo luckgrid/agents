@@ -25,7 +25,7 @@ Complete AG1.1 (AS-ADR-0003 D7 / planning P3): a native Rust validator that pres
 | Non-delegation proof | `scripts/ag1-native-proof.sh` — source, strace, PATH without python3 |
 | Shell baseline | `scripts/check.sh` **retained** until cutover acceptance |
 
-## Checks (tip `bade3c846be40f20c17221237e2593efd71387f8`)
+## Checks (tip `1450eb1a8f3d582a55a2a9093b64e86df795e652`)
 
 - `cargo build -p agents-check` PASS
 - `./scripts/ag1-compare.sh` PASS (self-test, skills-default, skills-workspace)
