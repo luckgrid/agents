@@ -11,6 +11,7 @@ non-wiki notes the environment allows.
 2. Run [grill](grill.md) rounds. Before recommending an answer:
    - challenge terms against the wiki's glossary and accepted decisions;
    - sharpen fuzzy language into checkable claims;
+   - test settled wording with a concrete scenario when ambiguity remains;
    - verify claims against code or cited records when the claim is factual;
    - mark speculation as speculation.
 3. When the owner settles a decision that belongs in the wiki, write it through
