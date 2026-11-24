@@ -97,6 +97,10 @@ GitHub now confirms that the five original drafts [#18](https://github.com/luckg
 
 Draft [#23](https://github.com/luckgrid/agents/pull/23) is the separate **integration-delivery architecture follow-up**, not part of the #24 squash. Keep it open for review against current `main` and reconcile any evolved records and current-state declarations before landing. M3/M4 source merged is **not** evidence that the corresponding Workbench pin, skills installation or runtime admission has occurred. File exchange and archive extraction remain unadmitted.
 
+### STATE reconciliation (same documentation candidate)
+
+The PASS-WITH-NOTES follow-up—stale M2/M3/M4 and validator positions in [STATE](STATE.md)—is addressed on this PR #23 tip: `main` @ `cf86b6a…` is recorded as **merged source** for council, orchestration, wiki, bulk-transfer and the issue-#12 validator line; pin/install remain open. Historical decision rows keep their original wording; a 2026-11-24 row records the squash without rewriting earlier observations. Issue-#12 closeout evidence is in [2026-11-24-issue-12-validator-closeout.md](2026-11-24-issue-12-validator-closeout.md) (GitHub close remains host-authorized).
+
 ### Follow-up workflow friction observed during cleanup
 
 Closing five superseded PRs still left one `wb done REPO BRANCH` invocation and confirmation per branch. The owner requests **bounded bulk command handling**: inspect a named set once, approve the exact plan with a single `yes`, and automatically process eligible items until the first warning, stale precondition or failure, with durable per-item receipts and safe resume. Workstation owns the concrete `wb` design; the portable principle is grouped requests with explicit scope and per-item native guards, **not** a new agent permission or permission to execute arbitrary guest-authored scripts. See the companion [Workstation documentation PR #102](https://github.com/luckgrid/workstation/pull/102), whose detailed batch-operation proposal is part of this session follow-up.
