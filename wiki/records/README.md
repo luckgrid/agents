@@ -23,3 +23,5 @@ The modular rewrite's [review and corrections](2026-11-14-modular-rewrite/review
 - [2026-11-20-tab-role-audit-discovery.md](2026-11-20-tab-role-audit-discovery.md): Control / Record / Audit tab-role discovery (proposed architecture; layout remains Workstation).
 - [2026-11-20-bulk-transfer-handoff.md](2026-11-20-bulk-transfer-handoff.md): portable bulk-transfer / file-exchange handoff method (does not amend closeout freeze tip).
 - [2026-11-23-agents-orchestration-parallel-development.md](2026-11-23-agents-orchestration-parallel-development.md): owner chose orchestration over multiplex; Workbench standing-operator coordination; validator/M3/M4 parallel delivery as draft PRs #19–#21 and the pending independent review.
+- [2026-11-24-ag1-1-validator-parity.md](2026-11-24-ag1-1-validator-parity.md): AG1.1 Cargo agents-check baseline lock and compare harness; shell checker retained.
+- [2026-11-24-session-capability-prep.md](2026-11-24-session-capability-prep.md): orchestration/workspace consumer inventory; session-view prep; Herdr kept operational.

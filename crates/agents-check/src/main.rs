@@ -1,0 +1,112 @@
+//! AG1.1 skill-module validator CLI.
+//!
+//! Behavioral engine for this tip: the extracted baseline from `scripts/check.sh`
+//! (see `docs/baseline-check.py`), executed with `python3 -I` so CLI/exit/corpus
+//! stay locked while the Cargo workspace and compare harness land. A native Rust
+//! engine is the follow-on within AG1.1 before cutover; `scripts/check.sh` remains
+//! the shipped baseline until parity is independently reviewed.
+
+use clap::{Parser, ValueEnum};
+use std::env;
+use std::io::Write;
+use std::path::{Path, PathBuf};
+use std::process::{Command, Stdio};
+
+const BASELINE_PY: &str = include_str!("../docs/baseline-check.py");
+
+#[derive(Debug, Clone, ValueEnum)]
+enum Engine {
+    /// Extracted baseline (identical logic to scripts/check.sh Python body).
+    Baseline,
+}
+
+#[derive(Parser, Debug)]
+#[command(
+    name = "agents-check",
+    about = "AG1.1 skill-module validator (parity with scripts/check.sh)",
+    disable_version_flag = true
+)]
+struct Args {
+    /// Comma-separated namespaces (default: repository registry).
+    #[arg(long = "namespaces", value_name = "LIST")]
+    namespaces: Option<String>,
+
+    /// Run the embedded self-test corpus.
+    #[arg(long = "self-test")]
+    self_test: bool,
+
+    /// Validation engine (AG1.1 ships baseline lock only).
+    #[arg(long = "engine", value_enum, default_value_t = Engine::Baseline)]
+    engine: Engine,
+
+    /// Skills folder (default: skills/ under repository root).
+    #[arg(value_name = "SKILLS_FOLDER")]
+    skills_folder: Option<PathBuf>,
+}
+
+fn find_repo_root() -> PathBuf {
+    if let Ok(p) = env::var("AGENTS_CHECK_ROOT") {
+        return PathBuf::from(p);
+    }
+    // Prefer cwd when it contains scripts/check.sh; else walk up from exe.
+    let cwd = env::current_dir().unwrap_or_else(|_| PathBuf::from("."));
+    if cwd.join("scripts/check.sh").is_file() {
+        return cwd;
+    }
+    let mut cur = cwd;
+    for _ in 0..8 {
+        if cur.join("scripts/check.sh").is_file() {
+            return cur;
+        }
+        if !cur.pop() {
+            break;
+        }
+    }
+    env::current_dir().unwrap_or_else(|_| PathBuf::from("."))
+}
+
+fn run_baseline(root: &Path, argv: &[String]) -> i32 {
+    let mut child = Command::new("python3")
+        .arg("-I")
+        .arg("-")
+        .arg(root)
+        .args(argv)
+        .stdin(Stdio::piped())
+        .stdout(Stdio::inherit())
+        .stderr(Stdio::inherit())
+        .spawn()
+        .expect("failed to spawn python3 -I for baseline engine");
+    {
+        let mut stdin = child.stdin.take().expect("stdin");
+        stdin
+            .write_all(BASELINE_PY.as_bytes())
+            .expect("write baseline script");
+    }
+    match child.wait() {
+        Ok(status) => status.code().unwrap_or(1),
+        Err(_) => 1,
+    }
+}
+
+fn main() {
+    let args = Args::parse();
+    let root = find_repo_root();
+
+    let mut py_argv: Vec<String> = Vec::new();
+    if let Some(ns) = &args.namespaces {
+        py_argv.push("--namespaces".into());
+        py_argv.push(ns.clone());
+    }
+    if args.self_test {
+        py_argv.push("--self-test".into());
+    } else if let Some(folder) = &args.skills_folder {
+        py_argv.push(folder.display().to_string());
+    }
+
+    match args.engine {
+        Engine::Baseline => {
+            let code = run_baseline(&root, &py_argv);
+            std::process::exit(code);
+        }
+    }
+}
