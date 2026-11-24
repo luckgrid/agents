@@ -104,6 +104,6 @@ Current council: **one lens per reviewer turn**; required spec/standards/correct
 
 ## Non-claims
 
-- Not installed F1 or a new multiplex requirement before pilots continue.
+- Not installed F1 or a new orchestration requirement before pilots continue.
 - Not a reason to rearrange current long-running sessions from this page alone.
 - Not automatic provider diversity or sandbox isolation from pane labels.
