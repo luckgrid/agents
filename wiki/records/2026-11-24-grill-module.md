@@ -27,7 +27,6 @@ Deliver the M5 `grill` skill as specified in [program.md](../program.md#m5-grill
 ## Decisions
 
 - Settled [questioning-contract](../../skills/grill/references/questioning-contract.md) per AS-ADR-0003 D3; reference audit recorded.
-
 - One skill folder `skills/grill/` with flat references `grill.md`, `with-docs.md`, `choices.md`.
 - Own words only; credits in `CREDITS.md`.
 - No CLI, pin, install or exchange admission in this delivery.
