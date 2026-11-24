@@ -26,7 +26,7 @@ flowchart TD
     A[Resources, profiles and contracts]
     T[Deterministic validators and helpers]
     E[Environment adapters and policy]
-    B[Herdr, tmux, other interfaces]
+    B[Herdr, Kitty, Herdr Core, other interfaces]
     D --> C
     D --> R
     D --> K
@@ -90,13 +90,16 @@ flowchart TD
     V --> M
     O --> M
     M --> H[Herdr]
-    M --> T[tmux]
+    M --> K[Kitty]
+    M --> HC[Herdr Core]
     M --> Z[Other interfaces]
 ```
 
 For every operation define intent, input/target identity, required capability, authority, preconditions, freshness, output, failure behavior and recovery. Compare actual versioned capabilities as native, safely composed, unavailable or unverified. Do not force equivalent semantics across incompatible systems or guess unsupported mutations. Missing backend support must yield an allowed alternative or explicit limitation. Start read-only; test isolated open/create/focus before lifecycle mutation and destructive maintenance. Never infer agent ownership from a visible pane or name alone.
 
-Generic mappings may be separate portable resources where useful. Workstation retains its concrete Herdr runtime, environment/version checks, socket, agent ownership, permission and host/guest controls. Neither Herdr nor tmux belongs in general conduct. No standalone tool-named namespace is required by D9. Keep existing working paths until compatibility evidence supports migration.
+**Preferred implementation references (owner refinement, 2026-11-24):** use [Kitty native sessions](https://sw.kovidgoyal.net/kitty/sessions/), [Kitty remote control](https://sw.kovidgoyal.net/kitty/remote-control/) and [Herdr Core](https://herdr.dev/core/) in place of tmux and Zellij in the forward-looking session capability comparison. Retain the existing Herdr TUI as the current Workbench integration. Kitty informs terminal-native views, layouts, navigation and interface control; Herdr Core informs independently owned PTYs, session lifecycle, client attachment and programmable control. These are complementary implementation layers, not interchangeable substitutes. Do not infer process persistence from a restored Kitty layout or identical API/authority semantics across clients. Compare actual supported versions, feature discovery, identity, lifecycle, control permissions and failure/recovery behavior. Existing tmux support and historical research remain intact until a separate reviewed runtime migration. Neither Kitty nor Herdr Core is an approved new dependency or installation by this choice.
+
+Generic mappings may be separate portable resources where useful. Workstation retains its concrete Herdr runtime, environment/version checks, socket, agent ownership, permission and host/guest controls. No concrete backend commands belong in general conduct. No standalone tool-named namespace is required by D9. Keep existing working paths until compatibility evidence supports migration.
 
 ## Reasoning and delegated authority
 
