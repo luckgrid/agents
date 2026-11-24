@@ -52,6 +52,7 @@ A candidate that merges reviewed heads is **not** automatically covered by those
 For an **integrated delivery**, publish one integration draft PR; the independent reviewer reviews that unified result while source-worktree evidence remains traceable. Findings go back to the workspace operator, not as uncontrolled direct edits from the reviewer.
 
 The operator chooses between:
+
 - Sending component-specific findings with exact file, issue and acceptance condition back to the current worktree owners.
 - Starting new bounded workers/subtasks where the original builder is unavailable or scope changes.
 - Fixing small integration-specific problems directly in the integration checkout, or delegating that checkout to a dedicated integrator.
@@ -104,4 +105,3 @@ The PASS-WITH-NOTES follow-up—stale M2/M3/M4 and validator positions in [STATE
 ### Follow-up workflow friction observed during cleanup
 
 Closing five superseded PRs still left one `wb done REPO BRANCH` invocation and confirmation per branch. The owner requests **bounded bulk command handling**: inspect a named set once, approve the exact plan with a single `yes`, and automatically process eligible items until the first warning, stale precondition or failure, with durable per-item receipts and safe resume. Workstation owns the concrete `wb` design; the portable principle is grouped requests with explicit scope and per-item native guards, **not** a new agent permission or permission to execute arbitrary guest-authored scripts. See the companion [Workstation documentation PR #102](https://github.com/luckgrid/workstation/pull/102), whose detailed batch-operation proposal is part of this session follow-up.
-
