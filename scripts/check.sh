@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Check a folder of Agent Skills modules: front matter, folder contents,
-# references, links and the mode table. Needs only python3 (3.9 or later).
+# references, links and the mode table. Needs only python3 (3.9 or later), and
+# git when the repository root holds an empty .gitmodules placeholder.
 #
 #   scripts/check.sh [--namespaces a,b,...] [<skills folder>]
 #   scripts/check.sh --self-test
@@ -10,7 +11,7 @@
 set -euo pipefail
 root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 exec python3 -I - "$root" "$@" <<'PY'
-import os, pathlib, re, shutil, sys, tempfile, urllib.parse
+import os, pathlib, re, shutil, stat, subprocess, sys, tempfile, urllib.parse
 
 # This repository's namespaces. Source: the namespaces registry in
 # wiki/program.md (owner, 2026-11-14); change both together.
@@ -373,13 +374,63 @@ def check_skill(folder, namespaces):
     return errors, warnings
 
 
+def git_tracks(root, name):
+    """Whether the Git repository whose top level is root tracks name: True,
+    False, or an error string when that can't be told. A root without its own
+    .git (a source export) has no tracked files; a repository above root is
+    never asked."""
+    if not os.path.lexists(os.path.join(root, ".git")):
+        return False
+    env = {k: v for k, v in os.environ.items() if not k.startswith("GIT_")}
+
+    def git(*argv):
+        return subprocess.run(["git", "-C", root, "-c", "core.fsmonitor=false", *argv],
+                              stdin=subprocess.DEVNULL, capture_output=True, env=env, timeout=60)
+    try:
+        top = git("rev-parse", "--show-toplevel")
+        if top.returncode != 0:
+            return f"git rev-parse exit {top.returncode}: {top.stderr.decode(errors='replace').strip()}"
+        if os.path.realpath(top.stdout.decode(errors="replace").strip()) != os.path.realpath(root):
+            return "the repository's top level is not the checked root"
+        listed = git("ls-files", "-z", "--", name)
+        if listed.returncode != 0:
+            return f"git ls-files exit {listed.returncode}: {listed.stderr.decode(errors='replace').strip()}"
+    except (OSError, subprocess.SubprocessError) as e:
+        return f"git did not run: {e}"
+    return bool(listed.stdout)
+
+
+def gitmodules_problem(root):
+    """Why the root's .gitmodules fails the M0 check, or None when it may stay.
+
+    Absent is fine, and so is an empty untracked placeholder: a zero-length
+    file, or the zero-size character device a sandbox binds over a path it
+    hides. The file is only stat'ed, never opened."""
+    path = os.path.join(root, ".gitmodules")
+    try:
+        st = os.lstat(path)
+    except FileNotFoundError:
+        return None
+    if not (stat.S_ISREG(st.st_mode) or stat.S_ISCHR(st.st_mode)) or st.st_size != 0:
+        return ".gitmodules: not an empty placeholder; the upstream machinery was removed in M0"
+    tracked = git_tracks(root, ".gitmodules")
+    if tracked is True:
+        return ".gitmodules: tracked by Git; the upstream machinery was removed in M0"
+    if tracked is not False:
+        return f".gitmodules: can't tell whether Git tracks it ({tracked})"
+    return None
+
+
 def check_folder(folder, namespaces, root_checks, required, root):
     """Errors, warnings and the number of skills checked for a skills folder."""
     errors, warnings, count = [], [], 0
     if root_checks:
-        for leftover in ("upstream", "upstream.toml", ".gitmodules"):
+        for leftover in ("upstream", "upstream.toml"):
             if os.path.lexists(os.path.join(root, leftover)):
                 errors.append(f"{leftover}: the upstream machinery was removed in M0")
+        problem = gitmodules_problem(root)
+        if problem:
+            errors.append(problem)
     if not os.path.lexists(folder):
         if required:
             errors.append(f"{shown(folder)}: no such folder")
@@ -579,11 +630,43 @@ def self_test():
         f = pathlib.Path(tmp, "a-file")
         f.write_text("not a folder\n")
         expect("folder-is-a-file", check_folder(f, None, False, True, tmp), "not a folder")
-        for leftover in ("upstream", "upstream.toml", ".gitmodules"):
-            r = pathlib.Path(tmp, "leftover-" + leftover.strip("."))
+        for leftover in ("upstream", "upstream.toml"):
+            r = pathlib.Path(tmp, "leftover-" + leftover)
             (r / "skills").mkdir(parents=True)
             (r / leftover).mkdir() if leftover == "upstream" else (r / leftover).write_text("")
             expect(f"root-{leftover}", check_folder(r / "skills", NAMESPACES, True, False, str(r)), f"{leftover}: the upstream machinery was removed in M0")
+
+        # .gitmodules: an empty untracked placeholder may stay (a sandbox's bind
+        # mask looks like one); anything else is the removed upstream machinery.
+        def gitmodules_root(case, content=None, folder=False):
+            r = pathlib.Path(tmp, "gitmodules-" + case)
+            (r / "skills").mkdir(parents=True)
+            if folder:
+                (r / ".gitmodules").mkdir()
+            elif content is not None:
+                (r / ".gitmodules").write_text(content)
+            return r
+        r = gitmodules_root("empty-untracked", "")
+        expect("root-gitmodules-empty-untracked", check_folder(r / "skills", NAMESPACES, True, False, str(r)), None)
+        r = gitmodules_root("non-empty-untracked", "[submodule \"upstream\"]\n")
+        expect("root-gitmodules-non-empty-untracked", check_folder(r / "skills", NAMESPACES, True, False, str(r)), ".gitmodules: not an empty placeholder")
+        r = gitmodules_root("folder", folder=True)
+        expect("root-gitmodules-folder", check_folder(r / "skills", NAMESPACES, True, False, str(r)), ".gitmodules: not an empty placeholder")
+        r = gitmodules_root("empty-tracked", "")
+        # The fixture repository ignores the user's Git config, whose excludes
+        # may hide .gitmodules placeholders, and adds the file regardless.
+        env = {k: v for k, v in os.environ.items() if not k.startswith("GIT_")}
+        env.update(GIT_CONFIG_GLOBAL=os.devnull, GIT_CONFIG_NOSYSTEM="1")
+        for argv in (["init", "-q", "--template="], ["add", "-f", "--", ".gitmodules"]):
+            made = subprocess.run(["git", "-C", str(r), *argv], stdin=subprocess.DEVNULL, capture_output=True, env=env, timeout=60)
+            if made.returncode != 0:
+                failures.append(f"self-test root-gitmodules-empty-tracked: git {argv[0]} exit {made.returncode}: {made.stderr.decode(errors='replace').strip()}")
+                break
+        else:
+            expect("root-gitmodules-empty-tracked", check_folder(r / "skills", NAMESPACES, True, False, str(r)), ".gitmodules: tracked by Git")
+        r = gitmodules_root("broken-git", "")
+        (r / ".git").write_text("gitdir: missing\n")
+        expect("root-gitmodules-git-probe-fails", check_folder(r / "skills", NAMESPACES, True, False, str(r)), ".gitmodules: can't tell whether Git tracks it")
         d = copy("default-namespaces")
         expect("default-namespaces", check_folder(d.parent, NAMESPACES, True, False, str(d.parent.parent)), "is not in the namespaces council")
     finally:
