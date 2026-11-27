@@ -6,14 +6,14 @@ summary: "Proposed minimum P11 contract for one canonical resource with self-con
 status: proposed
 created: 2026-11-27
 updated: 2026-11-27
-related: [AS-ADR-0003, AS-REC-2026-11-24-SKILL-SYSTEM-PLANNING, AS-ARCH-SKILL-CAPABILITY-EVOLUTION, AS-ARCH-SKILL-SOURCES, AS-ARCH-GUEST-INSTALL, AS-PROGRAM, AS-STATE]
+related: [AS-ADR-0003, AS-REC-2026-11-24-SKILL-SYSTEM-PLANNING, AS-ARCH-SKILL-CAPABILITY-EVOLUTION, AS-ARCH-SKILL-SOURCES, AS-ARCH-GUEST-INSTALL, AS-PROGRAM, AS-STATE, AS-ARCH-AG12-CHECK-CONTRACT]
 ---
 
 # P11 packaging and receipt contract
 
 **Status: proposed.** Planning package **P11** (resource packaging proof) is not adopted until the owner accepts a contract and a two-consumer use case. This page states the **minimum** contract so AG1.2 digest-parity checks (planning **P12**) have something to adopt later. It is not validator code, Moon admission, checker cutover, pin, install, merge or publication.
 
-Unlanded parallel docs drafts (STATE tip reconciliation; AG1.2 check contract) are **not** assumed landed. This page stands alone from tip `adc1972cc6708fa8204506783c365904695d7e7d`.
+Written against Agents `main` at `adc1972cc6708fa8204506783c365904695d7e7d`. Since then `main` gained the STATE reconciliation (#29) and the [AG1.2 check contract](ag12-check-contract.md) (#30), whose digest-parity checks wait on this page; neither changes the contract below.
 
 ## Non-goals and domain boundaries
 
@@ -118,6 +118,7 @@ Owner actions: pick pair A, pair B, neither, or a different pair; then accept or
 
 ## References
 
+- AG1.2 (P12) checks that adopt this contract: [AG1.2 check contract](ag12-check-contract.md).
 - Decision direction: [AS-ADR-0003](../records/decisions/0003-portable-skill-capabilities.md) (D7 staged AG1; D10 dependency-driven delivery).
 - Planning P11/P12: [skill-system planning](../records/2026-11-24-skill-system-planning.md).
 - Packaging direction: [skill capability evolution](skill-capability-evolution.md).

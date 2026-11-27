@@ -6,7 +6,7 @@ summary: "Proposed P12 contract for AG1.2 expansion after AG1.1 parity: schema, 
 status: proposed
 created: 2026-11-27
 updated: 2026-11-27
-related: [AS-ADR-0003, AS-REC-2026-11-24-AG1-1, AS-REC-2026-11-24-SKILL-SYSTEM-PLANNING, AS-ARCH-SKILL-CAPABILITY-EVOLUTION, AS-ARCH-SKILL-SOURCES, AS-PROGRAM, AS-STATE]
+related: [AS-ADR-0003, AS-REC-2026-11-24-AG1-1, AS-REC-2026-11-24-SKILL-SYSTEM-PLANNING, AS-ARCH-SKILL-CAPABILITY-EVOLUTION, AS-ARCH-SKILL-SOURCES, AS-PROGRAM, AS-STATE, AS-ARCH-P11-PACKAGING-CONTRACT]
 ---
 
 # AG1.2 check contract
@@ -22,7 +22,7 @@ AG1.1 (planning **P3**) already landed native parity with the shell checker and 
 | Moon / `.prototools` guest admission | Separate admission track |
 | Removing or demoting `scripts/check.sh` | Cutover acceptance after parity evidence |
 | First pin, U16 install, Cell S1 | Owner gates |
-| P11 packaging / receipt / shared-resource content digests | Open; see slice 2 deferred choices |
+| P11 packaging / receipt / shared-resource content digests | Open: [P11 packaging and receipt contract](p11-packaging-contract.md), proposed; see slice 2 deferred choices |
 | Module implementation that assumes an installed Agents pin | After pin |
 
 ## Shared rules for every slice
@@ -147,3 +147,4 @@ Dangling related IDs and broken relative skill links: **fail** when that corpus 
 - Parity record: [AG1.1](../records/2026-11-24-ag1-1-validator-parity.md).
 - Direction: [skill capability evolution](skill-capability-evolution.md).
 - Module shape: [skill modules](skill-sources.md).
+- P11 contract these digest checks wait on (proposed): [P11 packaging and receipt contract](p11-packaging-contract.md).
