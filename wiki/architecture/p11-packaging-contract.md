@@ -5,7 +5,7 @@ title: P11 packaging and receipt contract
 summary: "Proposed minimum P11 contract for one canonical resource with self-contained copies in two skills: identity, layout, digest and revision parity, receipt fields, missing-resource and installed-folder fixtures. Distinct from U16 folder ownership and bulk-transfer package digests. Consumer-pair selection and acceptance remain with the owner. Not implementation, pin, install or cutover."
 status: proposed
 created: 2026-11-27
-updated: 2026-11-27
+updated: 2026-11-27  # the owner selected consumer pair B
 related: [AS-ADR-0003, AS-REC-2026-11-24-SKILL-SYSTEM-PLANNING, AS-ARCH-SKILL-CAPABILITY-EVOLUTION, AS-ARCH-SKILL-SOURCES, AS-ARCH-GUEST-INSTALL, AS-PROGRAM, AS-STATE, AS-ARCH-AG12-CHECK-CONTRACT]
 ---
 
@@ -102,6 +102,8 @@ At most two concrete pairs from **existing** tip skills. Neither is accepted by 
 | B | `wiki` + `workspace-handoff` | Shared durable-evidence / record frontmatter field list (id, kind, title, summary, status, created, updated, related + evidence locator shape) | Two tip skills already teach overlapping provenance fields; tests wiki vs handoff copy isolation |
 
 Owner actions: pick pair A, pair B, neither, or a different pair; then accept or amend this contract. Do not treat either pair as scheduled implementation.
+
+**Owner, 2026-11-27: pair B** (`wiki` + `workspace-handoff`, the record front-matter field list). The contract itself stays **proposed**: accepting or amending it is the next owner step, and docs or fixtures land only after that ([adoption order](#adoption-order) step 2).
 
 ## Relation to AG1.2 (P12)
 
