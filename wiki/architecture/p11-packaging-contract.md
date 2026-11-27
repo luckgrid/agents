@@ -34,10 +34,11 @@ Do not reuse U16 or bulk-transfer receipt shapes as P11 resource receipts withou
 | --- | --- |
 | `resource_id` | Stable token (ASCII, no paths), unique in the contract registry for this repository |
 | `title` | Short human label |
-| `canonical_revision` | Opaque revision string (recommended: hex digest of canonical bytes, or an explicit version the owner pins) |
+| `canonical_digest` | Hex digest of the canonical resource bytes under the declared algorithm and manifest order (this is the parity value) |
+| `revision_label` | Optional human or owner pin label (for example a short version string); **never** compared to digests |
 | `consumers` | Exactly two skill folder names that must carry a self-contained copy |
 
-The owner selects the `resource_id` and the two consumers when accepting a use case. This page may only **propose** pairs (below).
+The owner selects the `resource_id` and the two consumers when accepting a use case. This page may only **propose** pairs (below). Parity always uses `canonical_digest`, not `revision_label`.
 
 ### 2. Layout (self-contained copies)
 
@@ -54,9 +55,10 @@ The owner selects the `resource_id` and the two consumers when accepting a use c
 | Rule | Behavior |
 | --- | --- |
 | Algorithm | One named algorithm for the whole contract (proposal default: SHA-256 over canonical file bytes in a declared ordered manifest) |
-| Per-copy digest | Each consumer copy’s digest **equals** `canonical_revision` when the transform is identity |
-| Mismatch | Fail when either copy’s digest differs from `canonical_revision` or from the other copy (after allowed transform) |
+| Per-copy digest | Each consumer copy’s digest **equals** `canonical_digest` when the transform is identity |
+| Mismatch | Fail when either copy’s digest differs from `canonical_digest` or from the other copy (after allowed transform) |
 | Manifest | Optional ordered file list inside the resource tree; if present, digests cover listed files only |
+| Labels | `revision_label`, if present, is documentation only and must not participate in pass/fail |
 
 Until this contract is **accepted**, validators must not claim digest-parity PASS for shared resources.
 
@@ -67,8 +69,9 @@ Minimum machine-readable receipt (Markdown front matter or adjacent JSON — imp
 | Field | Required |
 | --- | --- |
 | `resource_id` | yes |
-| `canonical_revision` | yes |
+| `canonical_digest` | yes |
 | `digest_algorithm` | yes |
+| `revision_label` | no |
 | `consumer_skill` | yes (this folder’s skill name) |
 | `copy_path` | yes (path relative to the skill folder) |
 | `copy_digest` | yes |
